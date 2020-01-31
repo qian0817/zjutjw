@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/navigation_login">
+
+
+    <fragment
+        android:id="@+id/navigation_subject"
+        android:name="com.qianlei.jiaowu.ui.fragment.subject.SubjectFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_subject">
+        <action
+            android:id="@+id/action_navigation_subject_to_navigation_login"
+            app:destination="@id/navigation_login"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_score"
+        android:name="com.qianlei.jiaowu.ui.fragment.score.ScoreFragment"
+        android:label="@string/title_dashboard"
+        tools:layout="@layout/fragment_score">
+        <action
+            android:id="@+id/action_navigation_score_to_navigation_login"
+            app:destination="@id/navigation_login"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_examination"
+        android:name="com.qianlei.jiaowu.ui.fragment.exam.ExamFragment"
+        android:label="@string/title_notifications"
+        tools:layout="@layout/fragment_notifications" />
+
+
+    <fragment
+        android:id="@+id/navigation_login"
+        android:name="com.qianlei.jiaowu.ui.fragment.login.LoginFragment"
+        android:label="@string/login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_navigation_login_to_navigation_lesson"
+            app:destination="@id/navigation_subject"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+    </fragment>
+</navigation>

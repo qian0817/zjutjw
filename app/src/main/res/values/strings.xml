@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="title_home">课表</string>
+    <string name="title_dashboard">成绩</string>
+    <string name="title_notifications">考试</string>
+    <string name="student_id">学号</string>
+    <string name="password">密码</string>
+    <string name="captcha">验证码</string>
+    <string name="title_activity_login">My Application</string>
+    <string-array name="year">
+        <item>2017——2018</item>
+        <item>2018——2019</item>
+        <item>2019——2020</item>
+        <item>2020——2021</item>
+    </string-array>
+    <string-array name="term">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+    <string name="login">登录</string>
+    <string name="nav_header_desc">头像</string>
+    <string name="menu_share">分享</string>
+    <string name="menu_jiaowu">教务</string>
+    <string name="login_first">请先登录</string>
+
+</resources>
