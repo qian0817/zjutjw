@@ -34,7 +34,7 @@
         android:id="@+id/navigation_examination"
         android:name="com.qianlei.jiaowu.ui.fragment.exam.ExamFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_exam" />
 
 
     <fragment

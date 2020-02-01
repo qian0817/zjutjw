@@ -28,6 +28,12 @@ public class Examination {
     @JSONField(name = "kssj")
     private String time;
 
+    /**
+     * 座位号
+     */
+    @JSONField(name = "zwh")
+    private String seatId;
+
     public Examination() {
     }
 
@@ -59,6 +65,14 @@ public class Examination {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public String getSeatId() {
+        return seatId;
+    }
+
+    public void setSeatId(String seatId) {
+        this.seatId = seatId;
     }
 
     @Override

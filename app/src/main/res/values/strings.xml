@@ -23,5 +23,8 @@
     <string name="menu_share">分享</string>
     <string name="menu_jiaowu">教务</string>
     <string name="login_first">请先登录</string>
+    <string name="seat_id">座位号</string>
+    <string name="place">地点</string>
+    <string name="time">时间</string>
 
 </resources>

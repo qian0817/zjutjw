@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.qianlei.jiaowu.common.Result;
 import com.qianlei.jiaowu.common.ResultType;
+import com.qianlei.jiaowu.entity.Examination;
 import com.qianlei.jiaowu.entity.Score;
 import com.qianlei.jiaowu.entity.Student;
 import com.qianlei.jiaowu.entity.Subject;
@@ -229,6 +230,36 @@ public class StudentApi {
         } catch (Exception e) {
             return new Result<>(ResultType.OTHER, "其他错误");
         }
+    }
+
+    public Result<List<Examination>> getStudentExamInformation(String year, String term) {
+        if (cookies == null) {
+            return new Result<>(ResultType.NEED_LOGIN, "请先登陆");
+        }
+        try {
+            Map<String, String> parameter = new HashMap<>(2);
+            parameter.put("xnm", year);
+            parameter.put("xqm", formatTerm(term));
+            Connection connection = Jsoup.connect(PREFIX + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105");
+            Connection.Response response = connection.cookies(cookies).method(Connection.Method.POST)
+                    .data(parameter).ignoreContentType(true).execute();
+            JSONObject jsonObject = JSON.parseObject(response.body());
+            JSONArray examTable = JSON.parseArray(jsonObject.getString("items"));
+            List<Examination> examinationList = new ArrayList<>();
+            for (Object o : examTable) {
+                JSONObject lesson = (JSONObject) o;
+                Examination ans = JSON.parseObject(lesson.toJSONString(), Examination.class);
+                examinationList.add(ans);
+            }
+            return new Result<>(ResultType.OK, "获取成功", examinationList);
+        } catch (IOException e) {
+            return new Result<>(ResultType.IO, "请检查网络连接");
+        } catch (JSONException e) {
+            return new Result<>(ResultType.NEED_LOGIN, "请重新登陆");
+        } catch (Exception e) {
+            return new Result<>(ResultType.OTHER, "其他错误");
+        }
+
     }
 
     /**
