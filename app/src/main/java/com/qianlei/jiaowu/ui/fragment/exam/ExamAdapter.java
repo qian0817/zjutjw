@@ -38,7 +38,7 @@ public class ExamAdapter extends RecyclerView.Adapter<ExamAdapter.ExamViewHolder
         holder.examNameView.setText(examinationList.get(position).getName());
         holder.examTimeView.setText(examinationList.get(position).getTime());
         holder.examPlaceView.setText(examinationList.get(position).getPlace());
-        holder.examPlaceView.setText(examinationList.get(position).getSeatId());
+        holder.examSeatIdView.setText(examinationList.get(position).getSeatId());
     }
 
     @Override
