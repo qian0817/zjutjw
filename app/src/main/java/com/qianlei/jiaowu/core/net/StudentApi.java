@@ -37,8 +37,15 @@ public class StudentApi {
     /**
      * 保证cookie唯一 需要单例
      */
-    private static StudentApi studentApi = new StudentApi();
-    private Map<String, String> cookies;
+    private static volatile StudentApi studentApi;
+    /**
+     * 临时的cookies 登录之前使用
+     */
+    private Map<String, String> tempCookies;
+    /**
+     * 在登录之后使用的cookies
+     */
+    private Map<String, String> lastLoginCookies;
     private String csrftoken;
 
     private StudentApi() {
@@ -46,6 +53,13 @@ public class StudentApi {
     }
 
     public static StudentApi getStudentApi() {
+        if (studentApi == null) {
+            synchronized (StudentApi.class) {
+                if (studentApi == null) {
+                    studentApi = new StudentApi();
+                }
+            }
+        }
         return studentApi;
     }
 
@@ -59,7 +73,7 @@ public class StudentApi {
      */
     private String getRsaPublicKey(String password) throws IOException {
         Connection connection = Jsoup.connect(PREFIX + "/jwglxt/xtgl/login_getPublicKey.html");
-        Connection.Response response = connection.cookies(cookies).ignoreContentType(true).execute();
+        Connection.Response response = connection.cookies(tempCookies).ignoreContentType(true).execute();
         JSONObject jsonObject = JSON.parseObject(response.body());
         String modulus = jsonObject.getString("modulus");
         String exponent = jsonObject.getString("exponent");
@@ -86,13 +100,13 @@ public class StudentApi {
             connection.data("mm", password);
             connection.data("mm", password);
             connection.data("yzm", code);
-            Connection.Response response = connection.cookies(cookies).ignoreContentType(true)
+            Connection.Response response = connection.cookies(tempCookies).ignoreContentType(true)
                     .method(Connection.Method.POST).execute();
 
             Document document = Jsoup.parse(response.body());
             if (document.getElementById("tips") == null) {
                 //设置cookie
-                cookies = response.cookies();
+                lastLoginCookies = response.cookies();
                 return new Result<>(ResultType.OK, "成功登陆");
             } else {
                 return new Result<>(ResultType.PARAMS_ERROR, document.getElementById("tips").text());
@@ -116,7 +130,7 @@ public class StudentApi {
             Connection connection = Jsoup.connect(PREFIX + "/jwglxt/xtgl/login_slogin.html");
             Connection.Response response = connection.execute();
             //保存cookie
-            cookies = response.cookies();
+            tempCookies = response.cookies();
             //保存csrftoken
             Document document = Jsoup.parse(response.body());
             csrftoken = document.getElementById("csrftoken").val();
@@ -126,7 +140,7 @@ public class StudentApi {
         //获取验证码
         Connection connection = Jsoup.connect(PREFIX + "/jwglxt/kaptcha").ignoreContentType(true);
         try {
-            Connection.Response response = connection.cookies(cookies).execute();
+            Connection.Response response = connection.cookies(tempCookies).execute();
             byte[] bytes = response.bodyAsBytes();
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             return new Result<>(ResultType.OK, "获取成功", bitmap);
@@ -143,12 +157,12 @@ public class StudentApi {
      * @return 获取到的学生的信息的结果
      */
     public Result<Student> getStudentInformation() {
-        if (cookies == null) {
+        if (lastLoginCookies == null) {
             return new Result<>(ResultType.NEED_LOGIN, "请先登陆");
         }
         try {
             Connection connection = Jsoup.connect(PREFIX + "/jwglxt/xsxxxggl/xsxxwh_cxCkDgxsxx.html?gnmkdm=N100801");
-            Connection.Response response = connection.cookies(cookies).method(Connection.Method.GET).ignoreContentType(true).execute();
+            Connection.Response response = connection.cookies(lastLoginCookies).method(Connection.Method.GET).ignoreContentType(true).execute();
             Student student = JSON.parseObject(response.body(), Student.class);
             return new Result<>(ResultType.OK, "获取信息成功", student);
         } catch (JSONException e) {
@@ -168,7 +182,7 @@ public class StudentApi {
      * @return 当学期的课表信息
      */
     public Result<List<Subject>> getStudentTimetable(String year, String term) {
-        if (cookies == null) {
+        if (lastLoginCookies == null) {
             return new Result<>(ResultType.NEED_LOGIN, "请先登陆");
         }
         try {
@@ -176,7 +190,7 @@ public class StudentApi {
             connection.data("xnm", year);
             connection.data("xqm", formatTerm(term));
             Connection.Response response;
-            response = connection.cookies(cookies).
+            response = connection.cookies(lastLoginCookies).
                     method(Connection.Method.POST).ignoreContentType(true).execute();
             JSONObject jsonObject = JSON.parseObject(response.body());
             JSONArray timeTable = JSON.parseArray(jsonObject.getString("kbList"));
@@ -204,7 +218,7 @@ public class StudentApi {
      * @return 当学期的成绩信息
      */
     public Result<List<Score>> getStudentScore(String year, String term) {
-        if (cookies == null) {
+        if (lastLoginCookies == null) {
             return new Result<>(ResultType.NEED_LOGIN, "请先登陆");
         }
         try {
@@ -212,7 +226,7 @@ public class StudentApi {
             parameter.put("xnm", year);
             parameter.put("xqm", formatTerm(term));
             Connection connection = Jsoup.connect(PREFIX + "/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005");
-            Connection.Response response = connection.cookies(cookies).method(Connection.Method.POST)
+            Connection.Response response = connection.cookies(lastLoginCookies).method(Connection.Method.POST)
                     .data(parameter).ignoreContentType(true).execute();
             JSONObject jsonObject = JSON.parseObject(response.body());
             JSONArray gradeTable = JSON.parseArray(jsonObject.getString("items"));
@@ -233,7 +247,7 @@ public class StudentApi {
     }
 
     public Result<List<Examination>> getStudentExamInformation(String year, String term) {
-        if (cookies == null) {
+        if (lastLoginCookies == null) {
             return new Result<>(ResultType.NEED_LOGIN, "请先登陆");
         }
         try {
@@ -241,7 +255,7 @@ public class StudentApi {
             parameter.put("xnm", year);
             parameter.put("xqm", formatTerm(term));
             Connection connection = Jsoup.connect(PREFIX + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105");
-            Connection.Response response = connection.cookies(cookies).method(Connection.Method.POST)
+            Connection.Response response = connection.cookies(lastLoginCookies).method(Connection.Method.POST)
                     .data(parameter).ignoreContentType(true).execute();
             JSONObject jsonObject = JSON.parseObject(response.body());
             JSONArray examTable = JSON.parseArray(jsonObject.getString("items"));
@@ -285,6 +299,6 @@ public class StudentApi {
      * 登出
      */
     public void logout() {
-        cookies = null;
+        lastLoginCookies = null;
     }
 }
