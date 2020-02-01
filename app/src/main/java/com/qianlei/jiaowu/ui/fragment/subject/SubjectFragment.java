@@ -40,7 +40,6 @@ public class SubjectFragment extends Fragment implements AdapterView.OnItemSelec
         init();
 
         subjectViewModel = ViewModelProviders.of(this).get(SubjectViewModel.class);
-        //当ViewModel内的内容发生改变时，将内容更新
         subjectViewModel.getResult().observe(this, result -> {
             if (result.getType() == ResultType.OK) {
                 timetableView.source(result.getData()).showView();

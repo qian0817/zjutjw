@@ -42,7 +42,6 @@ public class LoginFragment extends Fragment {
 
         mViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
         init(root);
-
         mViewModel.getCaptcha().observe(this, result -> {
             if (result.isSuccess()) {
                 captchaImageView.setImageBitmap(result.getData());
@@ -60,7 +59,7 @@ public class LoginFragment extends Fragment {
                 editor.putString(PASSWORD, password);
                 editor.apply();
                 //跳转到课程界面
-                NavController controller = Navigation.findNavController(this.getView());
+                NavController controller = Navigation.findNavController(root);
                 controller.navigate(R.id.action_navigation_login_to_navigation_lesson);
             } else {
                 mViewModel.changeCaptcha();
