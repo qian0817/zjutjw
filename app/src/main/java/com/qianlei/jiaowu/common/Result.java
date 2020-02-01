@@ -1,14 +1,17 @@
 package com.qianlei.jiaowu.common;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
  * 用于传递执行结果的类
  *
  * @author qianlei
  */
+@Getter
+@EqualsAndHashCode
+@ToString
 public class Result<T> {
     /**
      * 是否成功以及相关的错误类型
@@ -34,48 +37,7 @@ public class Result<T> {
         this.data = data;
     }
 
-    public ResultType getType() {
-        return type;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public T getData() {
-        return data;
-    }
-
     public boolean isSuccess() {
         return type == ResultType.OK;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Result<?> result = (Result<?>) o;
-        return type == result.type &&
-                Objects.equals(msg, result.msg) &&
-                Objects.equals(data, result.data);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type, msg, data);
-    }
-
-    @Override
-    @NotNull
-    public String toString() {
-        return "Result{" +
-                "type=" + type +
-                ", msg='" + msg + '\'' +
-                ", data=" + data +
-                '}';
     }
 }

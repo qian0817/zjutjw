@@ -10,9 +10,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        dataBinding {
-            enabled true
-        }
     }
     buildTypes {
         release {
@@ -43,4 +40,11 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.3.0'
     implementation 'org.jsoup:jsoup:1.12.1'
     implementation 'com.alibaba:fastjson:1.2.62'
+    dependencies {
+        compileOnly 'org.projectlombok:lombok:1.18.10'
+        annotationProcessor 'org.projectlombok:lombok:1.18.10'
+    }
+    def room_version = "2.2.2"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
 }

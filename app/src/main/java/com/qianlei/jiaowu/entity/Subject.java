@@ -8,13 +8,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import lombok.Data;
 
 /**
  * 课程的实体类
  *
  * @author qianlei
  */
+@Data
 public class Subject implements ScheduleEnable {
     /**
      * 课程名称
@@ -51,89 +53,14 @@ public class Subject implements ScheduleEnable {
     @JSONField(name = "jc")
     private String last;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getTeacher() {
-        return teacher;
-    }
-
-    public void setTeacher(String teacher) {
-        this.teacher = teacher;
-    }
-
-    public String getPlace() {
-        return place;
-    }
-
-    public void setPlace(String place) {
-        this.place = place;
-    }
-
-    public String getWeek() {
-        return week;
-    }
-
     public void setWeek(String week) {
         week = week.replace("周", "");
         this.week = week;
     }
 
-    public String getDay() {
-        return day;
-    }
-
-    public void setDay(String day) {
-        this.day = day;
-    }
-
-    public String getLast() {
-        return last;
-    }
-
     public void setLast(String last) {
         last = last.replace("节", "");
         this.last = last;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Subject subject = (Subject) o;
-        return Objects.equals(name, subject.name) &&
-                Objects.equals(teacher, subject.teacher) &&
-                Objects.equals(place, subject.place) &&
-                Objects.equals(week, subject.week) &&
-                Objects.equals(day, subject.day) &&
-                Objects.equals(last, subject.last);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, teacher, place, week, day, last);
-    }
-
-    @Override
-    @NotNull
-    public String toString() {
-        return "Subject{" +
-                "name='" + name + '\'' +
-                ", teacher='" + teacher + '\'' +
-                ", place='" + place + '\'' +
-                ", week='" + week + '\'' +
-                ", day='" + day + '\'' +
-                ", last='" + last + '\'' +
-                '}';
     }
 
     @Override
@@ -171,7 +98,6 @@ public class Subject implements ScheduleEnable {
 
     /**
      * 格式化上课周
-     * <p>
      * 将上课周的字符串转换为list
      *
      * @return 上课周的列表
