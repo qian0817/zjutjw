@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.qianlei.jiaowu.R;
 import com.qianlei.jiaowu.common.ResultType;
@@ -24,46 +25,52 @@ import com.zhuangfei.timetable.view.WeekView;
  *
  * @author qianlei
  */
-public class SubjectFragment extends Fragment implements AdapterView.OnItemSelectedListener {
+public class SubjectFragment extends Fragment implements AdapterView.OnItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
     private SubjectViewModel subjectViewModel;
 
-    private View root;
     private TermChooseView termChooseView;
     private TimetableView timetableView;
     private WeekView weekView;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_subject, container, false);
-        this.root = root;
-        init();
+        init(root);
 
-        subjectViewModel = ViewModelProviders.of(this).get(SubjectViewModel.class);
-        subjectViewModel.getResult().observe(this, result -> {
-            if (result.getType() == ResultType.OK) {
-                timetableView.source(result.getData()).showView();
-                weekView.source(result.getData()).showView();
-            } else {
-                Toast.makeText(root.getContext(), result.getMsg(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        return root;
-    }
-
-    private void init() {
-        termChooseView = root.findViewById(R.id.subject_term_choose_view);
-        timetableView = root.findViewById(R.id.time_table_view);
-        weekView = root.findViewById(R.id.week_view);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        termChooseView.setItemSelectedListener(this);
         int startTime = ScheduleSupport.timeTransfrom("2019-9-16 00:00:00");
+        //修改周数时的方法
         weekView.curWeek(startTime).callback(week -> {
             int cur = timetableView.curWeek();
             //切换日期
             timetableView.onDateBuildListener().onUpdateDate(cur, week);
             timetableView.changeWeekOnly(week);
         }).showView();
+
         timetableView.curWeek(startTime).curTerm("").isShowNotCurWeek(false).showView();
-        termChooseView.setItemSelectedListener(this);
+        //设置viewModel
+        subjectViewModel = ViewModelProviders.of(this).get(SubjectViewModel.class);
+        subjectViewModel.getResult().observe(this, result -> {
+            System.out.println(timetableView.curTerm());
+            if (result.getType() == ResultType.OK) {
+                timetableView.source(result.getData()).curTerm(termChooseView.getTerm()).showView();
+                weekView.source(result.getData()).showView();
+            } else {
+                Toast.makeText(root.getContext(), result.getMsg(), Toast.LENGTH_SHORT).show();
+            }
+            swipeRefreshLayout.setRefreshing(false);
+        });
+        return root;
+    }
+
+    private void init(View root) {
+        termChooseView = root.findViewById(R.id.subject_term_choose_view);
+        timetableView = root.findViewById(R.id.time_table_view);
+        weekView = root.findViewById(R.id.week_view);
+        swipeRefreshLayout = root.findViewById(R.id.swipe_refresh_layout);
     }
 
     @Override
@@ -74,5 +81,10 @@ public class SubjectFragment extends Fragment implements AdapterView.OnItemSelec
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         subjectViewModel.changeTerm(String.valueOf(DateUtil.getCurYear()), String.valueOf(DateUtil.getCurTerm()));
+    }
+
+    @Override
+    public void onRefresh() {
+        subjectViewModel.changeTerm(termChooseView.getYear(), termChooseView.getTerm());
     }
 }

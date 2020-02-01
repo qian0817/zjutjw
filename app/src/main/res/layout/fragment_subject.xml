@@ -14,9 +14,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <com.zhuangfei.timetable.TimetableView
-        android:id="@+id/time_table_view"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/app_white" />
+        android:layout_height="match_parent">
+
+        <com.zhuangfei.timetable.TimetableView
+            android:id="@+id/time_table_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/app_white" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </LinearLayout>

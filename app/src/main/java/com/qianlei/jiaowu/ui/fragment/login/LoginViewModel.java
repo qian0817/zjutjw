@@ -30,7 +30,6 @@ public class LoginViewModel extends ViewModel {
     void login(String studentId, String password, String captcha) {
         executor.submit(() -> {
             final Result<String> result = studentApi.login(studentId, password, captcha);
-            System.out.println(result);
             handler.post(() -> loginResult.setValue(result));
         });
     }
