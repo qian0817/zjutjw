@@ -188,7 +188,7 @@ public class StudentApi {
         try {
             Connection connection = Jsoup.connect(PREFIX + "/jwglxt/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151");
             connection.data("xnm", year);
-            connection.data("xqm", formatTerm(term));
+            connection.data("xqm", term);
             Connection.Response response;
             response = connection.cookies(lastLoginCookies).
                     method(Connection.Method.POST).ignoreContentType(true).execute();
@@ -224,7 +224,7 @@ public class StudentApi {
         try {
             Map<String, String> parameter = new HashMap<>(2);
             parameter.put("xnm", year);
-            parameter.put("xqm", formatTerm(term));
+            parameter.put("xqm", term);
             Connection connection = Jsoup.connect(PREFIX + "/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005");
             Connection.Response response = connection.cookies(lastLoginCookies).method(Connection.Method.POST)
                     .data(parameter).ignoreContentType(true).execute();
@@ -253,7 +253,7 @@ public class StudentApi {
         try {
             Map<String, String> parameter = new HashMap<>(2);
             parameter.put("xnm", year);
-            parameter.put("xqm", formatTerm(term));
+            parameter.put("xqm", term);
             Connection connection = Jsoup.connect(PREFIX + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105");
             Connection.Response response = connection.cookies(lastLoginCookies).method(Connection.Method.POST)
                     .data(parameter).ignoreContentType(true).execute();
@@ -261,8 +261,10 @@ public class StudentApi {
             JSONArray examTable = JSON.parseArray(jsonObject.getString("items"));
             List<Examination> examinationList = new ArrayList<>();
             for (Object o : examTable) {
-                JSONObject lesson = (JSONObject) o;
-                Examination ans = JSON.parseObject(lesson.toJSONString(), Examination.class);
+                JSONObject exam = (JSONObject) o;
+                Examination ans = JSON.parseObject(exam.toJSONString(), Examination.class);
+                ans.setYear(year);
+                ans.setTerm(term);
                 examinationList.add(ans);
             }
             return new Result<>(ResultType.OK, "获取成功", examinationList);
@@ -274,25 +276,6 @@ public class StudentApi {
             return new Result<>(ResultType.OTHER, "其他错误");
         }
 
-    }
-
-    /**
-     * 格式化term
-     * 传到教务系统的学期格式需要转换
-     *
-     * @param term 转换前的学期
-     * @return 转换后的学期
-     */
-    private String formatTerm(String term) {
-        switch (term) {
-            case "2":
-                return "12";
-            case "3":
-                return "16";
-            case "1":
-            default:
-                return "3";
-        }
     }
 
     /**

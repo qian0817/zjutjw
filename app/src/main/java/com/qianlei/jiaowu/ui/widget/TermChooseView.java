@@ -45,7 +45,8 @@ public class TermChooseView extends LinearLayout {
      */
     public String getTerm() {
         String[] terms = getResources().getStringArray(R.array.term);
-        return terms[termSpinner.getSelectedItemPosition()];
+        String term = terms[termSpinner.getSelectedItemPosition()];
+        return formatTerm(term);
     }
 
     /**
@@ -56,5 +57,24 @@ public class TermChooseView extends LinearLayout {
     public String getYear() {
         String[] years = getResources().getStringArray(R.array.year);
         return years[yearSpinner.getSelectedItemPosition()].substring(0, 4);
+    }
+
+    /**
+     * 格式化term
+     * 传到教务系统的学期格式需要转换
+     *
+     * @param term 转换前的学期
+     * @return 转换后的学期
+     */
+    private String formatTerm(String term) {
+        switch (term) {
+            case "2":
+                return "12";
+            case "3":
+                return "16";
+            case "1":
+            default:
+                return "3";
+        }
     }
 }

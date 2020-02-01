@@ -1,13 +1,20 @@
 package com.qianlei.jiaowu.ui.fragment.exam;
 
+import android.app.Application;
 import android.os.Handler;
+import android.util.Log;
 
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.qianlei.jiaowu.common.Result;
+import com.qianlei.jiaowu.common.ResultType;
+import com.qianlei.jiaowu.core.db.MyDataBase;
+import com.qianlei.jiaowu.core.db.dao.ExamDao;
 import com.qianlei.jiaowu.core.net.StudentApi;
 import com.qianlei.jiaowu.entity.Examination;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -20,16 +27,20 @@ import java.util.concurrent.TimeUnit;
  *
  * @author qianlei
  */
-public class ExamViewModel extends ViewModel {
+public class ExamViewModel extends AndroidViewModel {
     private ExecutorService executorService = new ThreadPoolExecutor(1, 1,
             0, TimeUnit.MINUTES, new SynchronousQueue<>(), r -> new Thread(r, "获取考试信息线程"),
             new ThreadPoolExecutor.DiscardPolicy());
     private StudentApi studentApi = StudentApi.getStudentApi();
     private Handler handler = new Handler();
+    private boolean getDataFromDataBase = true;
+    private Application application;
 
     private MutableLiveData<Result<List<Examination>>> examListData = new MutableLiveData<>();
 
-    public ExamViewModel() {
+    public ExamViewModel(Application application) {
+        super(application);
+        this.application = application;
     }
 
     MutableLiveData<Result<List<Examination>>> getExamListData() {
@@ -38,10 +49,44 @@ public class ExamViewModel extends ViewModel {
 
     void changeTerm(String year, String term) {
         executorService.submit(() -> {
-            Result<List<Examination>> result = studentApi.getStudentExamInformation(year, term);
+            //首次从本地数据库中获取数据 之后从网络中获取数据
+            if (getDataFromDataBase) {
+                getDataFromDataBase = false;
+                final Result<List<Examination>> result = getDataFromDatabase(year, term);
+                if (result.isSuccess()) {
+                    handler.post(() -> examListData.setValue(result));
+                    return;
+                }
+            }
+            Result<List<Examination>> result = getDataFromNet(year, term);
             handler.post(() -> examListData.setValue(result));
         });
+    }
 
+    @NotNull
+    private Result<List<Examination>> getDataFromNet(String year, String term) {
+        Log.d("exam", "从网络中获取考试信息");
+        Result<List<Examination>> result = studentApi.getStudentExamInformation(year, term);
+        if (result.isSuccess()) {
+            //向数据库中添加数据
+            ExamDao examDao = MyDataBase.getDatabase(application).getExamDao();
+            List<Examination> examinationList = result.getData();
+            examDao.deleteAllByYearAndTerm(year, term);
+            for (Examination examination : examinationList) {
+                examDao.insertExam(examination);
+            }
+        }
+        return result;
+    }
 
+    private Result<List<Examination>> getDataFromDatabase(String year, String term) {
+        Log.d("exam", "从数据库中获取考试信息");
+        ExamDao examDao = MyDataBase.getDatabase(application).getExamDao();
+        List<Examination> examinationList = examDao.selectAllExamByYearAndTerm(year, term);
+        if (examinationList != null && !examinationList.isEmpty()) {
+            return new Result<>(ResultType.OK, "从数据获取成功", examinationList);
+        } else {
+            return new Result<>(ResultType.OTHER, "数据库中无数据");
+        }
     }
 }
