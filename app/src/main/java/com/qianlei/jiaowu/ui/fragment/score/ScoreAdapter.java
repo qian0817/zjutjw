@@ -18,7 +18,7 @@ import java.util.List;
  *
  * @author qianlei
  */
-public class ScoreAdapter extends RecyclerView.Adapter<ScoreViewHolder> {
+public class ScoreAdapter extends RecyclerView.Adapter<ScoreAdapter.ScoreViewHolder> {
     private List<Score> scoreList;
 
     ScoreAdapter(List<Score> scoreList) {
@@ -43,16 +43,16 @@ public class ScoreAdapter extends RecyclerView.Adapter<ScoreViewHolder> {
     public int getItemCount() {
         return scoreList.size();
     }
-}
 
-class ScoreViewHolder extends RecyclerView.ViewHolder {
-    TextView scoreNameText;
-    TextView scoreText;
+    static class ScoreViewHolder extends RecyclerView.ViewHolder {
+        TextView scoreNameText;
+        TextView scoreText;
 
-    ScoreViewHolder(@NonNull View itemView) {
-        super(itemView);
-        scoreNameText = itemView.findViewById(R.id.score_name);
-        scoreText = itemView.findViewById(R.id.score_score);
+        ScoreViewHolder(@NonNull View itemView) {
+            super(itemView);
+            scoreNameText = itemView.findViewById(R.id.score_name);
+            scoreText = itemView.findViewById(R.id.score_score);
+        }
+
     }
-
 }

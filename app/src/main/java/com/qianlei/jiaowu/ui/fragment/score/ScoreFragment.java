@@ -10,12 +10,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.qianlei.jiaowu.R;
 import com.qianlei.jiaowu.common.ResultType;
 import com.qianlei.jiaowu.ui.widget.TermChooseView;
+import com.qianlei.jiaowu.utils.DateUtil;
 
 /**
  * 显示成绩的fragment
@@ -37,11 +38,7 @@ public class ScoreFragment extends Fragment implements AdapterView.OnItemSelecte
         termChooseView = root.findViewById(R.id.score_term_choose_view);
 
         termChooseView.setItemSelectedListener(this);
-
-        StaggeredGridLayoutManager layoutManager = new
-                StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(layoutManager);
-
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
         scoreViewModel = ViewModelProviders.of(this).get(ScoreViewModel.class);
         scoreViewModel.getResult().observe(this, result -> {
             if (result.getType() == ResultType.OK) {
@@ -61,7 +58,7 @@ public class ScoreFragment extends Fragment implements AdapterView.OnItemSelecte
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-
+        scoreViewModel.changeTerm(String.valueOf(DateUtil.getCurYear()), String.valueOf(DateUtil.getCurTerm()));
     }
 }
 
