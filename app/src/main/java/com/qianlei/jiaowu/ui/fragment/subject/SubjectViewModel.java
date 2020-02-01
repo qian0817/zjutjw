@@ -2,7 +2,6 @@ package com.qianlei.jiaowu.ui.fragment.subject;
 
 import android.app.Application;
 import android.os.Handler;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -63,10 +62,8 @@ public class SubjectViewModel extends AndroidViewModel {
     }
 
     private Result<List<Subject>> getDataFromDatabase(String year, String term) {
-        Log.d("subject", "从数据库中获取考试信息");
         SubjectDao subjectDao = MyDataBase.getDatabase(application).getSubjectDao();
         List<Subject> subjectList = subjectDao.selectAllSubjectByYearAndTerm(year, term);
-        System.out.println(subjectList);
         if (subjectList != null && !subjectList.isEmpty()) {
             return new Result<>(ResultType.OK, "从数据获取成功", subjectList);
         } else {
@@ -76,7 +73,6 @@ public class SubjectViewModel extends AndroidViewModel {
 
     @NotNull
     private Result<List<Subject>> getDataFromNet(String year, String term) {
-        Log.d("subject", "从网络中获取考试信息");
         Result<List<Subject>> result = studentApi.getStudentTimetable(year, term);
         if (result.isSuccess()) {
             //向数据库中添加数据

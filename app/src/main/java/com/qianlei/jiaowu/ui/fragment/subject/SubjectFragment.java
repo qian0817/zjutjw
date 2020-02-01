@@ -54,7 +54,6 @@ public class SubjectFragment extends Fragment implements AdapterView.OnItemSelec
         //设置viewModel
         subjectViewModel = ViewModelProviders.of(this).get(SubjectViewModel.class);
         subjectViewModel.getResult().observe(this, result -> {
-            System.out.println(timetableView.curTerm());
             if (result.getType() == ResultType.OK) {
                 timetableView.source(result.getData()).curTerm(termChooseView.getTerm()).showView();
                 weekView.source(result.getData()).showView();

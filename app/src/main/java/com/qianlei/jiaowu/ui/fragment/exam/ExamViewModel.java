@@ -2,7 +2,6 @@ package com.qianlei.jiaowu.ui.fragment.exam;
 
 import android.app.Application;
 import android.os.Handler;
-import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
@@ -65,7 +64,6 @@ public class ExamViewModel extends AndroidViewModel {
 
     @NotNull
     private Result<List<Examination>> getDataFromNet(String year, String term) {
-        Log.d("exam", "从网络中获取考试信息");
         Result<List<Examination>> result = studentApi.getStudentExamInformation(year, term);
         if (result.isSuccess()) {
             //向数据库中添加数据
@@ -80,7 +78,6 @@ public class ExamViewModel extends AndroidViewModel {
     }
 
     private Result<List<Examination>> getDataFromDatabase(String year, String term) {
-        Log.d("exam", "从数据库中获取考试信息");
         ExamDao examDao = MyDataBase.getDatabase(application).getExamDao();
         List<Examination> examinationList = examDao.selectAllExamByYearAndTerm(year, term);
         if (examinationList != null && !examinationList.isEmpty()) {

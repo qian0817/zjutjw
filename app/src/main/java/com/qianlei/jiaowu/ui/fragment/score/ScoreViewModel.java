@@ -2,7 +2,6 @@ package com.qianlei.jiaowu.ui.fragment.score;
 
 import android.app.Application;
 import android.os.Handler;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -65,20 +64,17 @@ public class ScoreViewModel extends AndroidViewModel {
     }
 
     private Result<List<Score>> getDataFromDatabase(String year, String term) {
-        Log.d("score", "从数据库中获取考试信息");
         ScoreDao scoreDao = MyDataBase.getDatabase(application).getScoreDao();
         List<Score> scoreList = scoreDao.selectAllSubjectByYearAndTerm(year, term);
         if (scoreList != null && !scoreList.isEmpty()) {
             return new Result<>(ResultType.OK, "从数据获取成功", scoreList);
         } else {
-            Log.d("score", "数据库中无数据");
             return new Result<>(ResultType.OTHER, "数据库中无数据");
         }
     }
 
     @NotNull
     private Result<List<Score>> getDataFromNet(String year, String term) {
-        Log.d("score", "从网络中获取考试信息");
         Result<List<Score>> result = studentApi.getStudentScore(year, term);
         if (result.isSuccess()) {
             //向数据库中添加数据
