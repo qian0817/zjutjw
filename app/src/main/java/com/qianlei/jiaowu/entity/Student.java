@@ -13,12 +13,6 @@ import lombok.Data;
 public class Student {
     @JSONField(name = "xh_id")
     private String studentId;
-    @JSONField(name = "xbm")
-    private String sex;
-    @JSONField(name = "jg_id")
-    private String college;
-    @JSONField(name = "bh_id")
-    private String grade;
-    @JSONField(name = "xjztdm")
-    private String status;
+    @JSONField(name = "xm")
+    private String name;
 }

@@ -1,6 +1,7 @@
 package com.qianlei.jiaowu.ui.fragment.login;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -58,6 +60,10 @@ public class LoginFragment extends Fragment {
                 editor.putString(ID, studentId);
                 editor.putString(PASSWORD, password);
                 editor.apply();
+                if (getContext() != null) {
+                    Intent intent = new Intent("com.qianlei.jiaowu.LOGIN_BROADCAST");
+                    LocalBroadcastManager.getInstance(this.getContext()).sendBroadcast(intent);
+                }
                 //跳转到课程界面
                 NavController controller = Navigation.findNavController(root);
                 controller.navigate(R.id.action_navigation_login_to_navigation_lesson);
@@ -76,20 +82,22 @@ public class LoginFragment extends Fragment {
             final String captcha = captchaEditText.getText().toString();
             mViewModel.login(studentId, password, captcha);
         });
-
-        if (getContext() != null) {
-            preferences = getContext().getSharedPreferences("user", Context.MODE_PRIVATE);
-            getRememberPassword();
-        }
+        getRememberPassword();
         mViewModel.changeCaptcha();
         return root;
     }
 
+    /**
+     * 获取之前的学号和密码
+     */
     private void getRememberPassword() {
-        final String studentId = preferences.getString(ID, "");
-        final String password = preferences.getString(PASSWORD, "");
-        studentIdEditText.setText(studentId);
-        passwordEditText.setText(password);
+        if (getContext() != null) {
+            preferences = getContext().getSharedPreferences("user", Context.MODE_PRIVATE);
+            final String studentId = preferences.getString(ID, "");
+            final String password = preferences.getString(PASSWORD, "");
+            studentIdEditText.setText(studentId);
+            passwordEditText.setText(password);
+        }
     }
 
     private void init(View view) {
