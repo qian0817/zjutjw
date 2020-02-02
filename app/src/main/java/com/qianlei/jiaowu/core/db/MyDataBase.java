@@ -20,7 +20,7 @@ import com.qianlei.jiaowu.entity.Subject;
 public abstract class MyDataBase extends RoomDatabase {
     private static MyDataBase INSTANCE;
 
-    public static synchronized MyDataBase getDatabase(Context context) {
+    public static MyDataBase getDatabase(Context context) {
         if (INSTANCE == null) {
             synchronized (MyDataBase.class) {
                 if (INSTANCE == null) {

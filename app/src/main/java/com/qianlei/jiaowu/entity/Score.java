@@ -17,7 +17,7 @@ import lombok.Data;
 @Entity
 public class Score {
     @PrimaryKey(autoGenerate = true)
-    public int id;
+    private int id;
     /**
      * 考试名称
      */

@@ -73,7 +73,7 @@ import lombok.Data;
 @Entity
 public class Subject implements ScheduleEnable {
     @PrimaryKey(autoGenerate = true)
-    public int id;
+    private int id;
     /**
      * 课程名称
      */

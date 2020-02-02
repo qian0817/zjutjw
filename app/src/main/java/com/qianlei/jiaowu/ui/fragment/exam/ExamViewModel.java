@@ -81,7 +81,6 @@ public class ExamViewModel extends AndroidViewModel {
     }
 
     private Result<List<Examination>> getDataFromDatabase(String year, String term) {
-
         List<Examination> examinationList = examDao.selectAllExamByYearAndTerm(year, term);
         if (examinationList != null && !examinationList.isEmpty()) {
             return new Result<>(ResultType.OK, "从数据获取成功", examinationList);

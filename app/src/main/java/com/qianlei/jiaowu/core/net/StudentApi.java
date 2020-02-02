@@ -200,8 +200,8 @@ public class StudentApi {
             Connection.Response response;
             response = connection.cookies(lastLoginCookies).
                     method(Connection.Method.POST).ignoreContentType(true).execute();
-            JSONObject jsonObject = JSON.parseObject(response.body());
-            JSONArray timeTable = JSON.parseArray(jsonObject.getString("kbList"));
+            JSONObject body = JSON.parseObject(response.body());
+            JSONArray timeTable = JSON.parseArray(body.getString("kbList"));
             List<Subject> subjectList = new ArrayList<>();
             for (Object o : timeTable) {
                 String s = ((JSONObject) o).toJSONString();

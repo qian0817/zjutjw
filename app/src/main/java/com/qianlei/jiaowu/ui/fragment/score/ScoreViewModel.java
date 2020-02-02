@@ -67,7 +67,7 @@ public class ScoreViewModel extends AndroidViewModel {
 
     private Result<List<Score>> getDataFromDatabase(String year, String term) {
         scoreDao = MyDataBase.getDatabase(application).getScoreDao();
-        List<Score> scoreList = scoreDao.selectAllSubjectByYearAndTerm(year, term);
+        List<Score> scoreList = scoreDao.selectAllScoreByYearAndTerm(year, term);
         if (scoreList != null && !scoreList.isEmpty()) {
             return new Result<>(ResultType.OK, "从数据获取成功", scoreList);
         } else {
@@ -82,9 +82,9 @@ public class ScoreViewModel extends AndroidViewModel {
             //向数据库中添加数据
             scoreDao = MyDataBase.getDatabase(application).getScoreDao();
             List<Score> scoreList = result.getData();
-            scoreDao.deleteAllSubjectByYearAndTerm(year, term);
+            scoreDao.deleteAllScoreByYearAndTerm(year, term);
             for (Score score : scoreList) {
-                scoreDao.insertSubject(score);
+                scoreDao.insertScore(score);
             }
         }
         return result;
