@@ -27,5 +27,6 @@
     <string name="place">地点</string>
     <string name="time">时间</string>
     <string name="setting">设置</string>
+    <string name="addCalendar">添加到日历</string>
 
 </resources>

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.qianlei.jiaowu.MainApplication;
 import com.qianlei.jiaowu.R;
 import com.qianlei.jiaowu.ui.widget.TermChooseView;
 import com.qianlei.jiaowu.utils.DateUtil;
@@ -45,7 +46,7 @@ public class ExamFragment extends Fragment implements AdapterView.OnItemSelected
         swipeRefreshLayout.setOnRefreshListener(this);
         examViewModel.getExamListData().observe(this, result -> {
             if (result.isSuccess()) {
-                ExamAdapter adapter = new ExamAdapter(result.getData());
+                ExamAdapter adapter = new ExamAdapter(MainApplication.getInstance(), result.getData());
                 recyclerView.setAdapter(adapter);
             } else {
                 Toast.makeText(getContext(), result.getMsg(), Toast.LENGTH_SHORT).show();
