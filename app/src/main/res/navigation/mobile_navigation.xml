@@ -10,25 +10,13 @@
         android:id="@+id/navigation_subject"
         android:name="com.qianlei.jiaowu.ui.fragment.subject.SubjectFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_subject">
-        <action
-            android:id="@+id/action_navigation_subject_to_navigation_login"
-            app:destination="@id/navigation_login"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
-    </fragment>
+        tools:layout="@layout/fragment_subject" />
 
     <fragment
         android:id="@+id/navigation_score"
         android:name="com.qianlei.jiaowu.ui.fragment.score.ScoreFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_score">
-        <action
-            android:id="@+id/action_navigation_score_to_navigation_login"
-            app:destination="@id/navigation_login"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
-    </fragment>
+        tools:layout="@layout/fragment_score" />
 
     <fragment
         android:id="@+id/navigation_examination"
@@ -53,6 +41,6 @@
     <fragment
         android:id="@+id/navigation_setting"
         android:name="com.qianlei.jiaowu.ui.fragment.setting.SettingFragment"
-        android:label="@string/login"
+        android:label="@string/setting"
         tools:layout="@layout/fragment_login" />
 </navigation>
