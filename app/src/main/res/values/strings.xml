@@ -26,5 +26,6 @@
     <string name="seat_id">座位号</string>
     <string name="place">地点</string>
     <string name="time">时间</string>
+    <string name="setting">设置</string>
 
 </resources>

@@ -48,4 +48,11 @@
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
+
+
+    <fragment
+        android:id="@+id/navigation_setting"
+        android:name="com.qianlei.jiaowu.ui.fragment.setting.SettingFragment"
+        android:label="@string/login"
+        tools:layout="@layout/fragment_login" />
 </navigation>

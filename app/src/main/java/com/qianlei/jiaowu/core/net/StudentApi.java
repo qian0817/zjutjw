@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import androidx.preference.PreferenceManager;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
@@ -36,8 +38,6 @@ import java.util.Map;
  * @author qianlei
  */
 public class StudentApi {
-
-    private static final String PREFIX = "http://www.gdjw.zjut.edu.cn";
     /**
      * 保证cookie唯一 需要单例
      * 这里获取的context是application的context不会内存泄漏
@@ -80,7 +80,7 @@ public class StudentApi {
      * @throws IOException IO异常
      */
     private String getRsaPublicKey(String password) throws IOException {
-        Connection connection = Jsoup.connect(PREFIX + "/jwglxt/xtgl/login_getPublicKey.html");
+        Connection connection = Jsoup.connect(getPrefix() + "/jwglxt/xtgl/login_getPublicKey.html");
         Connection.Response response = connection.cookies(tempCookies).ignoreContentType(true).execute();
         JSONObject jsonObject = JSON.parseObject(response.body());
         String modulus = jsonObject.getString("modulus");
@@ -101,7 +101,7 @@ public class StudentApi {
     public Result<String> login(String studentId, String password, String code) {
         try {
             password = getRsaPublicKey(password);
-            Connection connection = Jsoup.connect(PREFIX + "/jwglxt/xtgl/login_slogin.html");
+            Connection connection = Jsoup.connect(getPrefix() + "/jwglxt/xtgl/login_slogin.html");
             connection.header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
             connection.data("csrftoken", csrftoken);
             connection.data("yhm", studentId);
@@ -135,7 +135,7 @@ public class StudentApi {
      */
     public Result<Bitmap> getCaptchaImage() {
         try {
-            Connection connection = Jsoup.connect(PREFIX + "/jwglxt/xtgl/login_slogin.html");
+            Connection connection = Jsoup.connect(getPrefix() + "/jwglxt/xtgl/login_slogin.html");
             Connection.Response response = connection.execute();
             //保存cookie
             tempCookies = response.cookies();
@@ -146,7 +146,7 @@ public class StudentApi {
             return new Result<>(ResultType.IO, "请检查网络连接" + e.getMessage());
         }
         //获取验证码
-        Connection connection = Jsoup.connect(PREFIX + "/jwglxt/kaptcha").ignoreContentType(true);
+        Connection connection = Jsoup.connect(getPrefix() + "/jwglxt/kaptcha").ignoreContentType(true);
         try {
             Connection.Response response = connection.cookies(tempCookies).execute();
             byte[] bytes = response.bodyAsBytes();
@@ -169,7 +169,7 @@ public class StudentApi {
             return new Result<>(ResultType.NEED_LOGIN, "请先登陆");
         }
         try {
-            Connection connection = Jsoup.connect(PREFIX + "/jwglxt/xsxxxggl/xsxxwh_cxCkDgxsxx.html?gnmkdm=N100801");
+            Connection connection = Jsoup.connect(getPrefix() + "/jwglxt/xsxxxggl/xsxxwh_cxCkDgxsxx.html?gnmkdm=N100801");
             Connection.Response response = connection.cookies(lastLoginCookies).method(Connection.Method.GET).ignoreContentType(true).execute();
             Student student = JSON.parseObject(response.body(), Student.class);
             return new Result<>(ResultType.OK, "获取信息成功", student);
@@ -194,7 +194,7 @@ public class StudentApi {
             return new Result<>(ResultType.NEED_LOGIN, "请先登陆");
         }
         try {
-            Connection connection = Jsoup.connect(PREFIX + "/jwglxt/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151");
+            Connection connection = Jsoup.connect(getPrefix() + "/jwglxt/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151");
             connection.data("xnm", year);
             connection.data("xqm", term);
             Connection.Response response;
@@ -233,7 +233,7 @@ public class StudentApi {
             Map<String, String> parameter = new HashMap<>(2);
             parameter.put("xnm", year);
             parameter.put("xqm", term);
-            Connection connection = Jsoup.connect(PREFIX + "/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005");
+            Connection connection = Jsoup.connect(getPrefix() + "/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005");
             Connection.Response response = connection.cookies(lastLoginCookies).method(Connection.Method.POST)
                     .data(parameter).ignoreContentType(true).execute();
             JSONObject jsonObject = JSON.parseObject(response.body());
@@ -262,7 +262,7 @@ public class StudentApi {
             Map<String, String> parameter = new HashMap<>(2);
             parameter.put("xnm", year);
             parameter.put("xqm", term);
-            Connection connection = Jsoup.connect(PREFIX + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105");
+            Connection connection = Jsoup.connect(getPrefix() + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105");
             Connection.Response response = connection.cookies(lastLoginCookies).method(Connection.Method.POST)
                     .data(parameter).ignoreContentType(true).execute();
             JSONObject jsonObject = JSON.parseObject(response.body());
@@ -309,6 +309,16 @@ public class StudentApi {
             editor.putString("cookies", json.toString());
             editor.apply();
             Log.d("保存", json.toString());
+        }
+    }
+
+    private String getPrefix() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        if (sharedPreferences.getBoolean("useIntranet", false)) {
+            return "http://www.gdjw.zjut.edu.cn";
+        } else {
+            //TODO 内网地址暂不知 回校测试
+            return "http://www.gdjw.zjut.edu.cn";
         }
     }
 }

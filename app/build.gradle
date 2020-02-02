@@ -33,6 +33,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.0.0'
     implementation 'androidx.navigation:navigation-ui:2.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    implementation 'androidx.preference:preference:1.1.0-alpha04'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
@@ -40,11 +41,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.3.0'
     implementation 'org.jsoup:jsoup:1.12.1'
     implementation 'com.alibaba:fastjson:1.2.62'
-    dependencies {
-        compileOnly 'org.projectlombok:lombok:1.18.10'
-        annotationProcessor 'org.projectlombok:lombok:1.18.10'
-    }
-    def room_version = "2.2.2"
-    implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
+    compileOnly 'org.projectlombok:lombok:1.18.10'
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
+    implementation "androidx.room:room-runtime:2.2.2"
+    annotationProcessor "androidx.room:room-compiler:2.2.2"
 }

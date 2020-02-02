@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.preference.PreferenceManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.qianlei.jiaowu.R;
@@ -41,28 +42,36 @@ public class SubjectFragment extends Fragment implements AdapterView.OnItemSelec
 
         swipeRefreshLayout.setOnRefreshListener(this);
         termChooseView.setItemSelectedListener(this);
-        int startTime = ScheduleSupport.timeTransfrom("2019-9-16 00:00:00");
         //修改周数时的方法
-        weekView.curWeek(startTime).callback(week -> {
+        weekView.curWeek(getStartTime()).callback(week -> {
             int cur = timetableView.curWeek();
             //切换日期
             timetableView.onDateBuildListener().onUpdateDate(cur, week);
             timetableView.changeWeekOnly(week);
         }).showView();
 
-        timetableView.curWeek(startTime).curTerm("").isShowNotCurWeek(false).showView();
+        timetableView.curWeek(getStartTime()).curTerm("").isShowNotCurWeek(false).showView();
         //设置viewModel
         subjectViewModel = ViewModelProviders.of(this).get(SubjectViewModel.class);
         subjectViewModel.getResult().observe(this, result -> {
             if (result.getType() == ResultType.OK) {
-                timetableView.source(result.getData()).curTerm(termChooseView.getTerm()).showView();
-                weekView.source(result.getData()).showView();
+                timetableView.curWeek(getStartTime()).source(result.getData()).curTerm(termChooseView.getTerm()).showView();
+                weekView.curWeek(getStartTime()).source(result.getData()).showView();
             } else {
                 Toast.makeText(root.getContext(), result.getMsg(), Toast.LENGTH_SHORT).show();
             }
             swipeRefreshLayout.setRefreshing(false);
         });
         return root;
+    }
+
+    private int getStartTime() {
+        int startTime = -1;
+        if (getContext() != null) {
+            String setStartTime = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("start_day", "2020-2-16");
+            startTime = ScheduleSupport.timeTransfrom(setStartTime + " 00:00:00");
+        }
+        return startTime;
     }
 
     private void init(View root) {
