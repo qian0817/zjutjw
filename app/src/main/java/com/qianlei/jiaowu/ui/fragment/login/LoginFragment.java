@@ -20,6 +20,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.qianlei.jiaowu.MainApplication;
 import com.qianlei.jiaowu.R;
 
 /**
@@ -60,10 +61,10 @@ public class LoginFragment extends Fragment {
                 editor.putString(ID, studentId);
                 editor.putString(PASSWORD, password);
                 editor.apply();
-                if (getContext() != null) {
-                    Intent intent = new Intent("com.qianlei.jiaowu.LOGIN_BROADCAST");
-                    LocalBroadcastManager.getInstance(this.getContext()).sendBroadcast(intent);
-                }
+                //这个广播用于修改header中的信息
+                Context context = MainApplication.getInstance();
+                Intent intent = new Intent("com.qianlei.jiaowu.LOGIN_BROADCAST");
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 //跳转到课程界面
                 NavController controller = Navigation.findNavController(root);
                 controller.navigate(R.id.action_navigation_login_to_navigation_lesson);

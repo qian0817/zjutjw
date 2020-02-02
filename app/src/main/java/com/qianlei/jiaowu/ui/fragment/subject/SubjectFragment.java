@@ -1,5 +1,6 @@
 package com.qianlei.jiaowu.ui.fragment.subject;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.qianlei.jiaowu.MainApplication;
 import com.qianlei.jiaowu.R;
 import com.qianlei.jiaowu.common.ResultType;
 import com.qianlei.jiaowu.ui.widget.TermChooseView;
@@ -76,11 +78,10 @@ public class SubjectFragment extends Fragment implements AdapterView.OnItemSelec
      * @return 开始时间
      */
     private int getStartTime() {
-        int startTime = -1;
-        if (getContext() != null) {
-            String setStartTime = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("start_day", "2020-2-16");
-            startTime = ScheduleSupport.timeTransfrom(setStartTime + " 00:00:00");
-        }
+        int startTime;
+        Context context = MainApplication.getInstance();
+        String setStartTime = PreferenceManager.getDefaultSharedPreferences(context).getString("start_day", "2020-2-16");
+        startTime = ScheduleSupport.timeTransfrom(setStartTime + " 00:00:00");
         return startTime;
     }
 
