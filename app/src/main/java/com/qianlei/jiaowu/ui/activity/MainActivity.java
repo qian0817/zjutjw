@@ -1,7 +1,6 @@
 package com.qianlei.jiaowu.ui.activity;
 
 import android.os.Bundle;
-import android.view.Menu;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -12,6 +11,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
 import com.qianlei.jiaowu.R;
+import com.qianlei.jiaowu.core.net.StudentApi;
 
 /**
  * 主界面的activity
@@ -39,8 +39,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
+    protected void onPause() {
+        super.onPause();
+        StudentApi.getStudentApi(this).saveCookies();
     }
 
     @Override

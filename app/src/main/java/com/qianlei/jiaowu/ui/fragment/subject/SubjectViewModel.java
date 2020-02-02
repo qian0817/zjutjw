@@ -26,19 +26,23 @@ import java.util.concurrent.TimeUnit;
  * @author qianlei
  */
 public class SubjectViewModel extends AndroidViewModel {
-    private StudentApi studentApi = StudentApi.getStudentApi();
     private ExecutorService executor = new ThreadPoolExecutor(1, 1,
             0, TimeUnit.SECONDS, new SynchronousQueue<>(), r -> new Thread(r, "获取课程进程"),
             new ThreadPoolExecutor.DiscardPolicy());
     private Handler handler = new Handler();
 
     private MutableLiveData<Result<List<Subject>>> mutableLiveData = new MutableLiveData<>();
+
+    private SubjectDao subjectDao;
+    private StudentApi studentApi;
     private boolean getFromDatabase = true;
     private Application application;
 
     public SubjectViewModel(@NonNull Application application) {
         super(application);
         this.application = application;
+        studentApi = StudentApi.getStudentApi(application);
+        subjectDao = MyDataBase.getDatabase(application).getSubjectDao();
     }
 
 
@@ -62,7 +66,7 @@ public class SubjectViewModel extends AndroidViewModel {
     }
 
     private Result<List<Subject>> getDataFromDatabase(String year, String term) {
-        SubjectDao subjectDao = MyDataBase.getDatabase(application).getSubjectDao();
+        subjectDao = MyDataBase.getDatabase(application).getSubjectDao();
         List<Subject> subjectList = subjectDao.selectAllSubjectByYearAndTerm(year, term);
         if (subjectList != null && !subjectList.isEmpty()) {
             return new Result<>(ResultType.OK, "从数据获取成功", subjectList);
@@ -76,7 +80,7 @@ public class SubjectViewModel extends AndroidViewModel {
         Result<List<Subject>> result = studentApi.getStudentTimetable(year, term);
         if (result.isSuccess()) {
             //向数据库中添加数据
-            SubjectDao subjectDao = MyDataBase.getDatabase(application).getSubjectDao();
+            subjectDao = MyDataBase.getDatabase(application).getSubjectDao();
             List<Subject> subjectList = result.getData();
             subjectDao.deleteAllSubjectByYearAndTerm(year, term);
             for (Subject subject : subjectList) {

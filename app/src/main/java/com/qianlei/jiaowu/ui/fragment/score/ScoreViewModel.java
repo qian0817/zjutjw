@@ -27,20 +27,22 @@ import java.util.concurrent.TimeUnit;
  */
 public class ScoreViewModel extends AndroidViewModel {
 
-    private final StudentApi studentApi = StudentApi.getStudentApi();
     private ExecutorService executor = new ThreadPoolExecutor(1, 1,
             0, TimeUnit.SECONDS, new SynchronousQueue<>(), r -> new Thread(r, "获取成绩线程"),
             new ThreadPoolExecutor.DiscardPolicy());
     private Handler handler = new Handler();
 
     private MutableLiveData<Result<List<Score>>> result = new MutableLiveData<>();
+    private final StudentApi studentApi;
+    private ScoreDao scoreDao;
     private Application application;
     private boolean getFromDatabase = true;
 
     public ScoreViewModel(@NonNull Application application) {
         super(application);
         this.application = application;
-
+        studentApi = StudentApi.getStudentApi(application);
+        scoreDao = MyDataBase.getDatabase(application).getScoreDao();
     }
 
     MutableLiveData<Result<List<Score>>> getResult() {
@@ -64,7 +66,7 @@ public class ScoreViewModel extends AndroidViewModel {
     }
 
     private Result<List<Score>> getDataFromDatabase(String year, String term) {
-        ScoreDao scoreDao = MyDataBase.getDatabase(application).getScoreDao();
+        scoreDao = MyDataBase.getDatabase(application).getScoreDao();
         List<Score> scoreList = scoreDao.selectAllSubjectByYearAndTerm(year, term);
         if (scoreList != null && !scoreList.isEmpty()) {
             return new Result<>(ResultType.OK, "从数据获取成功", scoreList);
@@ -78,7 +80,7 @@ public class ScoreViewModel extends AndroidViewModel {
         Result<List<Score>> result = studentApi.getStudentScore(year, term);
         if (result.isSuccess()) {
             //向数据库中添加数据
-            ScoreDao scoreDao = MyDataBase.getDatabase(application).getScoreDao();
+            scoreDao = MyDataBase.getDatabase(application).getScoreDao();
             List<Score> scoreList = result.getData();
             scoreDao.deleteAllSubjectByYearAndTerm(year, term);
             for (Score score : scoreList) {

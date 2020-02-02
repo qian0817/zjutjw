@@ -1,7 +1,11 @@
 package com.qianlei.jiaowu.core.net;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -36,7 +40,9 @@ public class StudentApi {
     private static final String PREFIX = "http://www.gdjw.zjut.edu.cn";
     /**
      * 保证cookie唯一 需要单例
+     * 这里获取的context是application的context不会内存泄漏
      */
+    @SuppressLint("StaticFieldLeak")
     private static volatile StudentApi studentApi;
     /**
      * 临时的cookies 登录之前使用
@@ -47,16 +53,18 @@ public class StudentApi {
      */
     private Map<String, String> lastLoginCookies;
     private String csrftoken;
+    private Context context;
 
-    private StudentApi() {
-
+    private StudentApi(Context context) {
+        this.context = context;
+        readCookies();
     }
 
-    public static StudentApi getStudentApi() {
+    public static StudentApi getStudentApi(Context context) {
         if (studentApi == null) {
             synchronized (StudentApi.class) {
                 if (studentApi == null) {
-                    studentApi = new StudentApi();
+                    studentApi = new StudentApi(context.getApplicationContext());
                 }
             }
         }
@@ -279,9 +287,28 @@ public class StudentApi {
     }
 
     /**
-     * 登出
+     * 读取cookies
      */
-    public void logout() {
-        lastLoginCookies = null;
+    private void readCookies() {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("cookies", Context.MODE_PRIVATE);
+        String json = sharedPreferences.getString("cookies", "");
+        @SuppressWarnings("unchecked")
+        Map<String, String> map = JSON.parseObject(json, Map.class);
+        lastLoginCookies = map;
+        Log.d("读取", json);
+    }
+
+    /**
+     * 保存cookies
+     */
+    public void saveCookies() {
+        Object json = JSON.toJSON(lastLoginCookies);
+        if (json != null) {
+            SharedPreferences sharedPreferences = context.getSharedPreferences("cookies", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("cookies", json.toString());
+            editor.apply();
+            Log.d("保存", json.toString());
+        }
     }
 }

@@ -30,9 +30,10 @@ public class ExamViewModel extends AndroidViewModel {
     private ExecutorService executorService = new ThreadPoolExecutor(1, 1,
             0, TimeUnit.MINUTES, new SynchronousQueue<>(), r -> new Thread(r, "获取考试信息线程"),
             new ThreadPoolExecutor.DiscardPolicy());
-    private StudentApi studentApi = StudentApi.getStudentApi();
     private Handler handler = new Handler();
     private boolean getDataFromDataBase = true;
+    private ExamDao examDao;
+    private StudentApi studentApi;
     private Application application;
 
     private MutableLiveData<Result<List<Examination>>> examListData = new MutableLiveData<>();
@@ -40,6 +41,8 @@ public class ExamViewModel extends AndroidViewModel {
     public ExamViewModel(Application application) {
         super(application);
         this.application = application;
+        studentApi = StudentApi.getStudentApi(application);
+        examDao = MyDataBase.getDatabase(application).getExamDao();
     }
 
     MutableLiveData<Result<List<Examination>>> getExamListData() {
@@ -78,7 +81,7 @@ public class ExamViewModel extends AndroidViewModel {
     }
 
     private Result<List<Examination>> getDataFromDatabase(String year, String term) {
-        ExamDao examDao = MyDataBase.getDatabase(application).getExamDao();
+
         List<Examination> examinationList = examDao.selectAllExamByYearAndTerm(year, term);
         if (examinationList != null && !examinationList.isEmpty()) {
             return new Result<>(ResultType.OK, "从数据获取成功", examinationList);
