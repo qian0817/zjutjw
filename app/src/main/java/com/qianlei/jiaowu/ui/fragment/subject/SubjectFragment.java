@@ -50,13 +50,18 @@ public class SubjectFragment extends Fragment implements AdapterView.OnItemSelec
             timetableView.changeWeekOnly(week);
         }).showView();
 
-        timetableView.curWeek(getStartTime()).curTerm("").isShowNotCurWeek(false).showView();
-        //设置viewModel
+        timetableView.curWeek(getStartTime())
+                .isShowFlaglayout(false)
+                .isShowNotCurWeek(false)
+                .showView();
         subjectViewModel = ViewModelProviders.of(this).get(SubjectViewModel.class);
         subjectViewModel.getResult().observe(this, result -> {
             if (result.getType() == ResultType.OK) {
-                timetableView.curWeek(getStartTime()).source(result.getData()).curTerm(termChooseView.getTerm()).showView();
-                weekView.curWeek(getStartTime()).source(result.getData()).showView();
+                timetableView.source(result.getData())
+                        .curTerm(termChooseView.getTerm())
+                        .showView();
+                weekView.source(result.getData())
+                        .showView();
             } else {
                 Toast.makeText(root.getContext(), result.getMsg(), Toast.LENGTH_SHORT).show();
             }
@@ -65,6 +70,11 @@ public class SubjectFragment extends Fragment implements AdapterView.OnItemSelec
         return root;
     }
 
+    /**
+     * 从设置中获取开始时间
+     *
+     * @return 开始时间
+     */
     private int getStartTime() {
         int startTime = -1;
         if (getContext() != null) {

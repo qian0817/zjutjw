@@ -29,9 +29,10 @@ public class SettingFragment extends PreferenceFragmentCompat {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
                     try {
                         dateFormat.parse(s);
+                        editTextPreference.setSummary(s);
                         return true;
                     } catch (ParseException e) {
-                        Toast.makeText(getContext(), "日期填写错误", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "日期填写错误,格式为yyyy-MM-dd", Toast.LENGTH_SHORT).show();
                         return false;
                     }
                 }

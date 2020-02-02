@@ -58,6 +58,7 @@ public class ScoreFragment extends Fragment implements AdapterView.OnItemSelecte
         recyclerView = root.findViewById(R.id.recycle_score);
         termChooseView = root.findViewById(R.id.score_term_choose_view);
         swipeRefreshLayout = root.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
     }
 
     @Override
