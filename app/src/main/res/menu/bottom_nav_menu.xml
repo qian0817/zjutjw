@@ -9,17 +9,17 @@
     <item
         android:id="@+id/navigation_subject"
         android:icon="@drawable/ic_subject_svg"
-        android:title="@string/title_home" />
+        android:title="@string/title_subject" />
 
     <item
         android:id="@+id/navigation_score"
         android:icon="@drawable/ic_grade_svg"
-        android:title="@string/title_dashboard" />
+        android:title="@string/title_score" />
 
     <item
         android:id="@+id/navigation_examination"
         android:icon="@drawable/ic_exam_svg"
-        android:title="@string/title_notifications" />
+        android:title="@string/title_exam" />
 
     <item
         android:id="@+id/navigation_setting"

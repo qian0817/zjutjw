@@ -9,19 +9,19 @@
     <fragment
         android:id="@+id/navigation_subject"
         android:name="com.qianlei.jiaowu.ui.fragment.subject.SubjectFragment"
-        android:label="@string/title_home"
+        android:label="@string/title_subject"
         tools:layout="@layout/fragment_subject" />
 
     <fragment
         android:id="@+id/navigation_score"
         android:name="com.qianlei.jiaowu.ui.fragment.score.ScoreFragment"
-        android:label="@string/title_dashboard"
+        android:label="@string/title_score"
         tools:layout="@layout/fragment_score" />
 
     <fragment
         android:id="@+id/navigation_examination"
         android:name="com.qianlei.jiaowu.ui.fragment.exam.ExamFragment"
-        android:label="@string/title_notifications"
+        android:label="@string/title_exam"
         tools:layout="@layout/fragment_exam" />
 
 
