@@ -9,7 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -35,16 +35,17 @@ public class ExamFragment extends Fragment implements AdapterView.OnItemSelected
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        examViewModel = ViewModelProviders.of(this).get(ExamViewModel.class);
         View root = inflater.inflate(R.layout.fragment_exam, container, false);
 
         init(root);
-        examViewModel = ViewModelProviders.of(this).get(ExamViewModel.class);
+
+        ViewModelProvider.AndroidViewModelFactory factory = new ViewModelProvider.AndroidViewModelFactory(MainApplication.getInstance());
+        examViewModel = factory.create(ExamViewModel.class);
         termChooseView.setItemSelectedListener(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
         swipeRefreshLayout.setOnRefreshListener(this);
-        examViewModel.getExamListData().observe(this, result -> {
+        examViewModel.getExamListData().observe(this.getViewLifecycleOwner(), result -> {
             if (result.isSuccess()) {
                 ExamAdapter adapter = new ExamAdapter(MainApplication.getInstance(), result.getData());
                 recyclerView.setAdapter(adapter);

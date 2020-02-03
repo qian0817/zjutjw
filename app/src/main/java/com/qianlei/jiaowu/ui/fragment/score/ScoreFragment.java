@@ -9,11 +9,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.qianlei.jiaowu.MainApplication;
 import com.qianlei.jiaowu.R;
 import com.qianlei.jiaowu.common.ResultType;
 import com.qianlei.jiaowu.ui.widget.TermChooseView;
@@ -41,8 +42,9 @@ public class ScoreFragment extends Fragment implements AdapterView.OnItemSelecte
         swipeRefreshLayout.setOnRefreshListener(this);
         termChooseView.setItemSelectedListener(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-        scoreViewModel = ViewModelProviders.of(this).get(ScoreViewModel.class);
-        scoreViewModel.getResult().observe(this, result -> {
+        ViewModelProvider.AndroidViewModelFactory factory = new ViewModelProvider.AndroidViewModelFactory(MainApplication.getInstance());
+        scoreViewModel = factory.create(ScoreViewModel.class);
+        scoreViewModel.getResult().observe(this.getViewLifecycleOwner(), result -> {
             if (result.getType() == ResultType.OK) {
                 ScoreAdapter adapter = new ScoreAdapter(result.getData());
                 recyclerView.setAdapter(adapter);

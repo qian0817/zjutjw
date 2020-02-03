@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -56,8 +56,9 @@ public class SubjectFragment extends Fragment implements AdapterView.OnItemSelec
                 .isShowFlaglayout(false)
                 .isShowNotCurWeek(false)
                 .showView();
-        subjectViewModel = ViewModelProviders.of(this).get(SubjectViewModel.class);
-        subjectViewModel.getResult().observe(this, result -> {
+        ViewModelProvider.AndroidViewModelFactory factory = new ViewModelProvider.AndroidViewModelFactory(MainApplication.getInstance());
+        subjectViewModel = factory.create(SubjectViewModel.class);
+        subjectViewModel.getResult().observe(this.getViewLifecycleOwner(), result -> {
             if (result.getType() == ResultType.OK) {
                 timetableView.source(result.getData())
                         .curTerm(termChooseView.getTerm())

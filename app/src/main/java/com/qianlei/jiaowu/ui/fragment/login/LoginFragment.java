@@ -15,7 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -43,16 +43,17 @@ public class LoginFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_login, container, false);
 
-        mViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
+        ViewModelProvider.AndroidViewModelFactory factory = new ViewModelProvider.AndroidViewModelFactory(MainApplication.getInstance());
+        mViewModel = factory.create(LoginViewModel.class);
         init(root);
-        mViewModel.getCaptcha().observe(this, result -> {
+        mViewModel.getCaptcha().observe(this.getViewLifecycleOwner(), result -> {
             if (result.isSuccess()) {
                 captchaImageView.setImageBitmap(result.getData());
             } else {
                 Toast.makeText(LoginFragment.this.getContext(), result.getMsg(), Toast.LENGTH_SHORT).show();
             }
         });
-        mViewModel.getLoginResult().observe(this, result -> {
+        mViewModel.getLoginResult().observe(this.getViewLifecycleOwner(), result -> {
             final String studentId = studentIdEditText.getText().toString();
             final String password = passwordEditText.getText().toString();
             if (result.isSuccess()) {
