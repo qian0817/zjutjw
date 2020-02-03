@@ -11,4 +11,8 @@
         android:summary="格式为yyyy-MM-dd"
         app:key="start_day"
         app:title="设置开学日期" />
+
+    <Preference
+        android:key="clear_log"
+        app:title="清理缓存" />
 </PreferenceScreen>

@@ -40,4 +40,10 @@ public interface ExamDao {
      */
     @Query("DELETE FROM examination WHERE year = (:year) AND term = (:term)")
     void deleteAllByYearAndTerm(String year, String term);
+
+    /**
+     * 删除所有信息
+     */
+    @Query("DELETE FROM examination")
+    void deleteAll();
 }

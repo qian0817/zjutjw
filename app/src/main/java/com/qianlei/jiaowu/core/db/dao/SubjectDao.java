@@ -39,4 +39,10 @@ public interface SubjectDao {
      */
     @Query("DELETE FROM subject WHERE year=(:year) AND term = (:term)")
     void deleteAllSubjectByYearAndTerm(String year, String term);
+
+    /**
+     * 删除所有课程信息
+     */
+    @Query("DELETE FROM subject")
+    void deleteAll();
 }

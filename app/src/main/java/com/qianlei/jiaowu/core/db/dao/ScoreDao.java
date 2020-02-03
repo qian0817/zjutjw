@@ -39,4 +39,10 @@ public interface ScoreDao {
      */
     @Query("DELETE FROM score WHERE year=(:year) AND term = (:term)")
     void deleteAllScoreByYearAndTerm(String year, String term);
+
+    /**
+     * 删除所有分数信息
+     */
+    @Query("DELETE FROM score")
+    void deleteAll();
 }
