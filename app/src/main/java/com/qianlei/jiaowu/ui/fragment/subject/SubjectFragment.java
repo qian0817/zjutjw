@@ -104,6 +104,6 @@ public class SubjectFragment extends Fragment implements AdapterView.OnItemSelec
 
     @Override
     public void onRefresh() {
-        subjectViewModel.changeTerm(termChooseView.getYear(), termChooseView.getTerm());
+        subjectViewModel.refreshData(termChooseView.getYear(), termChooseView.getTerm());
     }
 }

@@ -75,6 +75,6 @@ public class ExamFragment extends Fragment implements AdapterView.OnItemSelected
 
     @Override
     public void onRefresh() {
-        examViewModel.changeTerm(termChooseView.getYear(), termChooseView.getTerm());
+        examViewModel.refreshData(termChooseView.getYear(), termChooseView.getTerm());
     }
 }

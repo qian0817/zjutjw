@@ -73,7 +73,7 @@ public class ScoreFragment extends Fragment implements AdapterView.OnItemSelecte
 
     @Override
     public void onRefresh() {
-        scoreViewModel.changeTerm(termChooseView.getYear(), termChooseView.getTerm());
+        scoreViewModel.refreshData(termChooseView.getYear(), termChooseView.getTerm());
     }
 }
 

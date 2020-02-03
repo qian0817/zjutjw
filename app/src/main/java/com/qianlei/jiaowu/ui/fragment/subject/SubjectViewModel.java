@@ -50,7 +50,13 @@ public class SubjectViewModel extends AndroidViewModel {
         return mutableLiveData;
     }
 
-    void changeTerm(String year, String term) {
+    /**
+     * 刷新数据
+     *
+     * @param year 学年
+     * @param term 学期
+     */
+    void refreshData(String year, String term) {
         executor.execute(() -> {
             if (getFromDatabase) {
                 getFromDatabase = false;
@@ -63,6 +69,11 @@ public class SubjectViewModel extends AndroidViewModel {
             Result<List<Subject>> result = getDataFromNet(year, term);
             handler.post(() -> mutableLiveData.setValue(result));
         });
+    }
+
+    void changeTerm(String year, String term) {
+        getFromDatabase = true;
+        refreshData(year, term);
     }
 
     private Result<List<Subject>> getDataFromDatabase(String year, String term) {

@@ -49,11 +49,18 @@ public class ScoreViewModel extends AndroidViewModel {
         return result;
     }
 
-    void changeTerm(String year, String term) {
+    /**
+     * 刷新数据
+     *
+     * @param year 学年
+     * @param term 学期
+     */
+    void refreshData(String year, String term) {
         executor.execute(() -> {
             if (getFromDatabase) {
                 getFromDatabase = false;
                 Result<List<Score>> score = getDataFromDatabase(year, term);
+                //如果数据库中有数据则修改数据，否则从网络中获取
                 if (score.isSuccess()) {
                     handler.post(() -> result.setValue(score));
                     return;
@@ -62,7 +69,18 @@ public class ScoreViewModel extends AndroidViewModel {
             Result<List<Score>> score = getDataFromNet(year, term);
             handler.post(() -> result.setValue(score));
         });
+    }
 
+    /**
+     * 修改学期
+     *
+     * @param year 学年
+     * @param term 学期
+     */
+    void changeTerm(String year, String term) {
+        //第一次先从数据中获取数据
+        getFromDatabase = true;
+        refreshData(year, term);
     }
 
     private Result<List<Score>> getDataFromDatabase(String year, String term) {

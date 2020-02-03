@@ -49,7 +49,13 @@ public class ExamViewModel extends AndroidViewModel {
         return examListData;
     }
 
-    void changeTerm(String year, String term) {
+    /**
+     * 刷新数据
+     *
+     * @param year 学年
+     * @param term 学期
+     */
+    void refreshData(String year, String term) {
         executorService.submit(() -> {
             //首次从本地数据库中获取数据 之后从网络中获取数据
             if (getDataFromDataBase) {
@@ -63,6 +69,17 @@ public class ExamViewModel extends AndroidViewModel {
             Result<List<Examination>> result = getDataFromNet(year, term);
             handler.post(() -> examListData.setValue(result));
         });
+    }
+
+    /**
+     * 修改学期
+     *
+     * @param year 修改好的学年
+     * @param term 修改后的学期
+     */
+    void changeTerm(String year, String term) {
+        getDataFromDataBase = true;
+        refreshData(year, term);
     }
 
     @NotNull
