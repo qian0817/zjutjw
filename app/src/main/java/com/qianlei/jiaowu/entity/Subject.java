@@ -80,18 +80,10 @@ public class Subject implements ScheduleEnable {
     @JSONField(name = "xqm")
     private String term;
 
-    public void setWeek(String week) {
-        week = week.replace("周", "");
-        this.week = week;
-    }
-
-    public void setLast(String last) {
-        last = last.replace("节", "");
-        this.last = last;
-    }
-
     @Override
     public Schedule getSchedule() {
+        week = week.replace("周", "");
+        last = last.replace("节", "");
         String[] tmp = last.split("-");
         int start = Integer.valueOf(tmp[0]);
         int step = Integer.valueOf(tmp[1]) - start;
