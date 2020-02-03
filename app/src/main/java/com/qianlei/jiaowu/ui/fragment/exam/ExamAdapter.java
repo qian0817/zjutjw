@@ -8,10 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.qianlei.jiaowu.MainApplication;
 import com.qianlei.jiaowu.R;
 import com.qianlei.jiaowu.entity.Examination;
 
@@ -47,30 +49,34 @@ public class ExamAdapter extends RecyclerView.Adapter<ExamAdapter.ExamViewHolder
         holder.examPlaceView.setText(examinationList.get(position).getPlace());
         holder.examSeatIdView.setText(examinationList.get(position).getSeatId());
         holder.addCalendarImageView.setOnClickListener(v -> {
-            String time = examinationList.get(position).getTime();
-            int year = Integer.valueOf(time.substring(0, 4));
-            int month = Integer.valueOf(time.substring(5, 7)) - 1;
-            int day = Integer.valueOf(time.substring(8, 10));
+            try {
+                String time = examinationList.get(position).getTime();
+                int year = Integer.valueOf(time.substring(0, 4));
+                int month = Integer.valueOf(time.substring(5, 7)) - 1;
+                int day = Integer.valueOf(time.substring(8, 10));
+                Intent calendarIntent = new Intent(Intent.ACTION_INSERT, CalendarContract.Events.CONTENT_URI);
+                //开始时间
+                int hour = Integer.valueOf(time.substring(11, 13));
+                int minute = Integer.valueOf(time.substring(14, 16));
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(year, month, day, hour, minute);
+                calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, calendar.getTimeInMillis());
+                //结束时间
+                hour = Integer.valueOf(time.substring(17, 19));
+                minute = Integer.valueOf(time.substring(20, 22));
+                calendar.set(year, month, day, hour, minute);
+                calendarIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, calendar.getTimeInMillis());
+                calendarIntent.putExtra(CalendarContract.Events.TITLE, examinationList.get(position).getName() + "考试");
+                calendarIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, examinationList.get(position).getPlace());
+                calendarIntent.putExtra(CalendarContract.Events.DESCRIPTION, "座位号" + examinationList.get(position).getSeatId());
+                calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, CalendarContract.EXTRA_EVENT_ALL_DAY);
+                //启动日历
+                context.startActivity(calendarIntent);
+            } catch (Exception e) {
+                Toast.makeText(MainApplication.getInstance(), "添加到日历失败", Toast.LENGTH_SHORT).show();
+            }
 
-            Intent calendarIntent = new Intent(Intent.ACTION_INSERT, CalendarContract.Events.CONTENT_URI);
-            //开始时间
-            int hour = Integer.valueOf(time.substring(11, 13));
-            int minute = Integer.valueOf(time.substring(14, 16));
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(year, month, day, hour, minute);
-            calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, calendar.getTimeInMillis());
-            //结束时间
-            hour = Integer.valueOf(time.substring(11, 13));
-            minute = Integer.valueOf(time.substring(14, 16));
-            calendar.set(year, month, day, hour, minute);
-            calendarIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, calendar.getTimeInMillis());
-            calendarIntent.putExtra(CalendarContract.Events.TITLE, examinationList.get(position).getName() + "考试");
-            calendarIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, examinationList.get(position).getPlace());
-            calendarIntent.putExtra(CalendarContract.Events.DESCRIPTION, "座位号" + examinationList.get(position).getSeatId());
-            calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, CalendarContract.EXTRA_EVENT_ALL_DAY);
-            //启动日志
-            context.startActivity(calendarIntent);
         });
     }
 
