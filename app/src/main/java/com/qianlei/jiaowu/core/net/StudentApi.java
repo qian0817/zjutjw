@@ -120,11 +120,9 @@ public class StudentApi {
                 return new Result<>(ResultType.PARAMS_ERROR, document.getElementById("tips").text());
             }
         } catch (IOException e) {
-            return new Result<>(ResultType.IO, "网络错误" + e.getMessage());
-        } catch (JSONException e) {
-            return new Result<>(ResultType.NEED_LOGIN, "" + e.getMessage());
+            return new Result<>(ResultType.IO, "请检查网络连接");
         } catch (Exception e) {
-            return new Result<>(ResultType.IO, "登陆失败" + e.getMessage());
+            return new Result<>(ResultType.IO, "其他错误" + e.getMessage());
         }
     }
 
@@ -143,7 +141,7 @@ public class StudentApi {
             Document document = Jsoup.parse(response.body());
             csrftoken = document.getElementById("csrftoken").val();
         } catch (IOException e) {
-            return new Result<>(ResultType.IO, "请检查网络连接" + e.getMessage());
+            return new Result<>(ResultType.IO, "请检查网络连接");
         }
         //获取验证码
         Connection connection = Jsoup.connect(getPrefix() + "/jwglxt/kaptcha").ignoreContentType(true);
@@ -153,9 +151,9 @@ public class StudentApi {
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             return new Result<>(ResultType.OK, "获取成功", bitmap);
         } catch (IOException e) {
-            return new Result<>(ResultType.IO, e.getMessage());
+            return new Result<>(ResultType.IO, "请检查网络连接");
         } catch (Exception e) {
-            return new Result<>(ResultType.OTHER, e.getMessage());
+            return new Result<>(ResultType.OTHER, "其他错误" + e.getMessage());
         }
     }
 
@@ -174,11 +172,11 @@ public class StudentApi {
             Student student = JSON.parseObject(response.body(), Student.class);
             return new Result<>(ResultType.OK, "获取信息成功", student);
         } catch (JSONException e) {
-            return new Result<>(ResultType.NEED_LOGIN, "请先登陆");
+            return new Result<>(ResultType.NEED_LOGIN, "请重新登陆");
         } catch (IOException e) {
-            return new Result<>(ResultType.IO, "请检查网络");
+            return new Result<>(ResultType.IO, "请检查网络连接");
         } catch (Exception e) {
-            return new Result<>(ResultType.OTHER, "其他错误");
+            return new Result<>(ResultType.OTHER, "其他错误" + e.getMessage());
         }
     }
 
@@ -210,11 +208,11 @@ public class StudentApi {
             }
             return new Result<>(ResultType.OK, "获取成功", subjectList);
         } catch (IOException e) {
-            return new Result<>(ResultType.IO, "网络连接错误");
+            return new Result<>(ResultType.IO, "请检查网络连接");
         } catch (JSONException e) {
             return new Result<>(ResultType.NEED_LOGIN, "请重新登陆");
         } catch (Exception e) {
-            return new Result<>(ResultType.OTHER, "其他错误");
+            return new Result<>(ResultType.OTHER, "其他错误" + e.getMessage());
         }
     }
 
@@ -250,7 +248,7 @@ public class StudentApi {
         } catch (JSONException e) {
             return new Result<>(ResultType.NEED_LOGIN, "请重新登陆");
         } catch (Exception e) {
-            return new Result<>(ResultType.OTHER, "其他错误");
+            return new Result<>(ResultType.OTHER, "其他错误" + e.getMessage());
         }
     }
 

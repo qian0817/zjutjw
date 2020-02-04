@@ -52,19 +52,13 @@ public class SubjectFragment extends Fragment implements AdapterView.OnItemSelec
             timetableView.changeWeekOnly(week);
         }).showView();
 
-        timetableView.curWeek(getStartTime())
-                .isShowFlaglayout(false)
-                .isShowNotCurWeek(false)
-                .showView();
+        timetableView.curWeek(getStartTime()).isShowFlaglayout(false).showView();
         ViewModelProvider.AndroidViewModelFactory factory = new ViewModelProvider.AndroidViewModelFactory(MainApplication.getInstance());
         subjectViewModel = factory.create(SubjectViewModel.class);
         subjectViewModel.getResult().observe(this.getViewLifecycleOwner(), result -> {
             if (result.getType() == ResultType.OK) {
-                timetableView.source(result.getData())
-                        .curTerm(termChooseView.getTerm())
-                        .showView();
-                weekView.source(result.getData())
-                        .showView();
+                timetableView.source(result.getData()).showView();
+                weekView.source(result.getData()).showView();
             } else {
                 Toast.makeText(root.getContext(), result.getMsg(), Toast.LENGTH_SHORT).show();
             }

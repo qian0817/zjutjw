@@ -33,7 +33,7 @@ public class DateUtil {
         int month = calendar.get(Calendar.MONTH) + 1;
         if (month == 7 || month == 8) {
             return 3;
-        } else if (month < 7 && month > 2) {
+        } else if (month < 7 && month > 1) {
             return 2;
         } else {
             return 1;
