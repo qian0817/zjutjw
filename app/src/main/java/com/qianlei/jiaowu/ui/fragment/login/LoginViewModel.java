@@ -25,6 +25,7 @@ public class LoginViewModel extends AndroidViewModel {
     private ExecutorService executor = new ThreadPoolExecutor(1, 1,
             0, TimeUnit.SECONDS, new SynchronousQueue<>(), r -> new Thread(r, "登录获取验证码线程")
             , new ThreadPoolExecutor.DiscardPolicy());
+
     private MutableLiveData<Result<String>> loginResult = new MutableLiveData<>();
     private MutableLiveData<Result<Bitmap>> captcha = new MutableLiveData<>();
     private Handler handler = new Handler();
@@ -34,14 +35,14 @@ public class LoginViewModel extends AndroidViewModel {
         studentApi = StudentApi.getStudentApi(application);
     }
 
-    void login(String studentId, String password, String captcha) {
+    public void login(String studentId, String password, String captcha) {
         executor.submit(() -> {
             final Result<String> result = studentApi.login(studentId, password, captcha);
             handler.post(() -> loginResult.setValue(result));
         });
     }
 
-    void changeCaptcha() {
+    public void changeCaptcha() {
         executor.submit(() -> {
             final Result<Bitmap> result = studentApi.getCaptchaImage();
             handler.post(() -> captcha.setValue(result));

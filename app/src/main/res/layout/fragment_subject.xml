@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
 
-    <com.qianlei.jiaowu.ui.widget.TermChooseView
-        android:id="@+id/subject_term_choose_view"
+    </data>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <com.zhuangfei.timetable.view.WeekView
-        android:id="@+id/week_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.zhuangfei.timetable.TimetableView
-            android:id="@+id/time_table_view"
-            app:show_notcurweek="false"
+        <com.qianlei.jiaowu.ui.widget.TermChooseView
+            android:id="@+id/subject_term_choose_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/app_white" />
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            android:layout_height="wrap_content" />
 
-</LinearLayout>
+        <com.zhuangfei.timetable.view.WeekView
+            android:id="@+id/week_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.zhuangfei.timetable.TimetableView
+                android:id="@+id/time_table_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/app_white"
+                app:show_notcurweek="false" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    </LinearLayout>
+</layout>

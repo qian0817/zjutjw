@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
@@ -293,7 +292,6 @@ public class StudentApi {
         @SuppressWarnings("unchecked")
         Map<String, String> map = JSON.parseObject(json, Map.class);
         lastLoginCookies = map;
-        Log.d("读取", json);
     }
 
     /**
@@ -306,7 +304,6 @@ public class StudentApi {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("cookies", json.toString());
             editor.apply();
-            Log.d("保存", json.toString());
         }
     }
 
