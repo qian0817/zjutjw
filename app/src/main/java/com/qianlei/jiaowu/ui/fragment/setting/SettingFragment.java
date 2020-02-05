@@ -9,11 +9,13 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.qianlei.jiaowu.MainApplication;
 import com.qianlei.jiaowu.R;
-import com.qianlei.jiaowu.core.db.MyDataBase;
+import com.qianlei.jiaowu.db.MyDataBase;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 
@@ -31,13 +33,14 @@ public class SettingFragment extends PreferenceFragmentCompat {
             editTextPreference.setOnPreferenceChangeListener((preference, newValue) -> {
                 if (newValue instanceof String) {
                     String s = (String) newValue;
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+                    DateFormat dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM, Locale.CHINA);
                     try {
+                        System.out.println(dateFormat.format(new Date()));
                         dateFormat.parse(s);
                         editTextPreference.setSummary(s);
                         return true;
                     } catch (ParseException e) {
-                        Toast.makeText(getContext(), "日期填写错误,格式为yyyy-MM-dd", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "日期填写错误,格式为yyyy年MM月dd日", Toast.LENGTH_SHORT).show();
                         return false;
                     }
                 }

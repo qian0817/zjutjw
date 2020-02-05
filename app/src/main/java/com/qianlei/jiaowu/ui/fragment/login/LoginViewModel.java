@@ -9,7 +9,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.qianlei.jiaowu.common.Result;
-import com.qianlei.jiaowu.core.net.StudentApi;
+import com.qianlei.jiaowu.net.StudentApi;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;

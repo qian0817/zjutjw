@@ -90,7 +90,7 @@ public class SubjectFragment extends Fragment implements AdapterView.OnItemSelec
     private int getStartTime() {
         int startTime;
         Context context = MainApplication.getInstance();
-        String setStartTime = PreferenceManager.getDefaultSharedPreferences(context).getString("start_day", "2020-2-16");
+        String setStartTime = PreferenceManager.getDefaultSharedPreferences(context).getString("start_day", "2020年2月16日");
         startTime = ScheduleSupport.timeTransfrom(setStartTime + " 00:00:00");
         return startTime;
     }

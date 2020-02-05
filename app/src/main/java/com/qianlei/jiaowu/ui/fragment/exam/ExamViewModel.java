@@ -8,10 +8,10 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.qianlei.jiaowu.common.Result;
 import com.qianlei.jiaowu.common.ResultType;
-import com.qianlei.jiaowu.core.db.MyDataBase;
-import com.qianlei.jiaowu.core.db.dao.ExamDao;
-import com.qianlei.jiaowu.core.net.StudentApi;
+import com.qianlei.jiaowu.db.MyDataBase;
+import com.qianlei.jiaowu.db.dao.ExamDao;
 import com.qianlei.jiaowu.entity.Examination;
+import com.qianlei.jiaowu.net.StudentApi;
 
 import org.jetbrains.annotations.NotNull;
 

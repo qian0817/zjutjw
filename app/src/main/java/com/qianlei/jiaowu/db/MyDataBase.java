@@ -1,4 +1,4 @@
-package com.qianlei.jiaowu.core.db;
+package com.qianlei.jiaowu.db;
 
 import android.content.Context;
 
@@ -6,9 +6,9 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-import com.qianlei.jiaowu.core.db.dao.ExamDao;
-import com.qianlei.jiaowu.core.db.dao.ScoreDao;
-import com.qianlei.jiaowu.core.db.dao.SubjectDao;
+import com.qianlei.jiaowu.db.dao.ExamDao;
+import com.qianlei.jiaowu.db.dao.ScoreDao;
+import com.qianlei.jiaowu.db.dao.SubjectDao;
 import com.qianlei.jiaowu.entity.Examination;
 import com.qianlei.jiaowu.entity.Score;
 import com.qianlei.jiaowu.entity.Subject;

@@ -1,4 +1,4 @@
-package com.qianlei.jiaowu.core.db.dao;
+package com.qianlei.jiaowu.db.dao;
 
 import androidx.room.Dao;
 import androidx.room.Insert;

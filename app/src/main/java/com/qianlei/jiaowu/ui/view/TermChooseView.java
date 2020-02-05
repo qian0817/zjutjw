@@ -1,4 +1,4 @@
-package com.qianlei.jiaowu.ui.widget;
+package com.qianlei.jiaowu.ui.view;
 
 import android.content.Context;
 import android.util.AttributeSet;

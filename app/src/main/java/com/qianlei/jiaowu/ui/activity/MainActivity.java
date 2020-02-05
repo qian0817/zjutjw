@@ -20,8 +20,8 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.navigation.NavigationView;
 import com.qianlei.jiaowu.R;
 import com.qianlei.jiaowu.common.Result;
-import com.qianlei.jiaowu.core.net.StudentApi;
 import com.qianlei.jiaowu.entity.Student;
+import com.qianlei.jiaowu.net.StudentApi;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;

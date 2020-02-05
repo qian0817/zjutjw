@@ -15,7 +15,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <com.qianlei.jiaowu.ui.widget.TermChooseView
+            <com.qianlei.jiaowu.ui.view.TermChooseView
                 android:id="@+id/score_term_choose_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

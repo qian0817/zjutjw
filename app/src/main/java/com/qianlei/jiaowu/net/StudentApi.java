@@ -1,4 +1,4 @@
-package com.qianlei.jiaowu.core.net;
+package com.qianlei.jiaowu.net;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
