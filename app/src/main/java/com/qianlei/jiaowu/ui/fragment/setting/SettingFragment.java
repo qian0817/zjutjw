@@ -27,6 +27,7 @@ public class SettingFragment extends PreferenceFragmentCompat {
         setPreferencesFromResource(R.xml.fragement_setting, rootKey);
         EditTextPreference editTextPreference = findPreference("start_day");
         if (editTextPreference != null) {
+            editTextPreference.setSummary(editTextPreference.getText());
             editTextPreference.setOnPreferenceChangeListener((preference, newValue) -> {
                 if (newValue instanceof String) {
                     String s = (String) newValue;

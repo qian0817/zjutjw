@@ -8,7 +8,6 @@
         app:title="使用内网操作" />
     <EditTextPreference
         android:defaultValue="2019-9-16"
-        android:summary="格式为yyyy-MM-dd"
         app:key="start_day"
         app:title="设置开学日期" />
 
