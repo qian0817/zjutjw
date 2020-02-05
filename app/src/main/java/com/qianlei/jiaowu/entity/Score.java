@@ -42,4 +42,19 @@ public class Score {
     @ColumnInfo(name = "term")
     @JSONField(name = "xqm")
     private String term;
+
+    /**
+     * 学分
+     */
+    @ColumnInfo(name = "credit")
+    @JSONField(name = "xf")
+    private String credit;
+
+    /**
+     * 几点
+     */
+    @ColumnInfo(name = "grade_point")
+    @JSONField(name = "jd")
+    private String gradePoint;
+
 }

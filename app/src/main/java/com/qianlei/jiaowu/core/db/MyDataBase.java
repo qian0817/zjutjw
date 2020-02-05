@@ -25,7 +25,9 @@ public abstract class MyDataBase extends RoomDatabase {
             synchronized (MyDataBase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            MyDataBase.class, "database").build();
+                            MyDataBase.class, "database")
+                            .fallbackToDestructiveMigration()
+                            .build();
                 }
             }
         }

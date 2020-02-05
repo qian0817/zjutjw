@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -25,6 +26,8 @@ import com.qianlei.jiaowu.utils.DateUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+
+import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 
 /**
  * 显示成绩的fragment
@@ -44,7 +47,7 @@ public class ScoreFragment extends Fragment implements AdapterView.OnItemSelecte
         binding.swipeRefreshLayout.setOnRefreshListener(this);
         binding.scoreTermChooseView.setItemSelectedListener(this);
         binding.recycleScore.setLayoutManager(new LinearLayoutManager(getContext()));
-
+        binding.recycleScore.addItemDecoration(new DividerItemDecoration(MainApplication.getInstance(), VERTICAL));
         ViewModelProvider.AndroidViewModelFactory factory = new ViewModelProvider.AndroidViewModelFactory(MainApplication.getInstance());
         scoreViewModel = factory.create(ScoreViewModel.class);
         scoreViewModel.getResult().observe(this.getViewLifecycleOwner(), this::updateScore);
