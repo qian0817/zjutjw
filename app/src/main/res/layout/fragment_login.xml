@@ -26,44 +26,59 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-        <EditText
-            android:id="@+id/studentIdEditText"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
             android:layout_marginEnd="30dp"
-            android:autofillHints=""
-            android:hint="@string/student_id"
-            android:inputType="numberSigned"
-            android:text="@={studentId}"
-            android:textColor="#A9A9A9"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/passwordEditText"
+            android:layout_marginBottom="30dp"
+            app:layout_constraintBottom_toTopOf="@+id/textInputLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.50"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:targetApi="o" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <EditText
-            android:id="@+id/passwordEditText"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/studentIdEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints=""
+                android:hint="@string/student_id"
+                android:inputType="numberSigned"
+                android:singleLine="true"
+                android:text="@={studentId}"
+                android:textSize="20sp"
+                tools:targetApi="o" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:layout_marginBottom="32dp"
-            android:autofillHints=""
-            android:hint="@string/password"
-            android:inputType="textPassword"
-            android:text="@={password}"
-            android:textColor="#A9A9A9"
-            android:textSize="20sp"
+            android:layout_marginBottom="30dp"
             app:layout_constraintBottom_toTopOf="@+id/linearLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.733"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:targetApi="o" />
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/passwordEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints=""
+                android:hint="@string/password"
+                android:inputType="textPassword"
+                android:singleLine="true"
+                android:text="@={password}"
+                android:textSize="20sp"
+                tools:targetApi="o" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -77,18 +92,24 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <EditText
-                android:id="@+id/captchaText"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="20dp"
-                android:layout_weight="7"
-                android:hint="@string/captcha"
-                android:importantForAutofill="no"
-                android:inputType="text"
-                android:text="@={captcha}"
-                android:textColor="#A9A9A9"
-                android:textSize="20sp" />
+                android:layout_weight="7">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/captchaText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/captcha"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:text="@={captcha}"
+                    android:textSize="20sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
                 android:id="@+id/captchaImage"
@@ -115,7 +136,8 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.4" />
+            app:layout_constraintVertical_bias="0.4"
+            app:rippleColor="@color/colorPrimary" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
