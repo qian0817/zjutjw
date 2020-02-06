@@ -1,60 +1,53 @@
-package com.qianlei.jiaowu.entity;
+package com.qianlei.jiaowu.entity
 
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
-import com.alibaba.fastjson.annotation.JSONField;
-
-import lombok.Data;
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.alibaba.fastjson.annotation.JSONField
 
 /**
  * 学生成绩的实体类
  *
  * @author qianlei
  */
-@Data
 @Entity
-public class Score {
+class Score {
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    var id = 0
     /**
      * 考试名称
      */
     @ColumnInfo(name = "name")
     @JSONField(name = "kcmc")
-    private String name;
+    var name: String? = null
     /**
      * 分数
      */
     @ColumnInfo(name = "score")
     @JSONField(name = "cj")
-    private String score;
+    var score: String? = null
     /**
      * 学年
      */
     @ColumnInfo(name = "year")
     @JSONField(name = "xnm")
-    private String year;
+    var year: String? = null
     /**
      * 学期
      */
     @ColumnInfo(name = "term")
     @JSONField(name = "xqm")
-    private String term;
-
+    var term: String? = null
     /**
      * 学分
      */
     @ColumnInfo(name = "credit")
     @JSONField(name = "xf")
-    private String credit;
-
+    var credit: String? = null
     /**
      * 几点
      */
     @ColumnInfo(name = "grade_point")
     @JSONField(name = "jd")
-    private String gradePoint;
-
+    var gradePoint: String? = null
 }

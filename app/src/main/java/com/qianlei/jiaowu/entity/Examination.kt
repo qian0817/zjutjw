@@ -1,58 +1,52 @@
-package com.qianlei.jiaowu.entity;
+package com.qianlei.jiaowu.entity
 
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
-import com.alibaba.fastjson.annotation.JSONField;
-
-import lombok.Data;
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.alibaba.fastjson.annotation.JSONField
 
 /**
  * 考试信息的实体类
  *
  * @author qianlei
  */
-@Data
 @Entity
-public class Examination {
+class Examination {
+
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    var id = 0
     /**
      * 考试名称
      */
     @JSONField(name = "kcmc")
     @ColumnInfo(name = "name")
-    private String name;
+    var name: String? = null
     /**
      * 考试地点
      */
     @JSONField(name = "cdmc")
     @ColumnInfo(name = "place")
-    private String place;
+    var place: String? = null
     /**
      * 考试时间
      */
     @JSONField(name = "kssj")
     @ColumnInfo(name = "time")
-    private String time;
-
+    var time: String? = null
     /**
      * 座位号
      */
     @JSONField(name = "zwh")
     @ColumnInfo(name = "seat_id")
-    private String seatId;
-
+    var seatId: String? = null
     /**
      * 学年
      */
     @ColumnInfo(name = "year")
-    private String year;
-
+    var year: String? = null
     /**
      * 学期
      */
     @ColumnInfo(name = "term")
-    private String term;
+    var term: String? = null
 }

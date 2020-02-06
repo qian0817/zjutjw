@@ -1,25 +1,22 @@
-package com.qianlei.jiaowu.db.dao;
+package com.qianlei.jiaowu.db.dao
 
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.Query;
-
-import com.qianlei.jiaowu.entity.Subject;
-
-import java.util.List;
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import com.qianlei.jiaowu.entity.Subject
 
 /**
  * @author qianlei
  */
 @Dao
-public interface SubjectDao {
+interface SubjectDao {
     /**
      * 添加新的课程信息
      *
      * @param subjects 需要添加的课程
      */
     @Insert
-    void insertSubject(Subject... subjects);
+    fun insertSubject(vararg subjects: Subject?)
 
     /**
      * 根据学年学期获取所有的课程信息
@@ -29,7 +26,7 @@ public interface SubjectDao {
      * @return 该学年学期所有的课程信息
      */
     @Query("SELECT * FROM subject WHERE year=(:year) AND term = (:term)")
-    List<Subject> selectAllSubjectByYearAndTerm(String year, String term);
+    fun selectAllSubjectByYearAndTerm(year: String?, term: String?): List<Subject>
 
     /**
      * 根据学年学期获取所有的课程信息
@@ -38,11 +35,11 @@ public interface SubjectDao {
      * @param term 学期
      */
     @Query("DELETE FROM subject WHERE year=(:year) AND term = (:term)")
-    void deleteAllSubjectByYearAndTerm(String year, String term);
+    fun deleteAllSubjectByYearAndTerm(year: String?, term: String?)
 
     /**
      * 删除所有课程信息
      */
     @Query("DELETE FROM subject")
-    void deleteAll();
+    fun deleteAll()
 }

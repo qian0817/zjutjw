@@ -1,11 +1,11 @@
-package com.qianlei.jiaowu.common;
+package com.qianlei.jiaowu.common
 
 /**
  * 用于定义返回结果的类型
  *
  * @author qianlei
  */
-public enum ResultType {
+enum class ResultType {
     /**
      * 成功
      */

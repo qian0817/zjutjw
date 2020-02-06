@@ -1,4 +1,7 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
@@ -11,9 +14,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        dataBinding {
-            enabled true
-        }
+        dataBinding.enabled=true
     }
     buildTypes {
         release {
@@ -46,8 +47,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.3.0'
     implementation 'org.jsoup:jsoup:1.12.1'
     implementation 'com.alibaba:fastjson:1.2.62'
-    compileOnly 'org.projectlombok:lombok:1.18.10'
-    annotationProcessor 'org.projectlombok:lombok:1.18.10'
-    implementation "androidx.room:room-runtime:2.2.3"
-    annotationProcessor "androidx.room:room-compiler:2.2.3"
+    def room_version = "2.2.3"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt  "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
 }

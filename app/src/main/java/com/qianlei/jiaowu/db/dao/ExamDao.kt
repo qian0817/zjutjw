@@ -1,26 +1,22 @@
-package com.qianlei.jiaowu.db.dao;
+package com.qianlei.jiaowu.db.dao
 
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.Query;
-
-import com.qianlei.jiaowu.entity.Examination;
-
-import java.util.List;
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import com.qianlei.jiaowu.entity.Examination
 
 /**
  * @author qianlei
  */
 @Dao
-public interface ExamDao {
-
+interface ExamDao {
     /**
      * 添加考试信息
      *
      * @param examination 所有的考试信息
      */
     @Insert
-    void insertExam(Examination... examination);
+    fun insertExam(vararg examination: Examination?)
 
     /**
      * 根据学年以及学期获取考试信息
@@ -30,7 +26,7 @@ public interface ExamDao {
      * @return 该学期所有的考试信息
      */
     @Query("SELECT * FROM examination WHERE year = (:year) AND term = (:term)")
-    List<Examination> selectAllExamByYearAndTerm(String year, String term);
+    fun selectAllExamByYearAndTerm(year: String?, term: String?): List<Examination>?
 
     /**
      * 删除所有同年同学期的考试信息
@@ -39,11 +35,11 @@ public interface ExamDao {
      * @param term 学期
      */
     @Query("DELETE FROM examination WHERE year = (:year) AND term = (:term)")
-    void deleteAllByYearAndTerm(String year, String term);
+    fun deleteAllByYearAndTerm(year: String?, term: String?)
 
     /**
      * 删除所有信息
      */
     @Query("DELETE FROM examination")
-    void deleteAll();
+    fun deleteAll()
 }
