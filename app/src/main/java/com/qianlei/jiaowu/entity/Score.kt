@@ -45,7 +45,7 @@ class Score {
     @JSONField(name = "xf")
     var credit: String? = null
     /**
-     * 几点
+     * 绩点
      */
     @ColumnInfo(name = "grade_point")
     @JSONField(name = "jd")

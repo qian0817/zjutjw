@@ -22,6 +22,8 @@ object ScoreUtil {
         }
         return if (all == BigDecimal.ZERO) {
             "暂无绩点信息"
-        } else ans.divide(all, RoundingMode.HALF_UP).setScale(3, RoundingMode.HALF_UP).toString()
+        } else {
+            ans.setScale(3, RoundingMode.HALF_UP).divide(all, RoundingMode.HALF_UP).toString()
+        }
     }
 }
