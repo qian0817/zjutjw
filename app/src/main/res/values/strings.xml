@@ -28,5 +28,9 @@
     <string name="gpa">GPA</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="subject_last">节数</string>
+    <string name="subject_week">课程周数</string>
+    <string name="subject_place">课程地点</string>
+    <string name="subject_teacher">课程教师</string>
 
 </resources>

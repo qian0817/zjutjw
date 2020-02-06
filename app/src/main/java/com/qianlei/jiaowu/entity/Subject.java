@@ -84,35 +84,33 @@ public class Subject implements ScheduleEnable {
     public Schedule getSchedule() {
         week = week.replace("周", "");
         last = last.replace("节", "");
+
+        int tempDay = formatDay();
+        List<Integer> list = formatWeek();
+
         String[] tmp = last.split("-");
         int start = Integer.valueOf(tmp[0]);
         int step = Integer.valueOf(tmp[1]) - start;
-        int tempDay;
+        return new Schedule(name, place, teacher, list, start, step + 1, tempDay, 0);
+    }
+
+    private int formatDay() {
         switch (day) {
             case "星期一":
-                tempDay = 1;
-                break;
+                return 1;
             case "星期二":
-                tempDay = 2;
-                break;
+                return 2;
             case "星期三":
-                tempDay = 3;
-                break;
+                return 3;
             case "星期四":
-                tempDay = 4;
-                break;
+                return 4;
             case "星期五":
-                tempDay = 5;
-                break;
+                return 5;
             case "星期六":
-                tempDay = 6;
-                break;
+                return 6;
             default:
-                tempDay = 0;
-                break;
+                return 0;
         }
-        List<Integer> list = formatWeek();
-        return new Schedule(name, place, teacher, list, start, step + 1, tempDay, 0);
     }
 
     /**

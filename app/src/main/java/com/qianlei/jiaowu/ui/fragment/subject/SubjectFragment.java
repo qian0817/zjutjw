@@ -15,13 +15,17 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.qianlei.jiaowu.MainApplication;
 import com.qianlei.jiaowu.R;
 import com.qianlei.jiaowu.common.Result;
 import com.qianlei.jiaowu.common.ResultType;
 import com.qianlei.jiaowu.databinding.FragmentSubjectBinding;
 import com.qianlei.jiaowu.entity.Subject;
+import com.qianlei.jiaowu.ui.view.SubjectItemView;
 import com.qianlei.jiaowu.utils.DateUtil;
+import com.zhuangfei.timetable.listener.ISchedule;
+import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.timetable.model.ScheduleSupport;
 
 import org.jetbrains.annotations.NotNull;
@@ -49,11 +53,30 @@ public class SubjectFragment extends Fragment implements AdapterView.OnItemSelec
 
         binding.swipeRefreshLayout.setOnRefreshListener(this);
         binding.subjectTermChooseView.setItemSelectedListener(this);
-        binding.weekView.curWeek(getStartTime()).callback(this::changeWeek).showView();
-        binding.timeTableView.curWeek(getStartTime()).isShowFlaglayout(false).showView();
+        binding.weekView.curWeek(getStartTime()).hideLeftLayout().callback(this::changeWeek).showView();
+        binding.timeTableView.curWeek(getStartTime()).isShowFlaglayout(false)
+                .callback((ISchedule.OnItemClickListener) (v, scheduleList) -> showSubjectItemDialog(scheduleList))
+                .showView();
 
         binding.setLifecycleOwner(this);
         return binding.getRoot();
+    }
+
+    /**
+     * 显示课程具体弹窗
+     *
+     * @param scheduleList 点击的课程
+     */
+    private void showSubjectItemDialog(List<Schedule> scheduleList) {
+        if (scheduleList == null || scheduleList.isEmpty()) {
+            return;
+        }
+        if (getContext() != null) {
+            BottomSheetDialog dialog = new BottomSheetDialog(getContext());
+            View view = new SubjectItemView(getContext(), scheduleList.get(0));
+            dialog.setContentView(view);
+            dialog.show();
+        }
     }
 
     /**
