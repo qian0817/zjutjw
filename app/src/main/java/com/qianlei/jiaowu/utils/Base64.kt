@@ -73,11 +73,11 @@ object Base64 {
      * @param h 16进制数
      * @return base64编码
      */
-    fun hex2b64(h: String?): String {
+    fun hex2b64(h: String): String {
         var c: Int
         val ret = StringBuilder()
         var i = 0
-        while (i + 3 <= h!!.length) {
+        while (i + 3 <= h.length) {
             c = h.substring(i, i + 3).toInt(16)
             ret.append(B64MAP[c shr 6])
             ret.append(B64MAP[c and 63])

@@ -15,7 +15,7 @@ object ScoreUtil {
         var ans = BigDecimal("0")
         var all = BigDecimal("0")
         for (score in scoreList) {
-            if (score.gradePoint != null && score.gradePoint != null) {
+            if (score.gradePoint != null && score.credit != null) {
                 ans = ans.add(BigDecimal(score.credit).multiply(BigDecimal(score.gradePoint)))
                 all = all.add(BigDecimal(score.credit))
             }

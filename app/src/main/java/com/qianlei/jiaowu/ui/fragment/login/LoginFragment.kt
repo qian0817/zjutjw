@@ -1,7 +1,6 @@
 package com.qianlei.jiaowu.ui.fragment.login
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -13,22 +12,28 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.Navigation
 import com.qianlei.jiaowu.MainApplication
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.databinding.FragmentLoginBinding
+import com.qianlei.jiaowu.repository.StudentRepository
 
 /**
  * @author qianlei
  */
 class LoginFragment : Fragment() {
+
+    companion object {
+        private const val ID = "id"
+        private const val PASSWORD = "password"
+        private const val USER = "user"
+    }
+
     private lateinit var mViewModel: LoginViewModel
     private lateinit var preferences: SharedPreferences
     private lateinit var binding: FragmentLoginBinding
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false)
         val factory = AndroidViewModelFactory(MainApplication.getInstance())
         mViewModel = factory.create(LoginViewModel::class.java)
@@ -66,10 +71,9 @@ class LoginFragment : Fragment() {
             editor.putString(ID, studentId)
             editor.putString(PASSWORD, password)
             editor.apply()
-            //这个广播用于修改header中的信息
-            val context: Context = MainApplication.getInstance()
-            val intent = Intent("com.qianlei.jiaowu.LOGIN_BROADCAST")
-            LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+            //获取登录学生的信息
+            val task = StudentRepository.GetStudentInformationTask()
+            task.execute()
             //跳转到课程界面
             val controller = Navigation.findNavController(binding.root)
             controller.navigate(R.id.action_navigation_login_to_navigation_lesson)
@@ -78,11 +82,5 @@ class LoginFragment : Fragment() {
             binding.captcha = ""
             Toast.makeText(context, result.msg, Toast.LENGTH_SHORT).show()
         }
-    }
-
-    companion object {
-        private const val ID = "id"
-        private const val PASSWORD = "password"
-        private const val USER = "user"
     }
 }

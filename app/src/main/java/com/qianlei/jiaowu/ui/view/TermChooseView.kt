@@ -7,7 +7,8 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.LinearLayout
 import android.widget.Spinner
 import com.qianlei.jiaowu.R
-import com.qianlei.jiaowu.utils.DateUtil
+import com.qianlei.jiaowu.common.Term
+import com.qianlei.jiaowu.utils.TermUtil
 
 /**
  * @author qianlei
@@ -25,22 +26,13 @@ class TermChooseView @JvmOverloads constructor(context: Context?, attrs: Attribu
      *
      * @return 当前用户选择的学期
      */
-    val term: String
-        get() {
-            val terms = resources.getStringArray(R.array.term)
-            val term = terms[termSpinner.selectedItemPosition]
-            return formatTerm(term)
-        }
-
-    /**
-     * 获取选择的学年
-     *
-     * @return 当前用户选择的学年
-     */
-    val year: String
+    val term: Term
         get() {
             val years = resources.getStringArray(R.array.year)
-            return years[yearSpinner.selectedItemPosition].substring(0, 4)
+            val terms = resources.getStringArray(R.array.term)
+            val term = terms[termSpinner.selectedItemPosition]
+            val year = years[yearSpinner.selectedItemPosition].substring(0, 4)
+            return Term(year, formatTerm(term))
         }
 
     /**
@@ -63,8 +55,9 @@ class TermChooseView @JvmOverloads constructor(context: Context?, attrs: Attribu
         LayoutInflater.from(context).inflate(R.layout.term_choose_view, this)
         yearSpinner = findViewById(R.id.spinner_year)
         termSpinner = findViewById(R.id.spinner_term)
+        val years = resources.getStringArray(R.array.year)
         //设置选中项为当前学期
-        yearSpinner.setSelection(DateUtil.getCurYear() - 2017)
-        termSpinner.setSelection(DateUtil.getCurTerm() - 1)
+        yearSpinner.setSelection(TermUtil.getNowTerm().year.toInt() - years[0].substring(0, 4).toInt())
+        termSpinner.setSelection(TermUtil.getNowTerm().term.toInt() - 1)
     }
 }

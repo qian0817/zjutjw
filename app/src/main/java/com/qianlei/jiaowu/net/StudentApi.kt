@@ -51,7 +51,7 @@ class StudentApi private constructor(private val context: Context) {
             return null
         }
         var retPassword = password
-        val connection = Jsoup.connect("$prefix/jwglxt/xtgl/login_getPublicKey.html")
+        val connection = Jsoup.connect(prefix() + "/jwglxt/xtgl/login_getPublicKey.html")
         val response = connection.cookies(tempCookies).ignoreContentType(true).execute()
         val jsonObject = JSON.parseObject(response.body())
         val modulus = jsonObject.getString("modulus")
@@ -73,7 +73,7 @@ class StudentApi private constructor(private val context: Context) {
         var tempPassword = password
         return try {
             tempPassword = getRsaPublicKey(tempPassword)
-            val connection = Jsoup.connect("$prefix/jwglxt/xtgl/login_slogin.html")
+            val connection = Jsoup.connect(prefix() + "/jwglxt/xtgl/login_slogin.html")
             connection.header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
             connection.data("csrftoken", csrftoken)
             connection.data("yhm", studentId)
@@ -103,7 +103,7 @@ class StudentApi private constructor(private val context: Context) {
      */
     fun getCaptchaImage(): Result<Bitmap> {
         try {
-            val connection = Jsoup.connect("$prefix/jwglxt/xtgl/login_slogin.html")
+            val connection = Jsoup.connect(prefix() + "/jwglxt/xtgl/login_slogin.html")
             val response = connection.execute()
             //保存cookie
             tempCookies = response.cookies()
@@ -114,7 +114,7 @@ class StudentApi private constructor(private val context: Context) {
             return Result(ResultType.IO, "请检查网络连接")
         }
         //获取验证码
-        val connection = Jsoup.connect("$prefix/jwglxt/kaptcha").ignoreContentType(true)
+        val connection = Jsoup.connect(prefix() + "/jwglxt/kaptcha").ignoreContentType(true)
         return try {
             val response = connection.cookies(tempCookies).execute()
             val bytes = response.bodyAsBytes()
@@ -136,7 +136,7 @@ class StudentApi private constructor(private val context: Context) {
         return if (lastLoginCookies == null) {
             Result(ResultType.NEED_LOGIN, "请先登陆")
         } else try {
-            val connection = Jsoup.connect("$prefix/jwglxt/xsxxxggl/xsxxwh_cxCkDgxsxx.html?gnmkdm=N100801")
+            val connection = Jsoup.connect(prefix() + "/jwglxt/xsxxxggl/xsxxwh_cxCkDgxsxx.html?gnmkdm=N100801")
             val response = connection.cookies(lastLoginCookies).method(Connection.Method.GET).ignoreContentType(true).execute()
             val student = JSON.parseObject(response.body(), Student::class.java)
             Result(ResultType.OK, "获取信息成功", student)
@@ -160,7 +160,7 @@ class StudentApi private constructor(private val context: Context) {
         return if (lastLoginCookies == null) {
             Result(ResultType.NEED_LOGIN, "请先登陆")
         } else try {
-            val connection = Jsoup.connect("$prefix/jwglxt/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151")
+            val connection = Jsoup.connect(prefix() + "/jwglxt/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151")
             connection.data("xnm", year)
             connection.data("xqm", term)
             val response: Connection.Response
@@ -197,7 +197,7 @@ class StudentApi private constructor(private val context: Context) {
             val parameter: MutableMap<String, String> = HashMap(2)
             parameter["xnm"] = year
             parameter["xqm"] = term
-            val connection = Jsoup.connect("$prefix/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005")
+            val connection = Jsoup.connect(prefix() + "/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005")
             val response = connection.cookies(lastLoginCookies).method(Connection.Method.POST)
                     .data(parameter).ignoreContentType(true).execute()
             val jsonObject = JSON.parseObject(response.body())
@@ -225,7 +225,7 @@ class StudentApi private constructor(private val context: Context) {
             val parameter: MutableMap<String, String> = HashMap(2)
             parameter["xnm"] = year
             parameter["xqm"] = term
-            val connection = Jsoup.connect("$prefix/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105")
+            val connection = Jsoup.connect(prefix() + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105")
             val response = connection.cookies(lastLoginCookies).method(Connection.Method.POST)
                     .data(parameter).ignoreContentType(true).execute()
             val jsonObject = JSON.parseObject(response.body())
@@ -255,8 +255,8 @@ class StudentApi private constructor(private val context: Context) {
     private fun readCookies() {
         val sharedPreferences = context.getSharedPreferences("cookies", Context.MODE_PRIVATE)
         val json = sharedPreferences.getString("cookies", "")
-        val map: Map<String, String> = JSON.parseObject<Map<*, *>>(json, MutableMap::class.java) as Map<String, String>
-        lastLoginCookies = map
+        val map = JSON.parseObject<Map<*, *>>(json, MutableMap::class.java) ?: return
+        lastLoginCookies = map as Map<String, String>
     }
 
     /**
@@ -272,16 +272,15 @@ class StudentApi private constructor(private val context: Context) {
         }
     }
 
-    private val prefix: String
-        get() {
-            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-            return if (sharedPreferences.getBoolean("useIntranet", false)) {
-                "http://www.gdjw.zjut.edu.cn"
-            } else {
-                //TODO 内网地址暂不知 回校测试
-                "http://www.gdjw.zjut.edu.cn"
-            }
+    private fun prefix(): String {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        return if (sharedPreferences.getBoolean("useIntranet", false)) {
+            "http://www.gdjw.zjut.edu.cn"
+        } else {
+            //TODO 内网地址暂不知 回校测试
+            "http://www.gdjw.zjut.edu.cn"
         }
+    }
 
     companion object {
         /**

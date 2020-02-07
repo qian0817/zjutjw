@@ -2,7 +2,6 @@ package com.qianlei.jiaowu
 
 import android.app.Application
 import android.os.Process
-import android.widget.Toast
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -29,11 +28,15 @@ class MainApplication : Application() {
         application = this
     }
 
+    /**
+     * 用于未处理异常处理
+     */
     internal inner class CrashExceptionHandler : Thread.UncaughtExceptionHandler {
         override fun uncaughtException(t: Thread, e: Throwable) {
-            Toast.makeText(applicationContext, "程序出现异常，即将退出", Toast.LENGTH_SHORT).show()
-            if (externalCacheDir != null) {
-                val fileName = externalCacheDir!!.absolutePath + File.separator + "error.log"
+            //记录异常信息
+            val cacheDir = externalCacheDir
+            if (cacheDir != null) {
+                val fileName = cacheDir.absolutePath + File.separator + "error.log"
                 try {
                     PrintStream(FileOutputStream(fileName, true)).use { printStream ->
                         val date = SimpleDateFormat.getDateTimeInstance().format(Date())
@@ -43,11 +46,6 @@ class MainApplication : Application() {
                 } catch (ex: FileNotFoundException) {
                     ex.printStackTrace()
                 }
-            }
-            try {
-                Thread.sleep(1000)
-            } catch (ex: InterruptedException) {
-                ex.printStackTrace()
             }
             Process.killProcess(Process.myPid())
             exitProcess(1)

@@ -29,7 +29,6 @@ object RSAEncoder {
     private fun pkcs1pad2(s: String, n: Int): BigInteger? {
         var num = n
         if (num < s.length + 11) {
-            System.err.println("Message too long for RSAEncoder")
             return null
         }
         val ba = ByteArray(num)

@@ -27,7 +27,6 @@ class SettingFragment : PreferenceFragmentCompat() {
                 if (newValue is String) {
                     val dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM, Locale.CHINA)
                     try {
-                        println(dateFormat.format(Date()))
                         dateFormat.parse(newValue)
                         editTextPreference.summary = newValue
                         return@OnPreferenceChangeListener true

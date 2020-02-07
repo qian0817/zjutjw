@@ -10,7 +10,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.qianlei.jiaowu.MainApplication
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.entity.Examination
 import com.qianlei.jiaowu.ui.fragment.exam.ExamAdapter.ExamViewHolder
@@ -65,7 +64,7 @@ class ExamAdapter internal constructor(context: Context, private var examination
                 context.startActivity(calendarIntent)
             }
         } catch (e: Exception) {
-            Toast.makeText(MainApplication.getInstance(), "添加到日历失败", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "添加到日历失败", Toast.LENGTH_SHORT).show()
         }
     }
 

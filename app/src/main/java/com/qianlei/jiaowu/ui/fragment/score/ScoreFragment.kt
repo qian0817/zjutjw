@@ -17,10 +17,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.qianlei.jiaowu.MainApplication
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
-import com.qianlei.jiaowu.common.ResultType
 import com.qianlei.jiaowu.databinding.FragmentScoreBinding
 import com.qianlei.jiaowu.entity.Score
-import com.qianlei.jiaowu.utils.DateUtil
+import com.qianlei.jiaowu.utils.TermUtil
 
 /**
  * 显示成绩的fragment
@@ -39,7 +38,7 @@ class ScoreFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
         binding.recycleScore.addItemDecoration(DividerItemDecoration(MainApplication.getInstance(), DividerItemDecoration.VERTICAL))
         val factory = AndroidViewModelFactory(MainApplication.getInstance())
         scoreViewModel = factory.create(ScoreViewModel::class.java)
-        scoreViewModel.result.observe(this.viewLifecycleOwner, Observer { result: Result<List<Score>> -> updateScore(result) })
+        scoreViewModel.scoreData.observe(this.viewLifecycleOwner, Observer { result: Result<List<Score>> -> updateScore(result) })
         binding.lifecycleOwner = this
         return binding.root
     }
@@ -50,25 +49,27 @@ class ScoreFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
      * @param result 更新后的成绩数据
      */
     private fun updateScore(result: Result<List<Score>>) {
-        if (result.type == ResultType.OK) {
-            val data = result.data
-            val adapter = ScoreAdapter(data)
-            binding.recycleScore.adapter = adapter
-        } else {
+        if (result.data == null) {
+            result.data = ArrayList()
+        }
+        val data = result.data
+        val adapter = ScoreAdapter(data)
+        binding.recycleScore.adapter = adapter
+        if (!result.isSuccess()) {
             Toast.makeText(context, result.msg, Toast.LENGTH_SHORT).show()
         }
         binding.swipeRefreshLayout.isRefreshing = false
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
-        scoreViewModel.changeTerm(binding.scoreTermChooseView.year, binding.scoreTermChooseView.term)
+        scoreViewModel.changeTerm(binding.scoreTermChooseView.term)
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
-        scoreViewModel.changeTerm(DateUtil.getCurYear().toString(), DateUtil.getCurTerm().toString())
+        scoreViewModel.changeTerm(TermUtil.getNowTerm())
     }
 
     override fun onRefresh() {
-        scoreViewModel.refreshData(binding.scoreTermChooseView.year, binding.scoreTermChooseView.term)
+        scoreViewModel.refreshData(binding.scoreTermChooseView.term)
     }
 }

@@ -18,7 +18,7 @@ import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.databinding.FragmentExamBinding
 import com.qianlei.jiaowu.entity.Examination
-import com.qianlei.jiaowu.utils.DateUtil
+import com.qianlei.jiaowu.utils.TermUtil
 
 /**
  * 考试的fragment
@@ -36,7 +36,7 @@ class ExamFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
         binding.termChooseView.setItemSelectedListener(this)
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.swipeRefreshLayout.setOnRefreshListener(this)
-        examViewModel.examListData.observe(this.viewLifecycleOwner, Observer { result: Result<List<Examination>> -> updateExam(result) })
+        examViewModel.examData.observe(this.viewLifecycleOwner, Observer { result: Result<List<Examination>> -> updateExam(result) })
         binding.lifecycleOwner = this
         return binding.root
     }
@@ -47,29 +47,30 @@ class ExamFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
      * @param result 考试信息内容
      */
     private fun updateExam(result: Result<List<Examination>>) {
-        if (result.isSuccess()) {
-            val data = result.data
-            val adapter = if (data != null) {
-                ExamAdapter(MainApplication.getInstance(), data)
-            } else {
-                ExamAdapter(MainApplication.getInstance(), ArrayList())
-            }
-            binding.recyclerView.adapter = adapter
+        //设置数据
+        val data = result.data
+        val adapter = if (data != null) {
+            ExamAdapter(MainApplication.getInstance(), data)
         } else {
+            ExamAdapter(MainApplication.getInstance(), ArrayList())
+        }
+        binding.recyclerView.adapter = adapter
+        //如果不成功则弹出相关提示
+        if (!result.isSuccess()) {
             Toast.makeText(context, result.msg, Toast.LENGTH_SHORT).show()
         }
         binding.swipeRefreshLayout.isRefreshing = false
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
-        examViewModel.changeTerm(binding.termChooseView.year, binding.termChooseView.term)
+        examViewModel.changeTerm(binding.termChooseView.term)
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
-        examViewModel.changeTerm(DateUtil.getCurYear().toString(), DateUtil.getCurTerm().toString())
+        examViewModel.changeTerm(TermUtil.getNowTerm())
     }
 
     override fun onRefresh() {
-        examViewModel.refreshData(binding.termChooseView.year, binding.termChooseView.term)
+        examViewModel.refreshData(binding.termChooseView.term)
     }
 }

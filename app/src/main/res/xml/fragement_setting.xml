@@ -7,7 +7,7 @@
         app:key="useIntranet"
         app:title="使用内网操作" />
     <EditTextPreference
-        android:defaultValue="2019-9-16"
+        android:defaultValue="2020年2月16日"
         app:key="start_day"
         app:title="设置开学日期" />
 

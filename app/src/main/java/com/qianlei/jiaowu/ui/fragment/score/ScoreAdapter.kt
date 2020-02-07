@@ -44,7 +44,6 @@ class ScoreAdapter internal constructor(private val scoreList: List<Score>?) : R
     class ScoreViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var scoreNameText: TextView = itemView.findViewById(R.id.score_name)
         var scoreText: TextView = itemView.findViewById(R.id.score_score)
-
     }
 
 }

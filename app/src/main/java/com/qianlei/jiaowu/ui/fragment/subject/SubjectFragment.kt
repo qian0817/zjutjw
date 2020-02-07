@@ -18,11 +18,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.qianlei.jiaowu.MainApplication
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
-import com.qianlei.jiaowu.common.ResultType
 import com.qianlei.jiaowu.databinding.FragmentSubjectBinding
 import com.qianlei.jiaowu.entity.Subject
 import com.qianlei.jiaowu.ui.view.SubjectItemView
-import com.qianlei.jiaowu.utils.DateUtil
+import com.qianlei.jiaowu.utils.TermUtil
 import com.zhuangfei.timetable.model.Schedule
 import com.zhuangfei.timetable.model.ScheduleSupport
 
@@ -39,7 +38,7 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_subject, container, false)
         val factory = AndroidViewModelFactory(MainApplication.getInstance())
         subjectViewModel = factory.create(SubjectViewModel::class.java)
-        subjectViewModel.subjectResult.observe(this.viewLifecycleOwner, Observer { result: Result<List<Subject>> -> updateSubject(result) })
+        subjectViewModel.subjectData.observe(this.viewLifecycleOwner, Observer { result: Result<List<Subject>> -> updateSubject(result) })
         binding.swipeRefreshLayout.setOnRefreshListener(this)
         binding.subjectTermChooseView.setItemSelectedListener(this)
         binding.weekView.curWeek(getStartTime()).hideLeftLayout().callback { week: Int -> changeWeek(week) }.showView()
@@ -74,10 +73,12 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
      * @param result 课程内容
      */
     private fun updateSubject(result: Result<List<Subject>>) {
-        if (result.type == ResultType.OK) {
-            binding.timeTableView.source(result.data).showView()
-            binding.weekView.source(result.data).showView()
-        } else {
+        if (result.data == null) {
+            result.data = ArrayList()
+        }
+        binding.timeTableView.source(result.data).showView()
+        binding.weekView.source(result.data).showView()
+        if (!result.isSuccess()) {
             Toast.makeText(context, result.msg, Toast.LENGTH_SHORT).show()
         }
         binding.swipeRefreshLayout.isRefreshing = false
@@ -108,14 +109,14 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
-        subjectViewModel.changeTerm(binding.subjectTermChooseView.year, binding.subjectTermChooseView.term)
+        subjectViewModel.changeTerm(binding.subjectTermChooseView.term)
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
-        subjectViewModel.changeTerm(DateUtil.getCurYear().toString(), DateUtil.getCurTerm().toString())
+        subjectViewModel.changeTerm(TermUtil.getNowTerm())
     }
 
     override fun onRefresh() {
-        subjectViewModel.refreshData(binding.subjectTermChooseView.year, binding.subjectTermChooseView.term)
+        subjectViewModel.refreshData(binding.subjectTermChooseView.term)
     }
 }

@@ -1,0 +1,89 @@
+package com.qianlei.jiaowu.repository
+
+import android.os.AsyncTask
+import androidx.lifecycle.MutableLiveData
+import com.qianlei.jiaowu.MainApplication
+import com.qianlei.jiaowu.common.Result
+import com.qianlei.jiaowu.common.ResultType
+import com.qianlei.jiaowu.common.Term
+import com.qianlei.jiaowu.db.MyDataBase
+import com.qianlei.jiaowu.db.dao.ExamDao
+import com.qianlei.jiaowu.entity.Examination
+import com.qianlei.jiaowu.net.StudentApi
+
+/**
+ * 考试仓库类
+ *
+ * @author qianlei
+ */
+object ExamRepository {
+    val examData = MutableLiveData<Result<List<Examination>>>()
+    private val examDao: ExamDao = MyDataBase.getDatabase(MainApplication.getInstance()).examDao()
+    private val studentApi: StudentApi = StudentApi.getStudentApi(MainApplication.getInstance())
+
+    private fun getDataFromNet(term: Term): Result<List<Examination>> {
+        val result = studentApi.getStudentExamInformation(term.year, term.term)
+        if (result.isSuccess()) {
+            //向数据库中添加数据
+            val examDao: ExamDao = MyDataBase.getDatabase(MainApplication.getInstance()).examDao()
+            val examinationList = result.data
+            examDao.deleteAllByYearAndTerm(term.year, term.term)
+            if (examinationList != null) {
+                for (examination in examinationList) {
+                    examDao.insertExam(examination)
+                }
+            }
+        }
+        return result
+    }
+
+    private fun getDataFromDatabase(term: Term): Result<List<Examination>> {
+        val examinationList = examDao.selectAllExamByYearAndTerm(term.year, term.term)
+        return if (examinationList != null && examinationList.isNotEmpty()) {
+            Result(ResultType.OK, "从数据获取成功", examinationList)
+        } else {
+            Result(ResultType.OTHER, "数据库中无数据")
+        }
+    }
+
+    class GetExamDataUseCacheTask : AsyncTask<Term, Void, Result<List<Examination>>?>() {
+        override fun doInBackground(vararg params: Term?): Result<List<Examination>>? {
+            if (params.size != 1) {
+                return null
+            }
+            val term = params[0] ?: return null
+            val result = getDataFromDatabase(term)
+            return if (result.isSuccess()) {
+                result
+            } else {
+                getDataFromNet(term)
+            }
+        }
+
+        override fun onPostExecute(result: Result<List<Examination>>?) {
+            if (result == null) {
+                return
+            }
+            examData.value = result
+        }
+    }
+
+    class GetExamDataTask : AsyncTask<Term, Void, Result<List<Examination>>?>() {
+
+        override fun doInBackground(vararg params: Term?): Result<List<Examination>>? {
+            if (params.size != 1) {
+                return null
+            }
+            val term = params[0] ?: return null
+            return getDataFromNet(term)
+        }
+
+        override fun onPostExecute(result: Result<List<Examination>>?) {
+            if (result == null) {
+                return
+            }
+            examData.value = result
+        }
+    }
+
+}
