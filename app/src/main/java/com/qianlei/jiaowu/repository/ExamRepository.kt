@@ -16,7 +16,7 @@ import com.qianlei.jiaowu.net.StudentApi
  *
  * @author qianlei
  */
-object ExamRepository {
+class ExamRepository {
     val examData = MutableLiveData<Result<List<Examination>>>()
     private val examDao: ExamDao = MyDataBase.getDatabase(MainApplication.getInstance()).examDao()
     private val studentApi: StudentApi = StudentApi.getStudentApi(MainApplication.getInstance())
@@ -46,17 +46,17 @@ object ExamRepository {
         }
     }
 
-    class GetExamDataUseCacheTask : AsyncTask<Term, Void, Result<List<Examination>>?>() {
+    class GetExamDataUseCacheTask constructor(private val examRepository: ExamRepository) : AsyncTask<Term, Void, Result<List<Examination>>?>() {
         override fun doInBackground(vararg params: Term?): Result<List<Examination>>? {
             if (params.size != 1) {
                 return null
             }
             val term = params[0] ?: return null
-            val result = getDataFromDatabase(term)
+            val result = examRepository.getDataFromDatabase(term)
             return if (result.isSuccess()) {
                 result
             } else {
-                getDataFromNet(term)
+                examRepository.getDataFromNet(term)
             }
         }
 
@@ -64,25 +64,25 @@ object ExamRepository {
             if (result == null) {
                 return
             }
-            examData.value = result
+            examRepository.examData.value = result
         }
     }
 
-    class GetExamDataTask : AsyncTask<Term, Void, Result<List<Examination>>?>() {
+    class GetExamDataTask constructor(private val examRepository: ExamRepository) : AsyncTask<Term, Void, Result<List<Examination>>?>() {
 
         override fun doInBackground(vararg params: Term?): Result<List<Examination>>? {
             if (params.size != 1) {
                 return null
             }
             val term = params[0] ?: return null
-            return getDataFromNet(term)
+            return examRepository.getDataFromNet(term)
         }
 
         override fun onPostExecute(result: Result<List<Examination>>?) {
             if (result == null) {
                 return
             }
-            examData.value = result
+            examRepository.examData.value = result
         }
     }
 

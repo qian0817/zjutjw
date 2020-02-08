@@ -15,7 +15,7 @@ import com.qianlei.jiaowu.net.StudentApi
  *
  * @author qianlei
  */
-object ScoreRepository {
+class ScoreRepository {
     private var context = MainApplication.getInstance()
     private var scoreDao = MyDataBase.getDatabase(MainApplication.getInstance()).scoreDao()
     private val studentApi: StudentApi = StudentApi.getStudentApi(context)
@@ -60,14 +60,14 @@ object ScoreRepository {
     /**
      *  不使用缓存中直接从教务系统获取数据
      */
-    class GetScoreDataNotUseCacheTask : AsyncTask<Term, Void, Result<List<Score>>?>() {
+    class GetScoreDataNotUseCacheTask constructor(private val scoreRepository: ScoreRepository) : AsyncTask<Term, Void, Result<List<Score>>?>() {
         override fun doInBackground(vararg params: Term?): Result<List<Score>>? {
             if (params.size != 1) {
                 return null
             }
             val term = params[0]
             return if (term != null) {
-                getDataFromNet(term)
+                scoreRepository.getDataFromNet(term)
             } else {
                 null
             }
@@ -75,7 +75,7 @@ object ScoreRepository {
 
         override fun onPostExecute(result: Result<List<Score>>?) {
             super.onPostExecute(result)
-            scoreData.value = result
+            scoreRepository.scoreData.value = result
         }
     }
 
@@ -83,23 +83,23 @@ object ScoreRepository {
      * 从缓存中获取数据
      * 如果缓存中无内容 那么从数据库中获取数据
      */
-    class GetScoreDataUseCacheTask : AsyncTask<Term, Void, Result<List<Score>>?>() {
+    class GetScoreDataUseCacheTask constructor(private val scoreRepository: ScoreRepository) : AsyncTask<Term, Void, Result<List<Score>>?>() {
         override fun doInBackground(vararg params: Term?): Result<List<Score>>? {
             if (params.size != 1) {
                 return null
             }
             val term = params[0] ?: return null
-            val result = getDataFromDatabase(term)
+            val result = scoreRepository.getDataFromDatabase(term)
             return if (result.isSuccess()) {
                 result
             } else {
-                getDataFromNet(term)
+                scoreRepository.getDataFromNet(term)
             }
         }
 
         override fun onPostExecute(result: Result<List<Score>>?) {
             super.onPostExecute(result)
-            scoreData.value = result
+            scoreRepository.scoreData.value = result
         }
     }
 

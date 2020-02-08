@@ -16,7 +16,7 @@ import com.qianlei.jiaowu.net.StudentApi
  *
  * @author qianlei
  */
-object SubjectRepository {
+class SubjectRepository {
     private val context = MainApplication.getInstance()
     private var subjectDao: SubjectDao = MyDataBase.getDatabase(context).subjectDao()
     private val studentApi: StudentApi = StudentApi.getStudentApi(context)
@@ -46,39 +46,39 @@ object SubjectRepository {
         return result
     }
 
-    class GetSubjectDataUseCache : AsyncTask<Term, Void, Result<List<Subject>>>() {
+    class GetSubjectDataUseCache constructor(private val subjectRepository: SubjectRepository) : AsyncTask<Term, Void, Result<List<Subject>>?>() {
         override fun doInBackground(vararg params: Term?): Result<List<Subject>>? {
             if (params.size != 1) {
                 return null
             }
             val term = params[0] ?: return null
             //先从数据库中判断是否存在数据 不存在则继续从网络中获取数据
-            val result = getDataFromDatabase(term)
+            val result = subjectRepository.getDataFromDatabase(term)
             return if (result.isSuccess()) {
                 result
             } else {
-                getDataFromNet(term)
+                subjectRepository.getDataFromNet(term)
             }
         }
 
         override fun onPostExecute(result: Result<List<Subject>>?) {
             super.onPostExecute(result)
-            subjectLiveData.value = result
+            subjectRepository.subjectLiveData.value = result
         }
     }
 
-    class GetSubjectDataTask : AsyncTask<Term, Void, Result<List<Subject>>>() {
+    class GetSubjectDataTask constructor(private val subjectRepository: SubjectRepository) : AsyncTask<Term, Void, Result<List<Subject>>>() {
         override fun doInBackground(vararg params: Term?): Result<List<Subject>>? {
             if (params.size != 1) {
                 return null
             }
             val term = params[0] ?: return null
-            return getDataFromNet(term)
+            return subjectRepository.getDataFromNet(term)
         }
 
         override fun onPostExecute(result: Result<List<Subject>>?) {
             super.onPostExecute(result)
-            subjectLiveData.value = result
+            subjectRepository.subjectLiveData.value = result
         }
     }
 

@@ -11,7 +11,7 @@ import com.qianlei.jiaowu.repository.ExamRepository
  * @author qianlei
  */
 class ExamViewModel(app: Application) : AndroidViewModel(app) {
-    private val examRepository = ExamRepository
+    private val examRepository = ExamRepository()
     val examData = examRepository.examData
 
     /**
@@ -20,7 +20,7 @@ class ExamViewModel(app: Application) : AndroidViewModel(app) {
      * @param term 学期
      */
     fun refreshData(term: Term) {
-        val task = ExamRepository.GetExamDataTask()
+        val task = ExamRepository.GetExamDataTask(examRepository)
         task.execute(term)
     }
 
@@ -30,7 +30,7 @@ class ExamViewModel(app: Application) : AndroidViewModel(app) {
      * @param term 修改后的学期
      */
     fun changeTerm(term: Term) {
-        val task = ExamRepository.GetExamDataUseCacheTask()
+        val task = ExamRepository.GetExamDataUseCacheTask(examRepository)
         task.execute(term)
     }
 }

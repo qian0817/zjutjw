@@ -9,7 +9,7 @@ import com.qianlei.jiaowu.repository.SubjectRepository
  * @author qianlei
  */
 class SubjectViewModel(app: Application) : AndroidViewModel(app) {
-    private val subjectRepository = SubjectRepository
+    private val subjectRepository = SubjectRepository()
     val subjectData = subjectRepository.subjectLiveData
 
     /**
@@ -18,7 +18,7 @@ class SubjectViewModel(app: Application) : AndroidViewModel(app) {
      * @param term 学期
      */
     fun refreshData(term: Term) {
-        val task = SubjectRepository.GetSubjectDataTask()
+        val task = SubjectRepository.GetSubjectDataTask(subjectRepository)
         task.execute(term)
     }
 
@@ -27,7 +27,7 @@ class SubjectViewModel(app: Application) : AndroidViewModel(app) {
      * @param term 修改后学期
      */
     fun changeTerm(term: Term) {
-        val task = SubjectRepository.GetSubjectDataUseCache()
+        val task = SubjectRepository.GetSubjectDataUseCache(subjectRepository)
         task.execute(term)
     }
 

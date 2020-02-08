@@ -9,7 +9,7 @@ import com.qianlei.jiaowu.repository.ScoreRepository
  * @author qianlei
  */
 class ScoreViewModel(app: Application) : AndroidViewModel(app) {
-    private val scoreRepository = ScoreRepository
+    private val scoreRepository = ScoreRepository()
     val scoreData = scoreRepository.scoreData
 
     /**
@@ -18,7 +18,7 @@ class ScoreViewModel(app: Application) : AndroidViewModel(app) {
      * @param term 学期
      */
     fun refreshData(term: Term) {
-        val task = ScoreRepository.GetScoreDataNotUseCacheTask()
+        val task = ScoreRepository.GetScoreDataNotUseCacheTask(scoreRepository)
         task.execute(term)
     }
 
@@ -29,7 +29,7 @@ class ScoreViewModel(app: Application) : AndroidViewModel(app) {
      * @param term 学期
      */
     fun changeTerm(term: Term) {
-        val task = ScoreRepository.GetScoreDataUseCacheTask()
+        val task = ScoreRepository.GetScoreDataUseCacheTask(scoreRepository)
         task.execute(term)
     }
 

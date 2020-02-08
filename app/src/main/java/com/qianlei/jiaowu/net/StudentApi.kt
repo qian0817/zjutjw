@@ -30,11 +30,14 @@ class StudentApi private constructor(private val context: Context) {
     /**
      * 临时的cookies 登录之前使用
      */
+    @Volatile
     private var tempCookies: Map<String, String>? = null
     /**
      * 在登录之后使用的cookies
      */
+    @Volatile
     private var lastLoginCookies: Map<String, String>? = null
+    @Volatile
     private var csrftoken: String? = null
 
     /**
@@ -85,6 +88,7 @@ class StudentApi private constructor(private val context: Context) {
             val document = Jsoup.parse(response.body())
             if (document.getElementById("tips") == null) { //设置cookie
                 lastLoginCookies = response.cookies()
+                println("set$lastLoginCookies")
                 Result(ResultType.OK, "成功登陆")
             } else {
                 Result(ResultType.PARAMS_ERROR, document.getElementById("tips").text())
@@ -158,6 +162,7 @@ class StudentApi private constructor(private val context: Context) {
      */
     fun getStudentTimetable(year: String?, term: String?): Result<List<Subject>> {
         return if (lastLoginCookies == null) {
+            println("getnull")
             Result(ResultType.NEED_LOGIN, "请先登陆")
         } else try {
             val connection = Jsoup.connect(prefix() + "/jwglxt/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151")
