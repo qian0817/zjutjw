@@ -12,7 +12,7 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <TextView
-        android:id="@+id/student_name_text"
+        android:id="@+id/studentNameTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
@@ -21,7 +21,7 @@
         android:textSize="20sp" />
 
     <TextView
-        android:id="@+id/student_id_text"
+        android:id="@+id/studentIdTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/login_first"

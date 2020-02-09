@@ -1,7 +1,6 @@
 package com.qianlei.jiaowu.ui.activity
 
 import android.os.Bundle
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
@@ -14,6 +13,7 @@ import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.entity.Student
 import com.qianlei.jiaowu.net.StudentApi
 import com.qianlei.jiaowu.repository.StudentRepository
+import kotlinx.android.synthetic.main.header_layout.*
 
 /**
  * 主界面的activity
@@ -46,11 +46,7 @@ class MainActivity : AppCompatActivity() {
      * 更新学生信息
      */
     private fun updateStudentInformation(result: Result<Student>) {
-        val navView = findViewById<NavigationView>(R.id.nav_view)
         val data = result.data ?: return
-        val header = navView.getHeaderView(0)
-        val studentNameTextView = header.findViewById<TextView>(R.id.student_name_text)
-        val studentIdTextView = header.findViewById<TextView>(R.id.student_id_text)
         studentIdTextView.text = data.studentId
         studentNameTextView.text = data.name
     }

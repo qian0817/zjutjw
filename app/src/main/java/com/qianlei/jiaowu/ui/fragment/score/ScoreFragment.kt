@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
@@ -17,9 +16,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.qianlei.jiaowu.MainApplication
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
-import com.qianlei.jiaowu.databinding.FragmentScoreBinding
 import com.qianlei.jiaowu.entity.Score
 import com.qianlei.jiaowu.utils.TermUtil
+import kotlinx.android.synthetic.main.fragment_exam.swipeRefreshLayout
+import kotlinx.android.synthetic.main.fragment_score.*
 
 /**
  * 显示成绩的fragment
@@ -28,20 +28,25 @@ import com.qianlei.jiaowu.utils.TermUtil
  */
 class ScoreFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     private lateinit var scoreViewModel: ScoreViewModel
-    private lateinit var binding: FragmentScoreBinding
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_score, container, false)
-        binding.swipeRefreshLayout.setOnRefreshListener(this)
-        binding.scoreTermChooseView.setItemSelectedListener(this)
-        binding.recycleScore.layoutManager = LinearLayoutManager(context)
-        binding.recycleScore.addItemDecoration(DividerItemDecoration(MainApplication.getInstance(), DividerItemDecoration.VERTICAL))
+        val root = inflater.inflate(R.layout.fragment_score, container, false)
         val factory = AndroidViewModelFactory(MainApplication.getInstance())
         scoreViewModel = factory.create(ScoreViewModel::class.java)
         scoreViewModel.scoreData.observe(this.viewLifecycleOwner, Observer { result: Result<List<Score>> -> updateScore(result) })
-        binding.lifecycleOwner = this
-        return binding.root
+        return root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        recycleView.layoutManager = LinearLayoutManager(context)
+        recycleView.addItemDecoration(DividerItemDecoration(MainApplication.getInstance(), DividerItemDecoration.VERTICAL))
+        swipeRefreshLayout.setOnRefreshListener(this)
+        scoreTermChooseView.setItemSelectedListener(this)
+    }
+
+
 
     /**
      * 更新成绩数据
@@ -54,15 +59,15 @@ class ScoreFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
         }
         val data = result.data
         val adapter = ScoreAdapter(data)
-        binding.recycleScore.adapter = adapter
+        recycleView.adapter = adapter
         if (!result.isSuccess()) {
             Toast.makeText(context, result.msg, Toast.LENGTH_SHORT).show()
         }
-        binding.swipeRefreshLayout.isRefreshing = false
+        swipeRefreshLayout.isRefreshing = false
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
-        scoreViewModel.changeTerm(binding.scoreTermChooseView.term)
+        scoreViewModel.changeTerm(scoreTermChooseView.term)
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -70,6 +75,6 @@ class ScoreFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     }
 
     override fun onRefresh() {
-        scoreViewModel.refreshData(binding.scoreTermChooseView.term)
+        scoreViewModel.refreshData(scoreTermChooseView.term)
     }
 }

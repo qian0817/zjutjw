@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
@@ -16,9 +15,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.qianlei.jiaowu.MainApplication
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
-import com.qianlei.jiaowu.databinding.FragmentExamBinding
 import com.qianlei.jiaowu.entity.Examination
 import com.qianlei.jiaowu.utils.TermUtil
+import kotlinx.android.synthetic.main.fragment_exam.*
 
 /**
  * 考试的fragment
@@ -27,19 +26,23 @@ import com.qianlei.jiaowu.utils.TermUtil
  */
 class ExamFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     private lateinit var examViewModel: ExamViewModel
-    private lateinit var binding: FragmentExamBinding
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_exam, container, false)
+        val root = inflater.inflate(R.layout.fragment_exam, container, false)
         val factory = AndroidViewModelFactory(MainApplication.getInstance())
         examViewModel = factory.create(ExamViewModel::class.java)
-        binding.termChooseView.setItemSelectedListener(this)
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        binding.swipeRefreshLayout.setOnRefreshListener(this)
-        examViewModel.examData.observe(this.viewLifecycleOwner, Observer { result: Result<List<Examination>> -> updateExam(result) })
-        binding.lifecycleOwner = this
-        return binding.root
+        return root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        termChooseView.setItemSelectedListener(this)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        swipeRefreshLayout.setOnRefreshListener(this)
+        examViewModel.examData.observe(this.viewLifecycleOwner, Observer { result: Result<List<Examination>> -> updateExam(result) })
+    }
+
 
     /**
      * 更新考试信息
@@ -54,16 +57,16 @@ class ExamFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
         } else {
             ExamAdapter(MainApplication.getInstance(), ArrayList())
         }
-        binding.recyclerView.adapter = adapter
+        recyclerView.adapter = adapter
         //如果不成功则弹出相关提示
         if (!result.isSuccess()) {
             Toast.makeText(context, result.msg, Toast.LENGTH_SHORT).show()
         }
-        binding.swipeRefreshLayout.isRefreshing = false
+        swipeRefreshLayout.isRefreshing = false
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
-        examViewModel.changeTerm(binding.termChooseView.term)
+        examViewModel.changeTerm(termChooseView.term)
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -71,6 +74,6 @@ class ExamFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     }
 
     override fun onRefresh() {
-        examViewModel.refreshData(binding.termChooseView.term)
+        examViewModel.refreshData(termChooseView.term)
     }
 }

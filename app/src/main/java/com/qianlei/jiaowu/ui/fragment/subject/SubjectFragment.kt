@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
@@ -18,12 +17,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.qianlei.jiaowu.MainApplication
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
-import com.qianlei.jiaowu.databinding.FragmentSubjectBinding
 import com.qianlei.jiaowu.entity.Subject
 import com.qianlei.jiaowu.ui.view.SubjectItemView
 import com.qianlei.jiaowu.utils.TermUtil
 import com.zhuangfei.timetable.model.Schedule
 import com.zhuangfei.timetable.model.ScheduleSupport
+import kotlinx.android.synthetic.main.fragment_subject.*
 
 /**
  * 课程显示的fragment
@@ -32,22 +31,26 @@ import com.zhuangfei.timetable.model.ScheduleSupport
  */
 class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     private lateinit var subjectViewModel: SubjectViewModel
-    private lateinit var binding: FragmentSubjectBinding
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_subject, container, false)
+        val root = inflater.inflate(R.layout.fragment_subject, container, false)
         val factory = AndroidViewModelFactory(MainApplication.getInstance())
         subjectViewModel = factory.create(SubjectViewModel::class.java)
         subjectViewModel.subjectData.observe(this.viewLifecycleOwner, Observer { result: Result<List<Subject>> -> updateSubject(result) })
-        binding.swipeRefreshLayout.setOnRefreshListener(this)
-        binding.subjectTermChooseView.setItemSelectedListener(this)
-        binding.weekView.curWeek(getStartTime()).hideLeftLayout().callback { week: Int -> changeWeek(week) }.showView()
-        binding.timeTableView.curWeek(getStartTime()).isShowFlaglayout(false)
+        return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        subjectTermChooseView.setItemSelectedListener(this)
+        swipeRefreshLayout.setOnRefreshListener(this)
+        weekView.curWeek(getStartTime()).hideLeftLayout().callback { week: Int -> changeWeek(week) }.showView()
+        timeTableView.curWeek(getStartTime()).isShowFlaglayout(false)
                 .callback { _: View?, scheduleList: List<Schedule>? -> showSubjectItemDialog(scheduleList) }
                 .showView()
-        binding.lifecycleOwner = this
-        return binding.root
     }
+
 
     /**
      * 显示课程具体弹窗
@@ -76,12 +79,12 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
         if (result.data == null) {
             result.data = ArrayList()
         }
-        binding.timeTableView.source(result.data).showView()
-        binding.weekView.source(result.data).showView()
+        timeTableView.source(result.data).showView()
+        weekView.source(result.data).showView()
         if (!result.isSuccess()) {
             Toast.makeText(context, result.msg, Toast.LENGTH_SHORT).show()
         }
-        binding.swipeRefreshLayout.isRefreshing = false
+        swipeRefreshLayout.isRefreshing = false
     }
 
     /**
@@ -90,9 +93,9 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
      * @param week 修改后的周
      */
     private fun changeWeek(week: Int) {
-        val cur = binding.timeTableView.curWeek()
-        binding.timeTableView.onDateBuildListener().onUpdateDate(cur, week)
-        binding.timeTableView.changeWeekOnly(week)
+        val cur = timeTableView.curWeek()
+        timeTableView.onDateBuildListener().onUpdateDate(cur, week)
+        timeTableView.changeWeekOnly(week)
     }
 
     /**
@@ -109,7 +112,7 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
-        subjectViewModel.changeTerm(binding.subjectTermChooseView.term)
+        subjectViewModel.changeTerm(subjectTermChooseView.term)
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -117,6 +120,6 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     }
 
     override fun onRefresh() {
-        subjectViewModel.refreshData(binding.subjectTermChooseView.term)
+        subjectViewModel.refreshData(subjectTermChooseView.term)
     }
 }
