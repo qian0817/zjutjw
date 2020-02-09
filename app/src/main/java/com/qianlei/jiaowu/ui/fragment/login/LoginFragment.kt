@@ -31,11 +31,17 @@ class LoginFragment : Fragment() {
 
     private lateinit var mViewModel: LoginViewModel
     private lateinit var preferences: SharedPreferences
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_login, container, false)
         val factory = AndroidViewModelFactory(MainApplication.getInstance())
         mViewModel = factory.create(LoginViewModel::class.java)
         preferences = MainApplication.getInstance().getSharedPreferences(USER, Context.MODE_PRIVATE)
+        return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         mViewModel.captcha.observe(this.viewLifecycleOwner, Observer { result: Result<Bitmap> -> changeCaptcha(result) })
         mViewModel.loginResult.observe(this.viewLifecycleOwner, Observer { result: Result<String> -> login(result) })
         loginButton.setOnClickListener {
@@ -47,7 +53,6 @@ class LoginFragment : Fragment() {
         //获取之前填写的学号和密码
         getRememberPassword()
         mViewModel.changeCaptcha()
-        return root
     }
 
     private fun getRememberPassword() {
