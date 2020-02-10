@@ -84,7 +84,7 @@ class LoginFragment : Fragment() {
             //跳转到课程界面
             val v = view
             if (v != null) {
-                val controller = Navigation.findNavController(v.rootView)
+                val controller = Navigation.findNavController(v)
                 controller.navigate(R.id.action_navigation_login_to_navigation_lesson)
             }
         } else {
