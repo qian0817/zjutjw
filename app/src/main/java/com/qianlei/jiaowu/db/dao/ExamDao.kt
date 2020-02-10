@@ -26,7 +26,7 @@ interface ExamDao {
      * @return 该学期所有的考试信息
      */
     @Query("SELECT * FROM examination WHERE year = (:year) AND term = (:term)")
-    fun selectAllExamByYearAndTerm(year: String?, term: String?): List<Examination>?
+    fun selectAllExamByYearAndTerm(year: String?, term: String?): List<Examination>
 
     /**
      * 删除所有同年同学期的考试信息
