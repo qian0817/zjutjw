@@ -25,7 +25,7 @@ class SubjectItemView(context: Context) : NestedScrollView(context) {
         subjectNameTextView!!.text = schedule.name
         subjectPlaceTextView!!.text = schedule.room
         subjectLastTextView!!.text = String.format(Locale.CHINA, "%d-%d", schedule.start, schedule.start + schedule.step - 1)
-        subjectWeekTextView!!.text = schedule.weekList.toString()
+        subjectWeekTextView!!.text = schedule.extras["week"].toString()
     }
 
     private fun findView() {

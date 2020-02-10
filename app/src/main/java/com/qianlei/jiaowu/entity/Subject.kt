@@ -71,14 +71,15 @@ class Subject : ScheduleEnable {
     var term: String? = null
 
     override fun getSchedule(): Schedule {
-        week = week!!.replace("周", "")
         last = last!!.replace("节", "")
         val tempDay = formatDay()
         val list = formatWeek()
         val tmp = last!!.split("-").toTypedArray()
         val start = Integer.valueOf(tmp[0])
         val step = Integer.valueOf(tmp[1]) - start
-        return Schedule(name, place, teacher, list, start, step + 1, tempDay, 0)
+        val schedule = Schedule(name, place, teacher, list, start, step + 1, tempDay, 0)
+        schedule.extras["week"] = week
+        return schedule
     }
 
     private fun formatDay(): Int {
@@ -100,21 +101,22 @@ class Subject : ScheduleEnable {
      * @return 上课周的列表
      */
     private fun formatWeek(): List<Int> {
+        val tempWeek = week!!.replace("周", "")
         val list: MutableList<Int> = ArrayList(16)
-        if (week!!.contains("单")) {
+        if (tempWeek.contains("单")) {
             var i = 1
             while (i <= 15) {
                 list.add(i)
                 i += 2
             }
-        } else if (week!!.contains("双")) {
+        } else if (tempWeek.contains("双")) {
             var i = 2
             while (i <= 16) {
                 list.add(i)
                 i += 2
             }
         } else {
-            val weeks = week!!.split("-").toTypedArray()
+            val weeks = tempWeek.split("-").toTypedArray()
             if (weeks.size == 1) {
                 list.add(Integer.valueOf(weeks[0]))
             } else if (weeks.size > 1) {
