@@ -43,6 +43,7 @@ class ScoreFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
         recycleView.layoutManager = LinearLayoutManager(context)
         recycleView.addItemDecoration(DividerItemDecoration(MainApplication.getInstance(), DividerItemDecoration.VERTICAL))
         swipeRefreshLayout.setOnRefreshListener(this)
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary)
         scoreTermChooseView.setItemSelectedListener(this)
     }
 

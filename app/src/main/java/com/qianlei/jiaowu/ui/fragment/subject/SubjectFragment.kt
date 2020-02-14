@@ -1,5 +1,6 @@
 package com.qianlei.jiaowu.ui.fragment.subject
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -41,12 +42,15 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
         return root
     }
 
+    @SuppressLint("InflateParams")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         subjectTermChooseView.setItemSelectedListener(this)
         swipeRefreshLayout.setOnRefreshListener(this)
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary)
         weekView.curWeek(getStartTime()).hideLeftLayout().callback { week: Int -> changeWeek(week) }.showView()
         timeTableView.curWeek(getStartTime()).isShowFlaglayout(false)
+                .callback { mInflate: LayoutInflater -> mInflate.inflate(R.layout.custom_myscrollview, null, false) }
                 .callback { _: View?, scheduleList: List<Schedule>? -> showSubjectItemDialog(scheduleList) }
                 .showView()
     }

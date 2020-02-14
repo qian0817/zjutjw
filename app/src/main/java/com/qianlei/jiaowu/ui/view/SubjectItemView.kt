@@ -6,7 +6,6 @@ import android.widget.TextView
 import androidx.core.widget.NestedScrollView
 import com.qianlei.jiaowu.R
 import com.zhuangfei.timetable.model.Schedule
-import java.util.*
 
 /**
  * @author qianlei
@@ -24,7 +23,7 @@ class SubjectItemView(context: Context) : NestedScrollView(context) {
         teacherNameTextView!!.text = schedule.teacher
         subjectNameTextView!!.text = schedule.name
         subjectPlaceTextView!!.text = schedule.room
-        subjectLastTextView!!.text = String.format(Locale.CHINA, "%d-%d", schedule.start, schedule.start + schedule.step - 1)
+        subjectLastTextView!!.text = schedule.extras["last"].toString()
         subjectWeekTextView!!.text = schedule.extras["week"].toString()
     }
 

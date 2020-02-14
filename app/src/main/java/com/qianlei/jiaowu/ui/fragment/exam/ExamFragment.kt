@@ -40,6 +40,7 @@ class ExamFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
         termChooseView.setItemSelectedListener(this)
         recyclerView.layoutManager = LinearLayoutManager(context)
         swipeRefreshLayout.setOnRefreshListener(this)
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary)
         examViewModel.examData.observe(this.viewLifecycleOwner, Observer { result: Result<List<Examination>> -> updateExam(result) })
     }
 
