@@ -1,8 +1,8 @@
 package com.qianlei.jiaowu.repository
 
+import android.content.Context
 import android.os.AsyncTask
 import androidx.lifecycle.MutableLiveData
-import com.qianlei.jiaowu.MainApplication
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.common.ResultType
 import com.qianlei.jiaowu.common.Term
@@ -15,9 +15,8 @@ import com.qianlei.jiaowu.net.StudentApi
  *
  * @author qianlei
  */
-class ScoreRepository {
-    private var context = MainApplication.getInstance()
-    private var scoreDao = MyDataBase.getDatabase(MainApplication.getInstance()).scoreDao()
+class ScoreRepository constructor(private val context: Context) {
+    private var scoreDao = MyDataBase.getDatabase(context).scoreDao()
     private val studentApi: StudentApi = StudentApi.getStudentApi(context)
     val scoreData = MutableLiveData<Result<List<Score>>>()
 

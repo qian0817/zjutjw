@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
-import com.qianlei.jiaowu.MainApplication
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.entity.Score
@@ -32,7 +31,7 @@ class ScoreFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_score, container, false)
-        val factory = AndroidViewModelFactory(MainApplication.getInstance())
+        val factory = AndroidViewModelFactory(activity!!.application)
         scoreViewModel = factory.create(ScoreViewModel::class.java)
         scoreViewModel.scoreData.observe(this.viewLifecycleOwner, Observer { result: Result<List<Score>> -> updateScore(result) })
         return root
@@ -41,7 +40,7 @@ class ScoreFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recycleView.layoutManager = LinearLayoutManager(context)
-        recycleView.addItemDecoration(DividerItemDecoration(MainApplication.getInstance(), DividerItemDecoration.VERTICAL))
+        recycleView.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         swipeRefreshLayout.setOnRefreshListener(this)
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary)
         scoreTermChooseView.setItemSelectedListener(this)
@@ -55,13 +54,11 @@ class ScoreFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
      * @param result 更新后的成绩数据
      */
     private fun updateScore(result: Result<List<Score>>) {
-        if (result.data == null) {
-            result.data = ArrayList()
-        }
-        val data = result.data
-        val adapter = ScoreAdapter(data)
-        recycleView.adapter = adapter
-        if (!result.isSuccess()) {
+        if (result.isSuccess()) {
+            val data = result.data
+            val adapter = ScoreAdapter(data)
+            recycleView.adapter = adapter
+        } else {
             Toast.makeText(context, result.msg, Toast.LENGTH_SHORT).show()
         }
         swipeRefreshLayout.isRefreshing = false

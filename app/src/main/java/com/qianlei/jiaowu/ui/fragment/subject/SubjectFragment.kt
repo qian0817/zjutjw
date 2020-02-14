@@ -1,7 +1,6 @@
 package com.qianlei.jiaowu.ui.fragment.subject
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,18 +11,18 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
-import androidx.preference.PreferenceManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.qianlei.jiaowu.MainApplication
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.entity.Subject
+import com.qianlei.jiaowu.repository.SettingRepository
 import com.qianlei.jiaowu.ui.view.SubjectItemView
 import com.qianlei.jiaowu.utils.TermUtil
 import com.zhuangfei.timetable.model.Schedule
 import com.zhuangfei.timetable.model.ScheduleSupport
 import kotlinx.android.synthetic.main.fragment_subject.*
+
 
 /**
  * 课程显示的fragment
@@ -36,7 +35,7 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_subject, container, false)
-        val factory = AndroidViewModelFactory(MainApplication.getInstance())
+        val factory = AndroidViewModelFactory(activity!!.application)
         subjectViewModel = factory.create(SubjectViewModel::class.java)
         subjectViewModel.subjectData.observe(this.viewLifecycleOwner, Observer { result: Result<List<Subject>> -> updateSubject(result) })
         return root
@@ -65,14 +64,13 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
         if (scheduleList == null || scheduleList.isEmpty()) {
             return
         }
-        val c = context
-        if (c != null) {
-            val dialog = BottomSheetDialog(c)
-            val view: View = SubjectItemView(c, scheduleList[0])
-            dialog.setContentView(view)
-            dialog.show()
-        }
+        val c = context ?: return
+        val dialog = BottomSheetDialog(c)
+        val view: View = SubjectItemView(c, scheduleList[0])
+        dialog.setContentView(view)
+        dialog.show()
     }
+
 
     /**
      * 修改课程
@@ -108,11 +106,9 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
      * @return 开始时间
      */
     private fun getStartTime(): Int {
-        val startTime: Int
-        val context: Context = MainApplication.getInstance()
-        val setStartTime = PreferenceManager.getDefaultSharedPreferences(context).getString("start_day", "2020年2月16日")
-        startTime = ScheduleSupport.timeTransfrom("$setStartTime 00:00:00")
-        return startTime
+        val c = context ?: return 1
+        val setStartTime = SettingRepository.getInstance(c).getStartDayFormat()
+        return ScheduleSupport.timeTransfrom("$setStartTime 00:00:00")
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View, position: Int, id: Long) {

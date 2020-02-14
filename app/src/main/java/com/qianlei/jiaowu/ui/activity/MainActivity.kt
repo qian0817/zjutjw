@@ -38,7 +38,8 @@ class MainActivity : AppCompatActivity() {
         //当学生信息修改时，更新学生数据
         StudentRepository.studentData.observe(this, Observer { result: Result<Student> -> updateStudentInformation(result) })
         //先尝试获取学生信息
-        val task = StudentRepository.GetStudentInformationTask()
+        val studentRepository = StudentRepository(this)
+        val task = StudentRepository.GetStudentInformationTask(studentRepository)
         task.execute()
     }
 

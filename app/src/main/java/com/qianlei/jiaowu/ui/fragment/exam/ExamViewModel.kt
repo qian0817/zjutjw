@@ -11,7 +11,7 @@ import com.qianlei.jiaowu.repository.ExamRepository
  * @author qianlei
  */
 class ExamViewModel(app: Application) : AndroidViewModel(app) {
-    private val examRepository = ExamRepository()
+    private val examRepository = ExamRepository(app)
     val examData = examRepository.examData
 
     /**

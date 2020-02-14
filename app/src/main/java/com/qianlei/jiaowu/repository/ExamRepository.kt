@@ -1,8 +1,8 @@
 package com.qianlei.jiaowu.repository
 
+import android.content.Context
 import android.os.AsyncTask
 import androidx.lifecycle.MutableLiveData
-import com.qianlei.jiaowu.MainApplication
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.common.ResultType
 import com.qianlei.jiaowu.common.Term
@@ -16,16 +16,16 @@ import com.qianlei.jiaowu.net.StudentApi
  *
  * @author qianlei
  */
-class ExamRepository {
+class ExamRepository constructor(private val context: Context) {
     val examData = MutableLiveData<Result<List<Examination>>>()
-    private val examDao: ExamDao = MyDataBase.getDatabase(MainApplication.getInstance()).examDao()
-    private val studentApi: StudentApi = StudentApi.getStudentApi(MainApplication.getInstance())
+    private val examDao: ExamDao = MyDataBase.getDatabase(context).examDao()
+    private val studentApi: StudentApi = StudentApi.getStudentApi(context)
 
     private fun getDataFromNet(term: Term): Result<List<Examination>> {
         val result = studentApi.getStudentExamInformation(term.year, term.term)
         if (result.isSuccess()) {
             //向数据库中添加数据
-            val examDao: ExamDao = MyDataBase.getDatabase(MainApplication.getInstance()).examDao()
+            val examDao: ExamDao = MyDataBase.getDatabase(context).examDao()
             val examinationList = result.data
             examDao.deleteAllByYearAndTerm(term.year, term.term)
             if (examinationList != null) {
@@ -39,7 +39,7 @@ class ExamRepository {
 
     private fun getDataFromDatabase(term: Term): Result<List<Examination>> {
         val examinationList = examDao.selectAllExamByYearAndTerm(term.year, term.term)
-        return if (examinationList != null && examinationList.isNotEmpty()) {
+        return if (examinationList.isNotEmpty()) {
             Result(ResultType.OK, "从数据获取成功", examinationList)
         } else {
             Result(ResultType.OTHER, "数据库中无数据")

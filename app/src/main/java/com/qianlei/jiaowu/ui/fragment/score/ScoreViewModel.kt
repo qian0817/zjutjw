@@ -9,7 +9,7 @@ import com.qianlei.jiaowu.repository.ScoreRepository
  * @author qianlei
  */
 class ScoreViewModel(app: Application) : AndroidViewModel(app) {
-    private val scoreRepository = ScoreRepository()
+    private val scoreRepository = ScoreRepository(app)
     val scoreData = scoreRepository.scoreData
 
     /**

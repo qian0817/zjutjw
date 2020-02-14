@@ -20,7 +20,7 @@ import java.util.*
  *
  * @author qianlei
  */
-class ExamAdapter internal constructor(context: Context, private var examinationList: List<Examination>) : RecyclerView.Adapter<ExamViewHolder>() {
+class ExamAdapter internal constructor(context: Context, private val examinationList: List<Examination>?) : RecyclerView.Adapter<ExamViewHolder>() {
     private val context: Context = context.applicationContext
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExamViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.exam_item, parent, false)
@@ -28,6 +28,9 @@ class ExamAdapter internal constructor(context: Context, private var examination
     }
 
     override fun onBindViewHolder(holder: ExamViewHolder, position: Int) {
+        if (examinationList == null) {
+            return
+        }
         holder.examNameView.text = examinationList[position].name
         holder.examTimeView.text = examinationList[position].time
         holder.examPlaceView.text = examinationList[position].place
@@ -36,6 +39,9 @@ class ExamAdapter internal constructor(context: Context, private var examination
     }
 
     private fun startCalender(position: Int) {
+        if (examinationList == null) {
+            return
+        }
         try {
             examinationList[position]
             val time = examinationList[position].time
@@ -69,6 +75,9 @@ class ExamAdapter internal constructor(context: Context, private var examination
     }
 
     override fun getItemCount(): Int {
+        if (examinationList == null) {
+            return 0
+        }
         return examinationList.size
     }
 

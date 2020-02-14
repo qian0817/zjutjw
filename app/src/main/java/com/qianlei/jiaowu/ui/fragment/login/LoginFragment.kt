@@ -1,7 +1,6 @@
 package com.qianlei.jiaowu.ui.fragment.login
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.navigation.Navigation
-import com.qianlei.jiaowu.MainApplication
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.repository.StudentRepository
@@ -30,13 +28,11 @@ class LoginFragment : Fragment() {
     }
 
     private lateinit var mViewModel: LoginViewModel
-    private lateinit var preferences: SharedPreferences
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_login, container, false)
-        val factory = AndroidViewModelFactory(MainApplication.getInstance())
+        val factory = AndroidViewModelFactory(activity!!.application)
         mViewModel = factory.create(LoginViewModel::class.java)
-        preferences = MainApplication.getInstance().getSharedPreferences(USER, Context.MODE_PRIVATE)
         return root
     }
 
@@ -56,6 +52,8 @@ class LoginFragment : Fragment() {
     }
 
     private fun getRememberPassword() {
+        val c = context ?: return
+        val preferences = c.getSharedPreferences(USER, Context.MODE_PRIVATE)
         val studentId = preferences.getString(ID, "")
         val password = preferences.getString(PASSWORD, "")
         passwordEditText.setText(password)
@@ -74,19 +72,19 @@ class LoginFragment : Fragment() {
         val studentId = studentIdEditText.text.toString()
         val password = passwordEditText.text.toString()
         if (result.isSuccess()) { //保存用户名 密码
+            val c = context ?: return
+            val preferences = c.getSharedPreferences(USER, Context.MODE_PRIVATE)
             val editor = preferences.edit()
             editor.putString(ID, studentId)
             editor.putString(PASSWORD, password)
             editor.apply()
             //获取登录学生的信息
-            val task = StudentRepository.GetStudentInformationTask()
+            val task = StudentRepository.GetStudentInformationTask(StudentRepository(c))
             task.execute()
             //跳转到课程界面
-            val v = view
-            if (v != null) {
-                val controller = Navigation.findNavController(v)
-                controller.navigate(R.id.action_navigation_login_to_navigation_lesson)
-            }
+            val v = view ?: return
+            val controller = Navigation.findNavController(v)
+            controller.navigate(R.id.action_navigation_login_to_navigation_lesson)
         } else {
             mViewModel.changeCaptcha()
             captchaText.setText("")

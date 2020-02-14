@@ -1,8 +1,8 @@
 package com.qianlei.jiaowu.repository
 
+import android.content.Context
 import android.os.AsyncTask
 import androidx.lifecycle.MutableLiveData
-import com.qianlei.jiaowu.MainApplication
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.common.ResultType
 import com.qianlei.jiaowu.common.Term
@@ -16,8 +16,7 @@ import com.qianlei.jiaowu.net.StudentApi
  *
  * @author qianlei
  */
-class SubjectRepository {
-    private val context = MainApplication.getInstance()
+class SubjectRepository constructor(context: Context) {
     private var subjectDao: SubjectDao = MyDataBase.getDatabase(context).subjectDao()
     private val studentApi: StudentApi = StudentApi.getStudentApi(context)
     val subjectLiveData = MutableLiveData<Result<List<Subject>>>()

@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 import com.alibaba.fastjson.annotation.JSONField
 import com.zhuangfei.timetable.model.Schedule
 import com.zhuangfei.timetable.model.ScheduleEnable
-import java.util.*
 
 /**
  * 课程的实体类
@@ -73,9 +72,14 @@ class Subject : ScheduleEnable {
     override fun getSchedule(): Schedule {
         val tempDay = formatDay()
         val list = formatWeek()
-        val tmp = last!!.replace("节", "").split("-").toTypedArray()
-        val start = Integer.valueOf(tmp[0])
-        val step = Integer.valueOf(tmp[1]) - start
+        var start = 0
+        var step = 0
+        val tempLast = last
+        if (tempLast != null) {
+            val tmp = tempLast.replace("节", "").split("-")
+            start = Integer.valueOf(tmp[0])
+            step = Integer.valueOf(tmp[1]) - start
+        }
         val schedule = Schedule(name, place, teacher, list, start, step + 1, tempDay, 0)
         schedule.extras["week"] = week
         schedule.extras["last"] = last
@@ -101,8 +105,8 @@ class Subject : ScheduleEnable {
      * @return 上课周的列表
      */
     private fun formatWeek(): List<Int> {
-
-        val tempWeek = week!!.replace("周", "")
+        var tempWeek = week ?: return ArrayList()
+        tempWeek = tempWeek.replace("周", "")
         val list: MutableList<Int> = ArrayList(16)
         if (tempWeek.contains("单")) {
             var i = 1

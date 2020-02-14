@@ -9,7 +9,7 @@ import com.qianlei.jiaowu.repository.SubjectRepository
  * @author qianlei
  */
 class SubjectViewModel(app: Application) : AndroidViewModel(app) {
-    private val subjectRepository = SubjectRepository()
+    private val subjectRepository = SubjectRepository(app)
     val subjectData = subjectRepository.subjectLiveData
 
     /**

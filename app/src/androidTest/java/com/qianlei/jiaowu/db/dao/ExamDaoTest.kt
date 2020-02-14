@@ -45,9 +45,7 @@ class ExamDaoTest {
         examDao!!.deleteAllByYearAndTerm("2019", "3")
         var list: List<Examination?> = examDao!!.selectAllExamByYearAndTerm("2019", "3")
         Assert.assertEquals(list.size.toLong(), 0)
-        println(list)
         list = examDao!!.selectAllExamByYearAndTerm("2019", "12")
-        println(list)
         Assert.assertEquals(list.size.toLong(), 1)
         //测试deleteAll
         examDao!!.deleteAll()

@@ -17,7 +17,7 @@ class SubjectItemView(context: Context) : NestedScrollView(context) {
     private var subjectLastTextView: TextView? = null
     private var subjectWeekTextView: TextView? = null
 
-    constructor(context: Context?, schedule: Schedule) : this(context!!) {
+    constructor(context: Context, schedule: Schedule) : this(context) {
         LayoutInflater.from(context).inflate(R.layout.subject_item_dialog, this)
         findView()
         teacherNameTextView!!.text = schedule.teacher

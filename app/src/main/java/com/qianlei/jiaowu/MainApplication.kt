@@ -13,19 +13,11 @@ import kotlin.system.exitProcess
 /**
  * @author qianlei
  */
+@Suppress("unused")
 class MainApplication : Application() {
-    companion object {
-        private var application: MainApplication? = null
-
-        fun getInstance(): MainApplication {
-            return application!!
-        }
-    }
-
     override fun onCreate() {
         super.onCreate()
         Thread.setDefaultUncaughtExceptionHandler(CrashExceptionHandler())
-        application = this
     }
 
     /**
@@ -34,9 +26,9 @@ class MainApplication : Application() {
     internal inner class CrashExceptionHandler : Thread.UncaughtExceptionHandler {
         override fun uncaughtException(t: Thread, e: Throwable) {
             //记录异常信息
-            val cacheDir = externalCacheDir
-            if (cacheDir != null) {
-                val fileName = cacheDir.absolutePath + File.separator + "error.log"
+            val dir = externalCacheDir
+            if (dir != null) {
+                val fileName = dir.absolutePath + File.separator + "error.log"
                 try {
                     PrintStream(FileOutputStream(fileName, true)).use { printStream ->
                         val date = SimpleDateFormat.getDateTimeInstance().format(Date())

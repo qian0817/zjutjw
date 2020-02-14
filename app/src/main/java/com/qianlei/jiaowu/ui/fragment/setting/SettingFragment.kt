@@ -1,16 +1,21 @@
 package com.qianlei.jiaowu.ui.fragment.setting
 
+import android.app.DatePickerDialog
+import android.os.Build
 import android.os.Bundle
+import android.widget.DatePicker
 import android.widget.Toast
-import androidx.preference.EditTextPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.qianlei.jiaowu.MainApplication
+import com.afollestad.date.dayOfMonth
+import com.afollestad.date.month
+import com.afollestad.date.year
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.datetime.datePicker
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.db.MyDataBase
+import com.qianlei.jiaowu.repository.SettingRepository
 import java.io.File
-import java.text.ParseException
-import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -19,49 +24,82 @@ import java.util.*
 class SettingFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.fragement_setting, rootKey)
-        val editTextPreference = findPreference<EditTextPreference>("start_day")
-        if (editTextPreference != null) {
-            editTextPreference.summary = editTextPreference.text
-            //对输入的进行检测
-            editTextPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _: Preference?, newValue: Any? ->
-                if (newValue is String) {
-                    val dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM, Locale.CHINA)
-                    try {
-                        dateFormat.parse(newValue)
-                        editTextPreference.summary = newValue
-                        return@OnPreferenceChangeListener true
-                    } catch (e: ParseException) {
-                        Toast.makeText(context, "日期填写错误,格式为yyyy年MM月dd日", Toast.LENGTH_SHORT).show()
-                        return@OnPreferenceChangeListener false
+        val startDayPreference = findPreference<Preference>(getString(R.string.start_day))
+        if (startDayPreference != null) {
+            setStartDaySummary()
+            startDayPreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                return@OnPreferenceClickListener changeStartDay()
+            }
+        }
+        val clearCachePreference = findPreference<Preference>(getString(R.string.clear_log))
+        if (clearCachePreference != null) {
+            clearCachePreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                return@OnPreferenceClickListener deleteCache()
+            }
+        }
+    }
+
+    /**
+     * 设置开始时间的简介部分
+     */
+    private fun setStartDaySummary() {
+        val c = context ?: return
+        val startDayPreference = findPreference<Preference>(getString(R.string.start_day)) ?: return
+        startDayPreference.summary = SettingRepository.getInstance(c).getStartDayFormat()
+    }
+
+    /**
+     * 修改开始时间
+     */
+    private fun changeStartDay(): Boolean {
+        val c = context ?: return false
+        val date = SettingRepository.getInstance(c).getStartDay()
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val datePickerDialog = DatePickerDialog(c)
+            datePickerDialog.datePicker.init(calendar.year, calendar.month, calendar.dayOfMonth)
+            { _: DatePicker, year: Int, month: Int, day: Int ->
+                SettingRepository.getInstance(c).setStartDay(year, month, day)
+                setStartDaySummary()
+            }
+            datePickerDialog.show()
+        } else {
+            MaterialDialog(c).show {
+                datePicker(currentDate = calendar) { _, date ->
+                    SettingRepository.getInstance(c).setStartDay(date.year, date.month, date.dayOfMonth)
+                    setStartDaySummary()
+                }
+            }
+        }
+
+        return true
+    }
+
+    /**
+     * 删除缓存
+     */
+    private fun deleteCache(): Boolean {
+        val c = context ?: return false
+        Toast.makeText(c, "清除缓存成功", Toast.LENGTH_SHORT).show()
+        Thread(Runnable {
+            //删除错误记录文件
+            val file: File? = c.externalCacheDir
+            if (file != null && file.exists() && file.isDirectory) {
+                val files = file.listFiles()
+                if (files != null) {
+                    for (f in files) {
+                        f.delete()
                     }
                 }
-                return@OnPreferenceChangeListener true
             }
-        }
-        val preference = findPreference<Preference>("clear_log")
-        if (preference != null) {
-            //删除缓存文件
-            preference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                Toast.makeText(MainApplication.getInstance(), "清除缓存成功", Toast.LENGTH_SHORT).show()
-                Thread(Runnable {
-                    //删除错误记录文件
-                    val file: File? = MainApplication.getInstance().externalCacheDir
-                    if (file != null && file.exists() && file.isDirectory) {
-                        val files = file.listFiles()
-                        if (files != null) {
-                            for (f in files) {
-                                f.delete()
-                            }
-                        }
-                    }
-                    //从数据库中删除所有的数据
-                    val dataBase: MyDataBase = MyDataBase.getDatabase(MainApplication.getInstance())
-                    dataBase.examDao().deleteAll()
-                    dataBase.scoreDao().deleteAll()
-                    dataBase.subjectDao().deleteAll()
-                }).start()
-                return@OnPreferenceClickListener true
-            }
-        }
+            //从数据库中删除所有的数据
+            val dataBase: MyDataBase = MyDataBase.getDatabase(context)
+            dataBase.examDao().deleteAll()
+            dataBase.scoreDao().deleteAll()
+            dataBase.subjectDao().deleteAll()
+        }).start()
+        return true
     }
 }

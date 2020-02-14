@@ -12,7 +12,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
-import com.qianlei.jiaowu.MainApplication
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.entity.Examination
@@ -30,7 +29,7 @@ class ExamFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_exam, container, false)
-        val factory = AndroidViewModelFactory(MainApplication.getInstance())
+        val factory = AndroidViewModelFactory(activity!!.application)
         examViewModel = factory.create(ExamViewModel::class.java)
         return root
     }
@@ -51,16 +50,14 @@ class ExamFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
      * @param result 考试信息内容
      */
     private fun updateExam(result: Result<List<Examination>>) {
-        //设置数据
-        val data = result.data
-        val adapter = if (data != null) {
-            ExamAdapter(MainApplication.getInstance(), data)
-        } else {
-            ExamAdapter(MainApplication.getInstance(), ArrayList())
-        }
-        recyclerView.adapter = adapter
+        val c = context ?: return
         //如果不成功则弹出相关提示
-        if (!result.isSuccess()) {
+        if (result.isSuccess()) {
+            //设置数据
+            val data = result.data
+            val adapter = ExamAdapter(c, data)
+            recyclerView.adapter = adapter
+        } else {
             Toast.makeText(context, result.msg, Toast.LENGTH_SHORT).show()
         }
         swipeRefreshLayout.isRefreshing = false
