@@ -29,7 +29,7 @@ android {
 }
 
 dependencies {
-    def room_version = "2.2.3"
+    def room_version = "2.2.4"
     def material_dialogs_version = "3.2.1"
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
@@ -52,5 +52,4 @@ dependencies {
     implementation 'com.github.zfman:TimetableView:2.0.7'
     implementation "com.afollestad.material-dialogs:datetime:$material_dialogs_version"
     implementation "com.afollestad.material-dialogs:core:$material_dialogs_version"
-    implementation 'org.mnode.ical4j:ical4j:3.0.14'
 }
