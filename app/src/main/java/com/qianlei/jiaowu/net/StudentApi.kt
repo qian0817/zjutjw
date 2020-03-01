@@ -76,7 +76,7 @@ class StudentApi private constructor(private val context: Context) {
         var tempPassword = password
         return try {
             tempPassword = getRsaPublicKey(tempPassword)
-            val connection = Jsoup.connect(prefix() + "/jwglxt/xtgl/login_slogin.html")
+            val connection = Jsoup.connect(prefix() + "/jwglxt/xtgl/login_slogin.html?time=" + System.currentTimeMillis())
             connection.header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
             connection.data("csrftoken", csrftoken)
             connection.data("yhm", studentId)
@@ -106,7 +106,7 @@ class StudentApi private constructor(private val context: Context) {
      */
     fun getCaptchaImage(): Result<Bitmap> {
         try {
-            val connection = Jsoup.connect(prefix() + "/jwglxt/xtgl/login_slogin.html")
+            val connection = Jsoup.connect(prefix() + "/jwglxt/xtgl/login_slogin.html?time" + System.currentTimeMillis())
             val response = connection.execute()
             //保存cookie
             tempCookies = response.cookies()

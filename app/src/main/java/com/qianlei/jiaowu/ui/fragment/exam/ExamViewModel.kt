@@ -2,6 +2,8 @@ package com.qianlei.jiaowu.ui.fragment.exam
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.qianlei.jiaowu.common.Result
+import com.qianlei.jiaowu.common.ResultType
 import com.qianlei.jiaowu.common.Term
 import com.qianlei.jiaowu.repository.ExamRepository
 
@@ -30,6 +32,7 @@ class ExamViewModel(app: Application) : AndroidViewModel(app) {
      * @param term 修改后的学期
      */
     fun changeTerm(term: Term) {
+        examData.value = Result(ResultType.OK, "", ArrayList())
         val task = ExamRepository.GetExamDataUseCacheTask(examRepository)
         task.execute(term)
     }

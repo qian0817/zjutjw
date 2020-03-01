@@ -2,6 +2,8 @@ package com.qianlei.jiaowu.ui.fragment.subject
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.qianlei.jiaowu.common.Result
+import com.qianlei.jiaowu.common.ResultType
 import com.qianlei.jiaowu.common.Term
 import com.qianlei.jiaowu.repository.SubjectRepository
 
@@ -27,6 +29,7 @@ class SubjectViewModel(app: Application) : AndroidViewModel(app) {
      * @param term 修改后学期
      */
     fun changeTerm(term: Term) {
+        subjectData.value = Result(ResultType.OK, "", ArrayList())
         val task = SubjectRepository.GetSubjectDataUseCache(subjectRepository)
         task.execute(term)
     }

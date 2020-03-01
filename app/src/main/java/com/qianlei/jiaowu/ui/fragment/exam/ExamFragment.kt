@@ -51,9 +51,7 @@ class ExamFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
      */
     private fun updateExam(result: Result<List<Examination>>) {
         val c = context ?: return
-        //如果不成功则弹出相关提示
         if (result.isSuccess()) {
-            //设置数据
             val data = result.data
             val adapter = ExamAdapter(c, data)
             recyclerView.adapter = adapter
@@ -64,10 +62,12 @@ class ExamFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
+        swipeRefreshLayout.isRefreshing = true
         examViewModel.changeTerm(termChooseView.term)
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
+        swipeRefreshLayout.isRefreshing = true
         examViewModel.changeTerm(TermUtil.getNowTerm())
     }
 

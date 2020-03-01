@@ -59,8 +59,8 @@ class SettingFragment : PreferenceFragmentCompat() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val datePickerDialog = DatePickerDialog(c)
-            datePickerDialog.datePicker.init(calendar.year, calendar.month, calendar.dayOfMonth)
-            { _: DatePicker, year: Int, month: Int, day: Int ->
+            datePickerDialog.updateDate(calendar.year, calendar.month, calendar.dayOfMonth)
+            datePickerDialog.setOnDateSetListener { _: DatePicker, year: Int, month: Int, day: Int ->
                 SettingRepository.getInstance(c).setStartDay(year, month, day)
                 setStartDaySummary()
             }

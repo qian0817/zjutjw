@@ -65,10 +65,12 @@ class ScoreFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
+        swipeRefreshLayout.isRefreshing = true
         scoreViewModel.changeTerm(scoreTermChooseView.term)
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
+        swipeRefreshLayout.isRefreshing = true
         scoreViewModel.changeTerm(TermUtil.getNowTerm())
     }
 

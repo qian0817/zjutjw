@@ -78,12 +78,10 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
      * @param result 课程内容
      */
     private fun updateSubject(result: Result<List<Subject>>) {
-        if (result.data == null) {
-            result.data = ArrayList()
-        }
-        timeTableView.source(result.data).showView()
-        weekView.source(result.data).showView()
-        if (!result.isSuccess()) {
+        if (result.isSuccess()) {
+            timeTableView.source(result.data).showView()
+            weekView.source(result.data).showView()
+        } else {
             Toast.makeText(context, result.msg, Toast.LENGTH_SHORT).show()
         }
         swipeRefreshLayout.isRefreshing = false
@@ -112,10 +110,12 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
+        swipeRefreshLayout.isRefreshing = true
         subjectViewModel.changeTerm(subjectTermChooseView.term)
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
+        swipeRefreshLayout.isRefreshing = true
         subjectViewModel.changeTerm(TermUtil.getNowTerm())
     }
 

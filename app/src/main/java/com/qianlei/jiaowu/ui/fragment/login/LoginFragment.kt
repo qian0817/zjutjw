@@ -46,6 +46,7 @@ class LoginFragment : Fragment() {
             val captcha = captchaText.text.toString()
             mViewModel.login(studentId, password, captcha)
         }
+        captchaImage.setOnClickListener { mViewModel.changeCaptcha() }
         //获取之前填写的学号和密码
         getRememberPassword()
         mViewModel.changeCaptcha()

@@ -2,6 +2,8 @@ package com.qianlei.jiaowu.ui.fragment.score
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.qianlei.jiaowu.common.Result
+import com.qianlei.jiaowu.common.ResultType
 import com.qianlei.jiaowu.common.Term
 import com.qianlei.jiaowu.repository.ScoreRepository
 
@@ -29,6 +31,7 @@ class ScoreViewModel(app: Application) : AndroidViewModel(app) {
      * @param term 学期
      */
     fun changeTerm(term: Term) {
+        scoreData.value = Result(ResultType.OK, "", ArrayList())
         val task = ScoreRepository.GetScoreDataUseCacheTask(scoreRepository)
         task.execute(term)
     }
