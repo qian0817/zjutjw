@@ -3,7 +3,7 @@ package com.qianlei.jiaowu.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.alibaba.fastjson.annotation.JSONField
+import com.google.gson.annotations.SerializedName
 
 /**
  * 考试信息的实体类
@@ -18,25 +18,25 @@ class Examination {
     /**
      * 考试名称
      */
-    @JSONField(name = "kcmc")
+    @SerializedName(value = "kcmc")
     @ColumnInfo(name = "name")
     var name: String? = null
     /**
      * 考试地点
      */
-    @JSONField(name = "cdmc")
+    @SerializedName(value = "cdmc")
     @ColumnInfo(name = "place")
     var place: String? = null
     /**
      * 考试时间
      */
-    @JSONField(name = "kssj")
+    @SerializedName(value = "kssj")
     @ColumnInfo(name = "time")
     var time: String? = null
     /**
      * 座位号
      */
-    @JSONField(name = "zwh")
+    @SerializedName(value = "zwh")
     @ColumnInfo(name = "seat_id")
     var seatId: String? = null
     /**

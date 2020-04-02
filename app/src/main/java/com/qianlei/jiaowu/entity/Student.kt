@@ -1,6 +1,6 @@
 package com.qianlei.jiaowu.entity
 
-import com.alibaba.fastjson.annotation.JSONField
+import com.google.gson.annotations.SerializedName
 
 /**
  * 学生信息的实体类
@@ -8,8 +8,9 @@ import com.alibaba.fastjson.annotation.JSONField
  * @author qianlei
  */
 class Student {
-    @JSONField(name = "xh_id")
+    @SerializedName(value = "xh_id")
     var studentId: String? = null
-    @JSONField(name = "xm")
+
+    @SerializedName(value = "xm")
     var name: String? = null
 }

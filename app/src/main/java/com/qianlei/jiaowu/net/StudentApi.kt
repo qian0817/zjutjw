@@ -5,9 +5,10 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.preference.PreferenceManager
-import com.alibaba.fastjson.JSON
-import com.alibaba.fastjson.JSONException
-import com.alibaba.fastjson.JSONObject
+import com.google.gson.Gson
+import com.google.gson.JsonParser
+import com.google.gson.JsonSyntaxException
+import com.google.gson.reflect.TypeToken
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.common.ResultType
 import com.qianlei.jiaowu.entity.Examination
@@ -27,16 +28,20 @@ import java.util.*
  * @author qianlei
  */
 class StudentApi private constructor(private val context: Context) {
+    private val gson = Gson()
+
     /**
      * 临时的cookies 登录之前使用
      */
     @Volatile
     private var tempCookies: Map<String, String>? = null
+
     /**
      * 在登录之后使用的cookies
      */
     @Volatile
     private var lastLoginCookies: Map<String, String>? = null
+
     @Volatile
     private var csrftoken: String? = null
 
@@ -56,9 +61,9 @@ class StudentApi private constructor(private val context: Context) {
         var retPassword = password
         val connection = Jsoup.connect(prefix() + "/jwglxt/xtgl/login_getPublicKey.html")
         val response = connection.cookies(tempCookies).ignoreContentType(true).execute()
-        val jsonObject = JSON.parseObject(response.body())
-        val modulus = jsonObject.getString("modulus")
-        val exponent = jsonObject.getString("exponent")
+        val jsonObject = JsonParser.parseString(response.body()).asJsonObject
+        val modulus = jsonObject.get("modulus").asString
+        val exponent = jsonObject.get("exponent").asString
         retPassword = RSAEncoder.rsaEncrypt(retPassword, Base64.b64toHex(modulus), Base64.b64toHex(exponent))
         retPassword = Base64.hex2b64(retPassword)
         return retPassword
@@ -141,9 +146,9 @@ class StudentApi private constructor(private val context: Context) {
         } else try {
             val connection = Jsoup.connect(prefix() + "/jwglxt/xsxxxggl/xsxxwh_cxCkDgxsxx.html?gnmkdm=N100801")
             val response = connection.cookies(lastLoginCookies).method(Connection.Method.GET).ignoreContentType(true).execute()
-            val student = JSON.parseObject(response.body(), Student::class.java)
+            val student = gson.fromJson(response.body(), Student::class.java)
             Result(ResultType.OK, "获取信息成功", student)
-        } catch (e: JSONException) {
+        } catch (e: JsonSyntaxException) {
             Result<Student>(ResultType.NEED_LOGIN, "请重新登陆")
         } catch (e: IOException) {
             Result<Student>(ResultType.IO, "请检查网络连接")
@@ -167,19 +172,15 @@ class StudentApi private constructor(private val context: Context) {
             connection.data("xnm", year)
             connection.data("xqm", term)
             val response: Connection.Response
-            response = connection.cookies(lastLoginCookies).method(Connection.Method.POST).ignoreContentType(true).execute()
-            val body = JSON.parseObject(response.body())
-            val timeTable = JSON.parseArray(body.getString("kbList"))
-            val subjectList: MutableList<Subject> = ArrayList()
-            for (o in timeTable) {
-                val s = (o as JSONObject).toJSONString()
-                val subject = JSON.parseObject(s, Subject::class.java)
-                subjectList.add(subject)
-            }
+            response = connection.cookies(lastLoginCookies)
+                    .method(Connection.Method.POST).ignoreContentType(true).execute()
+            val body = JsonParser.parseString(response.body()).asJsonObject
+            val subjectList = gson.fromJson<List<Subject>>(body.get("kbList")
+                    , object : TypeToken<List<Subject>>() {}.type)
             Result<List<Subject>>(ResultType.OK, "获取成功", subjectList)
         } catch (e: IOException) {
             Result<List<Subject>>(ResultType.IO, "请检查网络连接")
-        } catch (e: JSONException) {
+        } catch (e: JsonSyntaxException) {
             Result<List<Subject>>(ResultType.NEED_LOGIN, "请重新登陆")
         } catch (e: Exception) {
             Result<List<Subject>>(ResultType.OTHER, "其他错误" + e.message)
@@ -203,18 +204,13 @@ class StudentApi private constructor(private val context: Context) {
             val connection = Jsoup.connect(prefix() + "/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005")
             val response = connection.cookies(lastLoginCookies).method(Connection.Method.POST)
                     .data(parameter).ignoreContentType(true).execute()
-            val jsonObject = JSON.parseObject(response.body())
-            val gradeTable = JSON.parseArray(jsonObject.getString("items"))
-            val scoreList: MutableList<Score> = ArrayList()
-            for (o in gradeTable) {
-                val lesson = o as JSONObject
-                val ans = JSON.parseObject(lesson.toJSONString(), Score::class.java)
-                scoreList.add(ans)
-            }
+            val jsonObject = JsonParser.parseString(response.body()).asJsonObject
+            val scoreList = gson.fromJson<List<Score>>(jsonObject.get("items")
+                    , object : TypeToken<List<Score>>() {}.type)
             Result<List<Score>>(ResultType.OK, "获取成功", scoreList)
         } catch (e: IOException) {
             Result<List<Score>>(ResultType.IO, "请检查网络连接")
-        } catch (e: JSONException) {
+        } catch (e: JsonSyntaxException) {
             Result<List<Score>>(ResultType.NEED_LOGIN, "请重新登陆")
         } catch (e: Exception) {
             Result<List<Score>>(ResultType.OTHER, "其他错误" + e.message)
@@ -229,22 +225,16 @@ class StudentApi private constructor(private val context: Context) {
             parameter["xnm"] = year
             parameter["xqm"] = term
             val connection = Jsoup.connect(prefix() + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105")
-            val response = connection.cookies(lastLoginCookies).method(Connection.Method.POST)
+            val response = connection.cookies(lastLoginCookies)
+                    .method(Connection.Method.POST)
                     .data(parameter).ignoreContentType(true).execute()
-            val jsonObject = JSON.parseObject(response.body())
-            val examTable = JSON.parseArray(jsonObject.getString("items"))
-            val examinationList: MutableList<Examination> = ArrayList()
-            for (o in examTable) {
-                val exam = o as JSONObject
-                val ans = JSON.parseObject(exam.toJSONString(), Examination::class.java)
-                ans.year = year
-                ans.term = term
-                examinationList.add(ans)
-            }
+            val jsonObject = JsonParser.parseString(response.body()).asJsonObject
+            val examinationList = gson.fromJson<List<Examination>>(jsonObject.get("items")
+                    , object : TypeToken<List<Examination>>() {}.type)
             Result<List<Examination>>(ResultType.OK, "获取成功", examinationList)
         } catch (e: IOException) {
             Result<List<Examination>>(ResultType.IO, "请检查网络连接")
-        } catch (e: JSONException) {
+        } catch (e: JsonSyntaxException) {
             Result<List<Examination>>(ResultType.NEED_LOGIN, "请重新登陆")
         } catch (e: Exception) {
             Result<List<Examination>>(ResultType.OTHER, "其他错误")
@@ -258,15 +248,15 @@ class StudentApi private constructor(private val context: Context) {
     private fun readCookies() {
         val sharedPreferences = context.getSharedPreferences("cookies", Context.MODE_PRIVATE)
         val json = sharedPreferences.getString("cookies", "")
-        val map = JSON.parseObject<Map<*, *>>(json, MutableMap::class.java) ?: return
-        lastLoginCookies = map as Map<String, String>
+        val map = gson.fromJson<Map<String, String>>(json, object : TypeToken<Map<String, String>>() {}.type)
+        lastLoginCookies = map
     }
 
     /**
      * 保存cookies
      */
     fun saveCookies() {
-        val json = JSON.toJSON(lastLoginCookies)
+        val json = gson.toJson(lastLoginCookies)
         if (json != null) {
             val sharedPreferences = context.getSharedPreferences("cookies", Context.MODE_PRIVATE)
             val editor = sharedPreferences.edit()

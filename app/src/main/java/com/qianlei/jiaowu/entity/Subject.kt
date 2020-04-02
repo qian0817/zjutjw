@@ -3,7 +3,7 @@ package com.qianlei.jiaowu.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.alibaba.fastjson.annotation.JSONField
+import com.google.gson.annotations.SerializedName
 import com.zhuangfei.timetable.model.Schedule
 import com.zhuangfei.timetable.model.ScheduleEnable
 
@@ -20,19 +20,19 @@ class Subject : ScheduleEnable {
      * 课程名称
      */
     @ColumnInfo(name = "name")
-    @JSONField(name = "kcmc")
+    @SerializedName(value = "kcmc")
     var name: String? = null
     /**
      * 任课教师
      */
     @ColumnInfo(name = "teacher")
-    @JSONField(name = "xm")
+    @SerializedName(value = "xm")
     var teacher: String? = null
     /**
      * 上课地点
      */
     @ColumnInfo(name = "place")
-    @JSONField(name = "cdmc")
+    @SerializedName(value = "cdmc")
     var place: String? = null
     /**
      * 上课星期
@@ -40,33 +40,33 @@ class Subject : ScheduleEnable {
      * 1-8
      */
     @ColumnInfo(name = "week")
-    @JSONField(name = "zcd")
+    @SerializedName(value = "zcd")
     var week: String? = null
     /**
      * 星期几
      * 格式为 星期X
      */
     @ColumnInfo(name = "day")
-    @JSONField(name = "xqjmc")
+    @SerializedName(value = "xqjmc")
     var day: String? = null
     /**
      * 上课时间
      * 格式为 X-X
      */
     @ColumnInfo(name = "last")
-    @JSONField(name = "jc")
+    @SerializedName(value = "jc")
     var last: String? = null
     /**
      * 学年
      */
     @ColumnInfo(name = "year")
-    @JSONField(name = "xnm")
+    @SerializedName(value = "xnm")
     var year: String? = null
     /**
      * 学年
      */
     @ColumnInfo(name = "term")
-    @JSONField(name = "xqm")
+    @SerializedName(value = "xqm")
     var term: String? = null
 
     override fun getSchedule(): Schedule {
