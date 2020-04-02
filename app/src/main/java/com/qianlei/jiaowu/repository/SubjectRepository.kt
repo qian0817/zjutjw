@@ -9,7 +9,7 @@ import com.qianlei.jiaowu.common.Term
 import com.qianlei.jiaowu.db.MyDataBase
 import com.qianlei.jiaowu.db.dao.SubjectDao
 import com.qianlei.jiaowu.entity.Subject
-import com.qianlei.jiaowu.net.StudentApi
+import com.qianlei.jiaowu.net.StudentClient
 
 /**
  * 课程的仓库类
@@ -18,7 +18,7 @@ import com.qianlei.jiaowu.net.StudentApi
  */
 class SubjectRepository constructor(context: Context) {
     private var subjectDao: SubjectDao = MyDataBase.getDatabase(context).subjectDao()
-    private val studentApi: StudentApi = StudentApi.getStudentApi(context)
+    private val studentClient: StudentClient = StudentClient.getStudentApi(context)
     val subjectLiveData = MutableLiveData<Result<List<Subject>>>()
 
     private fun getDataFromDatabase(term: Term): Result<List<Subject>> {
@@ -31,7 +31,7 @@ class SubjectRepository constructor(context: Context) {
     }
 
     private fun getDataFromNet(term: Term): Result<List<Subject>> {
-        val result = studentApi.getStudentTimetable(term.year, term.term)
+        val result = studentClient.getStudentTimetable(term.year, term.term)
         if (result.isSuccess()) {
             //向数据库中添加数据
             val subjectList = result.data

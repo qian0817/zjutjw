@@ -9,7 +9,7 @@ import com.qianlei.jiaowu.common.Term
 import com.qianlei.jiaowu.db.MyDataBase
 import com.qianlei.jiaowu.db.dao.ExamDao
 import com.qianlei.jiaowu.entity.Examination
-import com.qianlei.jiaowu.net.StudentApi
+import com.qianlei.jiaowu.net.StudentClient
 
 /**
  * 考试仓库类
@@ -19,10 +19,10 @@ import com.qianlei.jiaowu.net.StudentApi
 class ExamRepository constructor(private val context: Context) {
     val examData = MutableLiveData<Result<List<Examination>>>()
     private val examDao: ExamDao = MyDataBase.getDatabase(context).examDao()
-    private val studentApi: StudentApi = StudentApi.getStudentApi(context)
+    private val studentClient: StudentClient = StudentClient.getStudentApi(context)
 
     private fun getDataFromNet(term: Term): Result<List<Examination>> {
-        val result = studentApi.getStudentExamInformation(term.year, term.term)
+        val result = studentClient.getStudentExamInformation(term.year, term.term)
         if (result.isSuccess()) {
             //向数据库中添加数据
             val examDao: ExamDao = MyDataBase.getDatabase(context).examDao()

@@ -8,7 +8,7 @@ import com.qianlei.jiaowu.common.ResultType
 import com.qianlei.jiaowu.common.Term
 import com.qianlei.jiaowu.db.MyDataBase
 import com.qianlei.jiaowu.entity.Score
-import com.qianlei.jiaowu.net.StudentApi
+import com.qianlei.jiaowu.net.StudentClient
 
 /**
  * 课程的仓库类
@@ -17,7 +17,7 @@ import com.qianlei.jiaowu.net.StudentApi
  */
 class ScoreRepository constructor(private val context: Context) {
     private var scoreDao = MyDataBase.getDatabase(context).scoreDao()
-    private val studentApi: StudentApi = StudentApi.getStudentApi(context)
+    private val studentClient: StudentClient = StudentClient.getStudentApi(context)
     val scoreData = MutableLiveData<Result<List<Score>>>()
 
     /**
@@ -41,7 +41,7 @@ class ScoreRepository constructor(private val context: Context) {
      * @return 获取到的数据
      */
     private fun getDataFromNet(term: Term): Result<List<Score>> {
-        val result = studentApi.getStudentScore(term.year, term.term)
+        val result = studentClient.getStudentScore(term.year, term.term)
         if (result.isSuccess()) {
             //向数据库中添加获取到的数据
             scoreDao = MyDataBase.getDatabase(context).scoreDao()

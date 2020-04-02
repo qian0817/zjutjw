@@ -4,7 +4,7 @@ import android.app.Application
 import android.os.Handler
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.qianlei.jiaowu.net.HitokotoApi
+import com.qianlei.jiaowu.net.HitokotoClient
 
 class MainViewModel(app: Application) : AndroidViewModel(app) {
     val subTitleLiveData = MutableLiveData<String>()
@@ -14,7 +14,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         Thread {
             var subTitle: String
             do {
-                subTitle = HitokotoApi.getHitokoto()
+                subTitle = HitokotoClient.getHitokoto()
                 //说明可能发生错误,立即返回
                 if (subTitle.isEmpty()) {
                     return@Thread

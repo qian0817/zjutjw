@@ -8,7 +8,7 @@ import okhttp3.Request
 /**
  * @author qianlei
  */
-object HitokotoApi {
+object HitokotoClient {
     private val client = OkHttpClient()
 
     /**

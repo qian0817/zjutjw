@@ -13,7 +13,7 @@ import com.google.android.material.navigation.NavigationView
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.entity.Student
-import com.qianlei.jiaowu.net.StudentApi
+import com.qianlei.jiaowu.net.StudentClient
 import com.qianlei.jiaowu.repository.StudentRepository
 import kotlinx.android.synthetic.main.header_layout.*
 
@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         //保存cookies
-        StudentApi.getStudentApi(this).saveCookies()
+        StudentClient.getStudentApi(this).saveCookies()
     }
 
     override fun onResume() {

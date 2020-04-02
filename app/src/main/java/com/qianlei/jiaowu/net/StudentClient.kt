@@ -27,7 +27,7 @@ import java.util.*
  *
  * @author qianlei
  */
-class StudentApi private constructor(private val context: Context) {
+class StudentClient private constructor(private val context: Context) {
     private val gson = Gson()
 
     /**
@@ -282,17 +282,17 @@ class StudentApi private constructor(private val context: Context) {
          */
         @SuppressLint("StaticFieldLeak")
         @Volatile
-        private var studentApi: StudentApi? = null
+        private var studentClient: StudentClient? = null
 
-        fun getStudentApi(context: Context): StudentApi {
-            if (studentApi == null) {
-                synchronized(StudentApi::class.java) {
-                    if (studentApi == null) {
-                        studentApi = StudentApi(context.applicationContext)
+        fun getStudentApi(context: Context): StudentClient {
+            if (studentClient == null) {
+                synchronized(StudentClient::class.java) {
+                    if (studentClient == null) {
+                        studentClient = StudentClient(context.applicationContext)
                     }
                 }
             }
-            return studentApi!!
+            return studentClient!!
         }
     }
 
