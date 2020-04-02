@@ -1,6 +1,7 @@
 package com.qianlei.jiaowu
 
 import android.app.Application
+import android.content.Intent
 import android.os.Process
 import java.io.File
 import java.io.FileNotFoundException
@@ -8,7 +9,7 @@ import java.io.FileOutputStream
 import java.io.PrintStream
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.system.exitProcess
+
 
 /**
  * @author qianlei
@@ -29,6 +30,11 @@ class MainApplication : Application() {
             val dir = externalCacheDir
             if (dir != null) {
                 val fileName = dir.absolutePath + File.separator + "error.log"
+                val file = File(fileName)
+                //日志文件大于10M则删除
+                if (file.length() > 1024 * 1024 * 10) {
+                    file.delete()
+                }
                 try {
                     PrintStream(FileOutputStream(fileName, true)).use { printStream ->
                         val date = SimpleDateFormat.getDateTimeInstance().format(Date())
@@ -39,10 +45,13 @@ class MainApplication : Application() {
                     ex.printStackTrace()
                 }
             }
+            Thread.sleep(5000)
+            //重启应用
+            val intent = packageManager.getLaunchIntentForPackage(packageName) ?: return
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
+            //退出程序
             Process.killProcess(Process.myPid())
-            exitProcess(1)
         }
     }
-
-
 }
