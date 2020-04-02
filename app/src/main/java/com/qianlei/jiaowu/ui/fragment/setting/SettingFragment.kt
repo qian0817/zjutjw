@@ -1,6 +1,8 @@
 package com.qianlei.jiaowu.ui.fragment.setting
 
 import android.app.DatePickerDialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.widget.DatePicker
@@ -17,6 +19,7 @@ import com.qianlei.jiaowu.db.MyDataBase
 import com.qianlei.jiaowu.repository.SettingRepository
 import java.io.File
 import java.util.*
+
 
 /**
  * @author qianlei
@@ -37,6 +40,21 @@ class SettingFragment : PreferenceFragmentCompat() {
                 return@OnPreferenceClickListener deleteCache()
             }
         }
+        val checkUpdatePreference = findPreference<Preference>(getString(R.string.check_update))
+        if (checkUpdatePreference != null) {
+            checkUpdatePreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                return@OnPreferenceClickListener checkUpdate()
+            }
+        }
+    }
+
+
+    private fun checkUpdate(): Boolean {
+        //进入更新的界面
+        val uri: Uri = Uri.parse("https://github.com/qian0817/zjutjw/releases")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        startActivity(intent)
+        return true
     }
 
     /**

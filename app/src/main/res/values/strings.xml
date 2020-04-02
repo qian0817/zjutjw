@@ -34,4 +34,5 @@
     <string name="useIntranet">use_intranet</string>
     <string name="clear_log">clear_log</string>
     <string name="hitokoto">hitokoto</string>
+    <string name="check_update">check_update</string>
 </resources>

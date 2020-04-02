@@ -19,4 +19,7 @@
     <Preference
         android:key="@string/clear_log"
         app:title="清理缓存" />
+    <Preference
+        android:key="@string/check_update"
+        app:title="检查更新" />
 </PreferenceScreen>
