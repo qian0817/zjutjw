@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-        val needFlush = sharedPreferences.getBoolean("hitokoto", false)
+        val needFlush = sharedPreferences.getBoolean(getString(R.string.hitokoto), false)
         if (needFlush) {
             mainViewModel.getSubTitle()
         } else {

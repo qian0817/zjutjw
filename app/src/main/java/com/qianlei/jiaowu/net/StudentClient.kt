@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.common.ResultType
 import com.qianlei.jiaowu.entity.Examination
@@ -267,7 +268,7 @@ class StudentClient private constructor(private val context: Context) {
 
     private fun prefix(): String {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        return if (sharedPreferences.getBoolean("useIntranet", false)) {
+        return if (sharedPreferences.getBoolean(context.getString(R.string.useIntranet), false)) {
             "http://www.gdjw.zjut.edu.cn"
         } else {
             //TODO 内网地址暂不知 回校测试
