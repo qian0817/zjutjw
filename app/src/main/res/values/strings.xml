@@ -33,4 +33,5 @@
     <string name="start_day">start_day</string>
     <string name="useIntranet">use_intranet</string>
     <string name="clear_log">clear_log</string>
+    <string name="hitokoto">hitokoto</string>
 </resources>

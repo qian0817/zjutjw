@@ -4,9 +4,11 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationView
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
@@ -22,6 +24,7 @@ import kotlinx.android.synthetic.main.header_layout.*
  */
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var mainViewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,9 +38,16 @@ class MainActivity : AppCompatActivity() {
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
         NavigationUI.setupWithNavController(navView, navController)
-        //当学生信息修改时，更新学生数据
-        StudentRepository.studentData.observe(this, Observer { result: Result<Student> -> updateStudentInformation(result) })
-        //先尝试获取学生信息
+        //设置子标题
+        val factory = ViewModelProvider.AndroidViewModelFactory(application)
+        mainViewModel = factory.create(MainViewModel::class.java)
+        mainViewModel.subTitleLiveData.observe(this, Observer { subtitle ->
+            supportActionBar?.subtitle = subtitle
+        })
+        //设置学生信息
+        StudentRepository.studentData.observe(this, Observer { result: Result<Student> ->
+            updateStudentInformation(result)
+        })
         val studentRepository = StudentRepository(this)
         val task = StudentRepository.GetStudentInformationTask(studentRepository)
         task.execute()
@@ -56,6 +66,17 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         //保存cookies
         StudentApi.getStudentApi(this).saveCookies()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        val needFlush = sharedPreferences.getBoolean("hitokoto", false)
+        if (needFlush) {
+            mainViewModel.getSubTitle()
+        } else {
+            mainViewModel.subTitleLiveData.value = ""
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -2,6 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
     <SwitchPreferenceCompat
         android:defaultValue="false"
         app:key="@string/useIntranet"
@@ -9,6 +10,11 @@
     <Preference
         app:key="@string/start_day"
         app:title="设置开学日期" />
+
+    <SwitchPreferenceCompat
+        android:defaultValue="false"
+        app:key="@string/hitokoto"
+        app:title="一句" />
 
     <Preference
         android:key="@string/clear_log"
