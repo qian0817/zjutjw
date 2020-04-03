@@ -1,28 +1,14 @@
 package com.qianlei.jiaowu.ui.activity
 
 import android.app.Application
-import android.os.Handler
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import com.qianlei.jiaowu.net.HitokotoClient
+import com.qianlei.jiaowu.repository.HitokotoRepository
 
 class MainViewModel(app: Application) : AndroidViewModel(app) {
-    val subTitleLiveData = MutableLiveData<String>()
-    private val handler = Handler()
+    val subTitleLiveData = HitokotoRepository.hitokotoLiveData
 
     fun getSubTitle() {
-        Thread {
-            var subTitle: String
-            do {
-                subTitle = HitokotoClient.getHitokoto()
-                //说明可能发生错误,立即返回
-                if (subTitle.isEmpty()) {
-                    return@Thread
-                }
-            } while (subTitle.length > 15)
-            handler.post {
-                subTitleLiveData.value = subTitle
-            }
-        }.start()
+        val task = HitokotoRepository.GetPoemTask()
+        task.execute()
     }
 }

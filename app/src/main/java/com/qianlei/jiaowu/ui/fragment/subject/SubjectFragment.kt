@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
+import androidx.preference.PreferenceManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.qianlei.jiaowu.R
@@ -47,8 +48,13 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
         subjectTermChooseView.setItemSelectedListener(this)
         swipeRefreshLayout.setOnRefreshListener(this)
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary)
-        weekView.curWeek(getStartTime()).hideLeftLayout().callback { week: Int -> changeWeek(week) }.showView()
+        weekView.curWeek(getStartTime()).itemCount(16)
+                .hideLeftLayout().callback { week: Int -> changeWeek(week) }.showView()
+        //是否显示周末
+        val preferenceManager = PreferenceManager.getDefaultSharedPreferences(context)
+        val showWeek = preferenceManager.getBoolean(getString(R.string.show_weekend), true)
         timeTableView.curWeek(getStartTime()).isShowFlaglayout(false)
+                .isShowWeekends(showWeek)
                 .callback { mInflate: LayoutInflater -> mInflate.inflate(R.layout.custom_myscrollview, null, false) }
                 .callback { _: View?, scheduleList: List<Schedule>? -> showSubjectItemDialog(scheduleList) }
                 .showView()

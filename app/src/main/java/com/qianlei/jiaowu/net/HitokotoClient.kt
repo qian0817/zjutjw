@@ -21,7 +21,6 @@ object HitokotoClient {
                     .get()
                     .build()
             val response = client.newCall(request).execute()
-            println("response$response")
             val json = JsonParser.parseString(response.body?.string()).asJsonObject
             val hitokoto = json.get("hitokoto").asString
             //去除句号

@@ -1,8 +1,6 @@
 package com.qianlei.jiaowu.ui.fragment.setting
 
 import android.app.DatePickerDialog
-import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.widget.DatePicker
@@ -16,6 +14,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.datetime.datePicker
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.db.MyDataBase
+import com.qianlei.jiaowu.repository.HitokotoRepository
 import com.qianlei.jiaowu.repository.SettingRepository
 import java.io.File
 import java.util.*
@@ -27,6 +26,7 @@ import java.util.*
 class SettingFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.fragement_setting, rootKey)
+        //选择开学日期
         val startDayPreference = findPreference<Preference>(getString(R.string.start_day))
         if (startDayPreference != null) {
             setStartDaySummary()
@@ -34,26 +34,30 @@ class SettingFragment : PreferenceFragmentCompat() {
                 return@OnPreferenceClickListener changeStartDay()
             }
         }
+        //清楚缓存
         val clearCachePreference = findPreference<Preference>(getString(R.string.clear_log))
         if (clearCachePreference != null) {
             clearCachePreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 return@OnPreferenceClickListener deleteCache()
             }
         }
-        val checkUpdatePreference = findPreference<Preference>(getString(R.string.check_update))
-        if (checkUpdatePreference != null) {
-            checkUpdatePreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                return@OnPreferenceClickListener checkUpdate()
+        val hitokotoPreference = findPreference<Preference>(getString(R.string.hitokoto))
+        if (hitokotoPreference != null) {
+            hitokotoPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                return@OnPreferenceChangeListener changeHitokoto(newValue)
             }
         }
     }
 
-
-    private fun checkUpdate(): Boolean {
-        //进入更新的界面
-        val uri: Uri = Uri.parse("https://github.com/qian0817/zjutjw/releases")
-        val intent = Intent(Intent.ACTION_VIEW, uri)
-        startActivity(intent)
+    private fun changeHitokoto(newValue: Any?): Boolean {
+        if (newValue is Boolean) {
+            if (newValue) {
+                val task = HitokotoRepository.GetPoemTask()
+                task.execute()
+            } else {
+                HitokotoRepository.hitokotoLiveData.value = ""
+            }
+        }
         return true
     }
 
