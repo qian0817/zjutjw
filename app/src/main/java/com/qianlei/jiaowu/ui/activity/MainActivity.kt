@@ -11,10 +11,7 @@ import androidx.navigation.ui.NavigationUI
 import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationView
 import com.qianlei.jiaowu.R
-import com.qianlei.jiaowu.common.Result
-import com.qianlei.jiaowu.entity.Student
 import com.qianlei.jiaowu.net.StudentClient
-import com.qianlei.jiaowu.repository.StudentRepository
 import kotlinx.android.synthetic.main.header_layout.*
 
 /**
@@ -38,38 +35,27 @@ class MainActivity : AppCompatActivity() {
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
         NavigationUI.setupWithNavController(navView, navController)
-        //设置子标题
+        //设置一句
         val factory = ViewModelProvider.AndroidViewModelFactory(application)
         mainViewModel = factory.create(MainViewModel::class.java)
         mainViewModel.subTitleLiveData.observe(this, Observer { subtitle ->
-            supportActionBar?.subtitle = subtitle
+            if (poemTextView == null) {
+                return@Observer
+            }
+            poemTextView.text = subtitle
         })
-        //设置学生信息
-        StudentRepository.studentData.observe(this, Observer { result: Result<Student> ->
-            updateStudentInformation(result)
-        })
-        val studentRepository = StudentRepository(this)
-        val task = StudentRepository.GetStudentInformationTask(studentRepository)
-        task.execute()
-    }
-
-    /**
-     * 更新学生信息
-     */
-    private fun updateStudentInformation(result: Result<Student>) {
-        val data = result.data ?: return
-        studentIdTextView.text = data.studentId
-        studentNameTextView.text = data.name
     }
 
     override fun onPause() {
         super.onPause()
         //保存cookies
-        StudentClient.getStudentApi(this).saveCookies()
+        StudentClient.saveCookies(this)
     }
 
     override fun onResume() {
         super.onResume()
+        //读取cookies
+        StudentClient.readCookies(this)
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         val needFlush = sharedPreferences.getBoolean(getString(R.string.hitokoto), false)
         if (needFlush) {

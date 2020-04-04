@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.navigation.Navigation
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
-import com.qianlei.jiaowu.repository.StudentRepository
 import kotlinx.android.synthetic.main.fragment_login.*
 
 /**
@@ -79,9 +78,6 @@ class LoginFragment : Fragment() {
             editor.putString(ID, studentId)
             editor.putString(PASSWORD, password)
             editor.apply()
-            //获取登录学生的信息
-            val task = StudentRepository.GetStudentInformationTask(StudentRepository(c))
-            task.execute()
             //跳转到课程界面
             val v = view ?: return
             val controller = Navigation.findNavController(v)

@@ -1,6 +1,5 @@
 package com.qianlei.jiaowu.net
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -14,7 +13,6 @@ import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.common.ResultType
 import com.qianlei.jiaowu.entity.Examination
 import com.qianlei.jiaowu.entity.Score
-import com.qianlei.jiaowu.entity.Student
 import com.qianlei.jiaowu.entity.Subject
 import com.qianlei.jiaowu.utils.Base64
 import com.qianlei.jiaowu.utils.RSAEncoder
@@ -28,7 +26,7 @@ import java.util.*
  *
  * @author qianlei
  */
-class StudentClient private constructor(private val context: Context) {
+object StudentClient {
     private val gson = Gson()
 
     /**
@@ -55,12 +53,12 @@ class StudentClient private constructor(private val context: Context) {
      * @throws IOException IO异常
      */
     @Throws(IOException::class)
-    private fun getRsaPublicKey(password: String?): String? {
+    private fun getRsaPublicKey(context: Context, password: String?): String? {
         if (password == null) {
             return null
         }
         var retPassword = password
-        val connection = Jsoup.connect(prefix() + "/jwglxt/xtgl/login_getPublicKey.html")
+        val connection = Jsoup.connect(prefix(context) + "/jwglxt/xtgl/login_getPublicKey.html")
         val response = connection.cookies(tempCookies).ignoreContentType(true).execute()
         val jsonObject = JsonParser.parseString(response.body()).asJsonObject
         val modulus = jsonObject.get("modulus").asString
@@ -78,11 +76,11 @@ class StudentClient private constructor(private val context: Context) {
      * @param code      验证码
      * @return 登录结果
      */
-    fun login(studentId: String?, password: String?, code: String?): Result<String> {
+    fun login(context: Context, studentId: String?, password: String?, code: String?): Result<String> {
         var tempPassword = password
         return try {
-            tempPassword = getRsaPublicKey(tempPassword)
-            val connection = Jsoup.connect(prefix() + "/jwglxt/xtgl/login_slogin.html?time=" + System.currentTimeMillis())
+            tempPassword = getRsaPublicKey(context, tempPassword)
+            val connection = Jsoup.connect(prefix(context) + "/jwglxt/xtgl/login_slogin.html?time=" + System.currentTimeMillis())
             connection.header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
             connection.data("csrftoken", csrftoken)
             connection.data("yhm", studentId)
@@ -110,9 +108,9 @@ class StudentClient private constructor(private val context: Context) {
      *
      * @return 获取到的验证码的结果
      */
-    fun getCaptchaImage(): Result<Bitmap> {
+    fun getCaptchaImage(context: Context): Result<Bitmap> {
         try {
-            val connection = Jsoup.connect(prefix() + "/jwglxt/xtgl/login_slogin.html?time" + System.currentTimeMillis())
+            val connection = Jsoup.connect(prefix(context) + "/jwglxt/xtgl/login_slogin.html?time" + System.currentTimeMillis())
             val response = connection.execute()
             //保存cookie
             tempCookies = response.cookies()
@@ -123,7 +121,7 @@ class StudentClient private constructor(private val context: Context) {
             return Result(ResultType.IO, "请检查网络连接")
         }
         //获取验证码
-        val connection = Jsoup.connect(prefix() + "/jwglxt/kaptcha").ignoreContentType(true)
+        val connection = Jsoup.connect(prefix(context) + "/jwglxt/kaptcha").ignoreContentType(true)
         return try {
             val response = connection.cookies(tempCookies).execute()
             val bytes = response.bodyAsBytes()
@@ -137,39 +135,17 @@ class StudentClient private constructor(private val context: Context) {
     }
 
     /**
-     * 查询学生信息
-     *
-     * @return 获取到的学生的信息的结果
-     */
-    fun getStudentInformation(): Result<Student> {
-        return if (lastLoginCookies == null) {
-            Result(ResultType.NEED_LOGIN, "请先登陆")
-        } else try {
-            val connection = Jsoup.connect(prefix() + "/jwglxt/xsxxxggl/xsxxwh_cxCkDgxsxx.html?gnmkdm=N100801")
-            val response = connection.cookies(lastLoginCookies).method(Connection.Method.GET).ignoreContentType(true).execute()
-            val student = gson.fromJson(response.body(), Student::class.java)
-            Result(ResultType.OK, "获取信息成功", student)
-        } catch (e: JsonSyntaxException) {
-            Result<Student>(ResultType.NEED_LOGIN, "请重新登陆")
-        } catch (e: IOException) {
-            Result<Student>(ResultType.IO, "请检查网络连接")
-        } catch (e: Exception) {
-            Result<Student>(ResultType.OTHER, "其他错误" + e.message)
-        }
-    }
-
-    /**
      * 获取课表信息
      *
      * @param year 学年 只需要传入一个 例如2018-2019学年只需要传入2018
      * @param term 学期
      * @return 当学期的课表信息
      */
-    fun getStudentTimetable(year: String?, term: String?): Result<List<Subject>> {
+    fun getStudentTimetable(context: Context, year: String?, term: String?): Result<List<Subject>> {
         return if (lastLoginCookies == null) {
             Result(ResultType.NEED_LOGIN, "请先登陆")
         } else try {
-            val connection = Jsoup.connect(prefix() + "/jwglxt/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151")
+            val connection = Jsoup.connect(prefix(context) + "/jwglxt/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151")
             connection.data("xnm", year)
             connection.data("xqm", term)
             val response: Connection.Response
@@ -195,14 +171,14 @@ class StudentClient private constructor(private val context: Context) {
      * @param term 学期
      * @return 当学期的成绩信息
      */
-    fun getStudentScore(year: String, term: String): Result<List<Score>> {
+    fun getStudentScore(context: Context, year: String, term: String): Result<List<Score>> {
         return if (lastLoginCookies == null) {
             Result(ResultType.NEED_LOGIN, "请先登陆")
         } else try {
             val parameter: MutableMap<String, String> = HashMap(2)
             parameter["xnm"] = year
             parameter["xqm"] = term
-            val connection = Jsoup.connect(prefix() + "/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005")
+            val connection = Jsoup.connect(prefix(context) + "/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005")
             val response = connection.cookies(lastLoginCookies).method(Connection.Method.POST)
                     .data(parameter).ignoreContentType(true).execute()
             val jsonObject = JsonParser.parseString(response.body()).asJsonObject
@@ -218,14 +194,14 @@ class StudentClient private constructor(private val context: Context) {
         }
     }
 
-    fun getStudentExamInformation(year: String, term: String): Result<List<Examination>> {
+    fun getStudentExamInformation(context: Context, year: String, term: String): Result<List<Examination>> {
         return if (lastLoginCookies == null) {
             Result(ResultType.NEED_LOGIN, "请先登陆")
         } else try {
             val parameter: MutableMap<String, String> = HashMap(2)
             parameter["xnm"] = year
             parameter["xqm"] = term
-            val connection = Jsoup.connect(prefix() + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105")
+            val connection = Jsoup.connect(prefix(context) + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105")
             val response = connection.cookies(lastLoginCookies)
                     .method(Connection.Method.POST)
                     .data(parameter).ignoreContentType(true).execute()
@@ -245,8 +221,7 @@ class StudentClient private constructor(private val context: Context) {
     /**
      * 读取cookies
      */
-    @Suppress("UNCHECKED_CAST")
-    private fun readCookies() {
+    fun readCookies(context: Context) {
         val sharedPreferences = context.getSharedPreferences("cookies", Context.MODE_PRIVATE)
         val json = sharedPreferences.getString("cookies", "")
         val map = gson.fromJson<Map<String, String>>(json, object : TypeToken<Map<String, String>>() {}.type)
@@ -256,7 +231,7 @@ class StudentClient private constructor(private val context: Context) {
     /**
      * 保存cookies
      */
-    fun saveCookies() {
+    fun saveCookies(context: Context) {
         val json = gson.toJson(lastLoginCookies)
         if (json != null) {
             val sharedPreferences = context.getSharedPreferences("cookies", Context.MODE_PRIVATE)
@@ -266,7 +241,7 @@ class StudentClient private constructor(private val context: Context) {
         }
     }
 
-    private fun prefix(): String {
+    private fun prefix(context: Context): String {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         return if (sharedPreferences.getBoolean(context.getString(R.string.useIntranet), false)) {
             "http://www.gdjw.zjut.edu.cn"
@@ -274,30 +249,5 @@ class StudentClient private constructor(private val context: Context) {
             //TODO 内网地址暂不知 回校测试
             "http://www.gdjw.zjut.edu.cn"
         }
-    }
-
-    companion object {
-        /**
-         * 保证cookie唯一 需要单例
-         * 这里获取的context是application的context不会内存泄漏
-         */
-        @SuppressLint("StaticFieldLeak")
-        @Volatile
-        private var studentClient: StudentClient? = null
-
-        fun getStudentApi(context: Context): StudentClient {
-            if (studentClient == null) {
-                synchronized(StudentClient::class.java) {
-                    if (studentClient == null) {
-                        studentClient = StudentClient(context.applicationContext)
-                    }
-                }
-            }
-            return studentClient!!
-        }
-    }
-
-    init {
-        readCookies()
     }
 }

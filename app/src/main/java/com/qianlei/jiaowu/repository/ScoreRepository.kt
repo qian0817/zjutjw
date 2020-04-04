@@ -17,7 +17,6 @@ import com.qianlei.jiaowu.net.StudentClient
  */
 class ScoreRepository constructor(private val context: Context) {
     private var scoreDao = MyDataBase.getDatabase(context).scoreDao()
-    private val studentClient: StudentClient = StudentClient.getStudentApi(context)
     val scoreData = MutableLiveData<Result<List<Score>>>()
 
     /**
@@ -41,7 +40,7 @@ class ScoreRepository constructor(private val context: Context) {
      * @return 获取到的数据
      */
     private fun getDataFromNet(term: Term): Result<List<Score>> {
-        val result = studentClient.getStudentScore(term.year, term.term)
+        val result = StudentClient.getStudentScore(context, term.year, term.term)
         if (result.isSuccess()) {
             //向数据库中添加获取到的数据
             scoreDao = MyDataBase.getDatabase(context).scoreDao()

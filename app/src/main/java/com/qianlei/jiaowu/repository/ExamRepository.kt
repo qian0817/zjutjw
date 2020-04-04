@@ -19,10 +19,9 @@ import com.qianlei.jiaowu.net.StudentClient
 class ExamRepository constructor(private val context: Context) {
     val examData = MutableLiveData<Result<List<Examination>>>()
     private val examDao: ExamDao = MyDataBase.getDatabase(context).examDao()
-    private val studentClient: StudentClient = StudentClient.getStudentApi(context)
 
     private fun getDataFromNet(term: Term): Result<List<Examination>> {
-        val result = studentClient.getStudentExamInformation(term.year, term.term)
+        val result = StudentClient.getStudentExamInformation(context, term.year, term.term)
         if (result.isSuccess()) {
             //向数据库中添加数据
             val examDao: ExamDao = MyDataBase.getDatabase(context).examDao()

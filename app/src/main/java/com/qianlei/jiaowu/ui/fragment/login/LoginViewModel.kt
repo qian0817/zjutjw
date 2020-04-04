@@ -13,7 +13,6 @@ import java.util.concurrent.*
  * @author qianlei
  */
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
-    private val studentClient: StudentClient = StudentClient.getStudentApi(application)
     private val executor: ExecutorService = ThreadPoolExecutor(1, 1,
             0, TimeUnit.SECONDS, SynchronousQueue(), ThreadFactory { r: Runnable? -> Thread(r, "登录获取验证码线程") }
             , ThreadPoolExecutor.DiscardPolicy())
@@ -22,14 +21,14 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private val handler = Handler()
     fun login(studentId: String?, password: String?, captcha: String?) {
         executor.submit {
-            val result = studentClient.login(studentId, password, captcha)
+            val result = StudentClient.login(getApplication(), studentId, password, captcha)
             handler.post { loginResult.setValue(result) }
         }
     }
 
     fun changeCaptcha() {
         executor.submit {
-            val result = studentClient.getCaptchaImage()
+            val result = StudentClient.getCaptchaImage(getApplication())
             handler.post { captcha.setValue(result) }
         }
     }

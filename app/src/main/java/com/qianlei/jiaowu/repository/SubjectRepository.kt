@@ -16,9 +16,9 @@ import com.qianlei.jiaowu.net.StudentClient
  *
  * @author qianlei
  */
-class SubjectRepository constructor(context: Context) {
+class SubjectRepository constructor(private val context: Context) {
     private var subjectDao: SubjectDao = MyDataBase.getDatabase(context).subjectDao()
-    private val studentClient: StudentClient = StudentClient.getStudentApi(context)
+
     val subjectLiveData = MutableLiveData<Result<List<Subject>>>()
 
     private fun getDataFromDatabase(term: Term): Result<List<Subject>> {
@@ -31,7 +31,7 @@ class SubjectRepository constructor(context: Context) {
     }
 
     private fun getDataFromNet(term: Term): Result<List<Subject>> {
-        val result = studentClient.getStudentTimetable(term.year, term.term)
+        val result = StudentClient.getStudentTimetable(context, term.year, term.term)
         if (result.isSuccess()) {
             //向数据库中添加数据
             val subjectList = result.data
