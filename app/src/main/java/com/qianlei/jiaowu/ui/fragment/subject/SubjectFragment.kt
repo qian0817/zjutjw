@@ -111,7 +111,7 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
      */
     private fun getStartTime(): Int {
         val c = context ?: return 1
-        val setStartTime = SettingRepository.getInstance(c).getStartDayFormat()
+        val setStartTime = SettingRepository.getStartDayFormat(c)
         return ScheduleSupport.timeTransfrom("$setStartTime 00:00:00")
     }
 

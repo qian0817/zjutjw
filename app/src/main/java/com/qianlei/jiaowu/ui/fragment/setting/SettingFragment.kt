@@ -16,6 +16,8 @@ import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.db.MyDataBase
 import com.qianlei.jiaowu.repository.HitokotoRepository
 import com.qianlei.jiaowu.repository.SettingRepository
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
 
@@ -52,8 +54,7 @@ class SettingFragment : PreferenceFragmentCompat() {
     private fun changeHitokoto(newValue: Any?): Boolean {
         if (newValue is Boolean) {
             if (newValue) {
-                val task = HitokotoRepository.GetPoemTask()
-                task.execute()
+                HitokotoRepository.getPoem()
             } else {
                 HitokotoRepository.hitokotoLiveData.value = ""
             }
@@ -67,7 +68,7 @@ class SettingFragment : PreferenceFragmentCompat() {
     private fun setStartDaySummary() {
         val c = context ?: return
         val startDayPreference = findPreference<Preference>(getString(R.string.start_day)) ?: return
-        startDayPreference.summary = SettingRepository.getInstance(c).getStartDayFormat()
+        startDayPreference.summary = SettingRepository.getStartDayFormat(c)
     }
 
     /**
@@ -75,7 +76,7 @@ class SettingFragment : PreferenceFragmentCompat() {
      */
     private fun changeStartDay(): Boolean {
         val c = context ?: return false
-        val date = SettingRepository.getInstance(c).getStartDay()
+        val date = SettingRepository.getStartDay(c)
         val calendar = Calendar.getInstance()
         calendar.time = date
 
@@ -83,14 +84,14 @@ class SettingFragment : PreferenceFragmentCompat() {
             val datePickerDialog = DatePickerDialog(c)
             datePickerDialog.updateDate(calendar.year, calendar.month, calendar.dayOfMonth)
             datePickerDialog.setOnDateSetListener { _: DatePicker, year: Int, month: Int, day: Int ->
-                SettingRepository.getInstance(c).setStartDay(year, month, day)
+                SettingRepository.setStartDay(c, year, month, day)
                 setStartDaySummary()
             }
             datePickerDialog.show()
         } else {
             MaterialDialog(c).show {
                 datePicker(currentDate = calendar) { _, date ->
-                    SettingRepository.getInstance(c).setStartDay(date.year, date.month, date.dayOfMonth)
+                    SettingRepository.setStartDay(c, date.year, date.month, date.dayOfMonth)
                     setStartDaySummary()
                 }
             }
@@ -105,7 +106,7 @@ class SettingFragment : PreferenceFragmentCompat() {
     private fun deleteCache(): Boolean {
         val c = context ?: return false
         Toast.makeText(c, "清除缓存成功", Toast.LENGTH_SHORT).show()
-        Thread(Runnable {
+        GlobalScope.launch {
             //删除错误记录文件
             val file: File? = c.externalCacheDir
             if (file != null && file.exists() && file.isDirectory) {
@@ -121,7 +122,7 @@ class SettingFragment : PreferenceFragmentCompat() {
             dataBase.examDao().deleteAll()
             dataBase.scoreDao().deleteAll()
             dataBase.subjectDao().deleteAll()
-        }).start()
+        }
         return true
     }
 }

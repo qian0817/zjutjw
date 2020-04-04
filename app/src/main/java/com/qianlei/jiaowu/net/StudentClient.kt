@@ -3,6 +3,7 @@ package com.qianlei.jiaowu.net
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
 import com.google.gson.JsonParser
@@ -16,6 +17,8 @@ import com.qianlei.jiaowu.entity.Score
 import com.qianlei.jiaowu.entity.Subject
 import com.qianlei.jiaowu.utils.Base64
 import com.qianlei.jiaowu.utils.RSAEncoder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 import java.io.IOException
@@ -27,6 +30,7 @@ import java.util.*
  * @author qianlei
  */
 object StudentClient {
+    private val TAG = "STUDENT_CLIENT"
     private val gson = Gson()
 
     /**
@@ -53,19 +57,23 @@ object StudentClient {
      * @throws IOException IO异常
      */
     @Throws(IOException::class)
-    private fun getRsaPublicKey(context: Context, password: String?): String? {
+    private suspend fun getRsaPublicKey(context: Context, password: String?): String? {
         if (password == null) {
             return null
         }
-        var retPassword = password
-        val connection = Jsoup.connect(prefix(context) + "/jwglxt/xtgl/login_getPublicKey.html")
-        val response = connection.cookies(tempCookies).ignoreContentType(true).execute()
-        val jsonObject = JsonParser.parseString(response.body()).asJsonObject
-        val modulus = jsonObject.get("modulus").asString
-        val exponent = jsonObject.get("exponent").asString
-        retPassword = RSAEncoder.rsaEncrypt(retPassword, Base64.b64toHex(modulus), Base64.b64toHex(exponent))
-        retPassword = Base64.hex2b64(retPassword)
-        return retPassword
+        val response = withContext(Dispatchers.IO) {
+            val connection = Jsoup.connect(prefix(context) + "/jwglxt/xtgl/login_getPublicKey.html")
+            return@withContext connection.cookies(tempCookies).ignoreContentType(true).execute()
+        }
+        return withContext(Dispatchers.Default) {
+            var retPassword: String = password
+            val jsonObject = JsonParser.parseString(response.body()).asJsonObject
+            val modulus = jsonObject.get("modulus").asString
+            val exponent = jsonObject.get("exponent").asString
+            retPassword = RSAEncoder.rsaEncrypt(retPassword, Base64.b64toHex(modulus), Base64.b64toHex(exponent))
+            retPassword = Base64.hex2b64(retPassword)
+            return@withContext retPassword
+        }
     }
 
     /**
@@ -76,30 +84,35 @@ object StudentClient {
      * @param code      验证码
      * @return 登录结果
      */
-    fun login(context: Context, studentId: String?, password: String?, code: String?): Result<String> {
-        var tempPassword = password
-        return try {
-            tempPassword = getRsaPublicKey(context, tempPassword)
-            val connection = Jsoup.connect(prefix(context) + "/jwglxt/xtgl/login_slogin.html?time=" + System.currentTimeMillis())
-            connection.header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
-            connection.data("csrftoken", csrftoken)
-            connection.data("yhm", studentId)
-            connection.data("mm", tempPassword)
-            connection.data("mm", tempPassword)
-            connection.data("yzm", code)
-            val response = connection.cookies(tempCookies).ignoreContentType(true)
-                    .method(Connection.Method.POST).execute()
-            val document = Jsoup.parse(response.body())
-            if (document.getElementById("tips") == null) { //设置cookie
-                lastLoginCookies = response.cookies()
-                Result(ResultType.OK, "成功登陆")
-            } else {
-                Result(ResultType.PARAMS_ERROR, document.getElementById("tips").text())
+    suspend fun login(context: Context, studentId: String?, password: String?, code: String?): Result<String> {
+        return withContext(Dispatchers.IO) {
+            var tempPassword = password
+            try {
+                tempPassword = getRsaPublicKey(context, tempPassword)
+                val connection = Jsoup.connect(prefix(context) + "/jwglxt/xtgl/login_slogin.html?time=" + System.currentTimeMillis())
+                connection.header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
+                connection.data("csrftoken", csrftoken)
+                connection.data("yhm", studentId)
+                connection.data("mm", tempPassword)
+                connection.data("mm", tempPassword)
+                connection.data("yzm", code)
+                val response = connection.cookies(tempCookies).ignoreContentType(true)
+                        .method(Connection.Method.POST).execute()
+                return@withContext withContext(Dispatchers.Default) {
+                    val document = Jsoup.parse(response.body())
+                    if (document.getElementById("tips") == null) { //设置cookie
+                        lastLoginCookies = response.cookies()
+                        Result<String>(ResultType.OK, "成功登陆")
+                    } else {
+                        Result(ResultType.PARAMS_ERROR, document.getElementById("tips").text())
+                    }
+                }
+            } catch (e: IOException) {
+                Result<String>(ResultType.IO, "请检查网络连接")
+            } catch (e: Exception) {
+                Log.e(TAG, "登陆错误", e)
+                Result<String>(ResultType.IO, "其他错误" + e.message)
             }
-        } catch (e: IOException) {
-            Result(ResultType.IO, "请检查网络连接")
-        } catch (e: Exception) {
-            Result(ResultType.IO, "其他错误" + e.message)
         }
     }
 
@@ -108,29 +121,32 @@ object StudentClient {
      *
      * @return 获取到的验证码的结果
      */
-    fun getCaptchaImage(context: Context): Result<Bitmap> {
-        try {
-            val connection = Jsoup.connect(prefix(context) + "/jwglxt/xtgl/login_slogin.html?time" + System.currentTimeMillis())
-            val response = connection.execute()
-            //保存cookie
-            tempCookies = response.cookies()
-            //保存csrftoken
-            val document = Jsoup.parse(response.body())
-            csrftoken = document.getElementById("csrftoken").`val`()
-        } catch (e: IOException) {
-            return Result(ResultType.IO, "请检查网络连接")
-        }
-        //获取验证码
-        val connection = Jsoup.connect(prefix(context) + "/jwglxt/kaptcha").ignoreContentType(true)
-        return try {
-            val response = connection.cookies(tempCookies).execute()
-            val bytes = response.bodyAsBytes()
-            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-            Result(ResultType.OK, "获取成功", bitmap)
-        } catch (e: IOException) {
-            Result(ResultType.IO, "请检查网络连接")
-        } catch (e: Exception) {
-            Result(ResultType.OTHER, "其他错误" + e.message)
+    suspend fun getCaptchaImage(context: Context): Result<Bitmap> {
+        return withContext(Dispatchers.IO) {
+            try {
+                try {
+                    val connection = Jsoup.connect(prefix(context) + "/jwglxt/xtgl/login_slogin.html?time" + System.currentTimeMillis())
+                    val response = connection.execute()
+                    //保存cookie
+                    tempCookies = response.cookies()
+                    //保存csrftoken
+                    val document = Jsoup.parse(response.body())
+                    csrftoken = document.getElementById("csrftoken").`val`()
+                } catch (e: IOException) {
+                    return@withContext Result<Bitmap>(ResultType.IO, "请检查网络连接")
+                }
+                val connection = Jsoup.connect(prefix(context) + "/jwglxt/kaptcha").ignoreContentType(true)
+                val response = connection.cookies(tempCookies).execute()
+                withContext(Dispatchers.Default) {
+                    val bytes = response.bodyAsBytes()
+                    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                    Result<Bitmap>(ResultType.OK, "获取成功", bitmap)
+                }
+            } catch (e: IOException) {
+                return@withContext Result<Bitmap>(ResultType.IO, "请检查网络连接")
+            } catch (e: Exception) {
+                return@withContext Result<Bitmap>(ResultType.OTHER, "其他错误" + e.message)
+            }
         }
     }
 
@@ -141,26 +157,31 @@ object StudentClient {
      * @param term 学期
      * @return 当学期的课表信息
      */
-    fun getStudentTimetable(context: Context, year: String?, term: String?): Result<List<Subject>> {
-        return if (lastLoginCookies == null) {
-            Result(ResultType.NEED_LOGIN, "请先登陆")
-        } else try {
-            val connection = Jsoup.connect(prefix(context) + "/jwglxt/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151")
-            connection.data("xnm", year)
-            connection.data("xqm", term)
-            val response: Connection.Response
-            response = connection.cookies(lastLoginCookies)
-                    .method(Connection.Method.POST).ignoreContentType(true).execute()
-            val body = JsonParser.parseString(response.body()).asJsonObject
-            val subjectList = gson.fromJson<List<Subject>>(body.get("kbList")
-                    , object : TypeToken<List<Subject>>() {}.type)
-            Result<List<Subject>>(ResultType.OK, "获取成功", subjectList)
-        } catch (e: IOException) {
-            Result<List<Subject>>(ResultType.IO, "请检查网络连接")
-        } catch (e: JsonSyntaxException) {
-            Result<List<Subject>>(ResultType.NEED_LOGIN, "请重新登陆")
-        } catch (e: Exception) {
-            Result<List<Subject>>(ResultType.OTHER, "其他错误" + e.message)
+    suspend fun getStudentTimetable(context: Context, year: String?, term: String?): Result<List<Subject>> {
+        if (lastLoginCookies == null) {
+            return Result(ResultType.NEED_LOGIN, "请先登陆")
+        }
+        return withContext(Dispatchers.IO) {
+            try {
+                val connection = Jsoup.connect(prefix(context) + "/jwglxt/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151")
+                connection.data("xnm", year)
+                connection.data("xqm", term)
+                val response: Connection.Response
+                response = connection.cookies(lastLoginCookies)
+                        .method(Connection.Method.POST).ignoreContentType(true).execute()
+                withContext(Dispatchers.Default) {
+                    val body = JsonParser.parseString(response.body()).asJsonObject
+                    val subjectList = gson.fromJson<List<Subject>>(body.get("kbList")
+                            , object : TypeToken<List<Subject>>() {}.type)
+                    Result<List<Subject>>(ResultType.OK, "获取成功", subjectList)
+                }
+            } catch (e: IOException) {
+                Result<List<Subject>>(ResultType.IO, "请检查网络连接")
+            } catch (e: JsonSyntaxException) {
+                Result<List<Subject>>(ResultType.NEED_LOGIN, "请重新登陆")
+            } catch (e: Exception) {
+                Result<List<Subject>>(ResultType.OTHER, "其他错误" + e.message)
+            }
         }
     }
 
@@ -171,50 +192,60 @@ object StudentClient {
      * @param term 学期
      * @return 当学期的成绩信息
      */
-    fun getStudentScore(context: Context, year: String, term: String): Result<List<Score>> {
-        return if (lastLoginCookies == null) {
-            Result(ResultType.NEED_LOGIN, "请先登陆")
-        } else try {
-            val parameter: MutableMap<String, String> = HashMap(2)
-            parameter["xnm"] = year
-            parameter["xqm"] = term
-            val connection = Jsoup.connect(prefix(context) + "/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005")
-            val response = connection.cookies(lastLoginCookies).method(Connection.Method.POST)
-                    .data(parameter).ignoreContentType(true).execute()
-            val jsonObject = JsonParser.parseString(response.body()).asJsonObject
-            val scoreList = gson.fromJson<List<Score>>(jsonObject.get("items")
-                    , object : TypeToken<List<Score>>() {}.type)
-            Result<List<Score>>(ResultType.OK, "获取成功", scoreList)
-        } catch (e: IOException) {
-            Result<List<Score>>(ResultType.IO, "请检查网络连接")
-        } catch (e: JsonSyntaxException) {
-            Result<List<Score>>(ResultType.NEED_LOGIN, "请重新登陆")
-        } catch (e: Exception) {
-            Result<List<Score>>(ResultType.OTHER, "其他错误" + e.message)
+    suspend fun getStudentScore(context: Context, year: String, term: String): Result<List<Score>> {
+        if (lastLoginCookies == null) {
+            return Result(ResultType.NEED_LOGIN, "请先登陆")
+        }
+        return withContext(Dispatchers.IO) {
+            try {
+                val parameter: MutableMap<String, String> = HashMap(2)
+                parameter["xnm"] = year
+                parameter["xqm"] = term
+                val connection = Jsoup.connect(prefix(context) + "/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005")
+                val response = connection.cookies(lastLoginCookies).method(Connection.Method.POST)
+                        .data(parameter).ignoreContentType(true).execute()
+                withContext(Dispatchers.Default) {
+                    val jsonObject = JsonParser.parseString(response.body()).asJsonObject
+                    val scoreList = gson.fromJson<List<Score>>(jsonObject.get("items")
+                            , object : TypeToken<List<Score>>() {}.type)
+                    Result(ResultType.OK, "获取成功", scoreList)
+                }
+            } catch (e: IOException) {
+                Result<List<Score>>(ResultType.IO, "请检查网络连接")
+            } catch (e: JsonSyntaxException) {
+                Result<List<Score>>(ResultType.NEED_LOGIN, "请重新登陆")
+            } catch (e: Exception) {
+                Result<List<Score>>(ResultType.OTHER, "其他错误" + e.message)
+            }
         }
     }
 
-    fun getStudentExamInformation(context: Context, year: String, term: String): Result<List<Examination>> {
-        return if (lastLoginCookies == null) {
-            Result(ResultType.NEED_LOGIN, "请先登陆")
-        } else try {
-            val parameter: MutableMap<String, String> = HashMap(2)
-            parameter["xnm"] = year
-            parameter["xqm"] = term
-            val connection = Jsoup.connect(prefix(context) + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105")
-            val response = connection.cookies(lastLoginCookies)
-                    .method(Connection.Method.POST)
-                    .data(parameter).ignoreContentType(true).execute()
-            val jsonObject = JsonParser.parseString(response.body()).asJsonObject
-            val examinationList = gson.fromJson<List<Examination>>(jsonObject.get("items")
-                    , object : TypeToken<List<Examination>>() {}.type)
-            Result<List<Examination>>(ResultType.OK, "获取成功", examinationList)
-        } catch (e: IOException) {
-            Result<List<Examination>>(ResultType.IO, "请检查网络连接")
-        } catch (e: JsonSyntaxException) {
-            Result<List<Examination>>(ResultType.NEED_LOGIN, "请重新登陆")
-        } catch (e: Exception) {
-            Result<List<Examination>>(ResultType.OTHER, "其他错误")
+    suspend fun getStudentExamInformation(context: Context, year: String, term: String): Result<List<Examination>> {
+        if (lastLoginCookies == null) {
+            return Result(ResultType.NEED_LOGIN, "请先登陆")
+        }
+        return withContext(Dispatchers.IO) {
+            try {
+                val parameter: MutableMap<String, String> = HashMap(2)
+                parameter["xnm"] = year
+                parameter["xqm"] = term
+                val connection = Jsoup.connect(prefix(context) + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105")
+                val response = connection.cookies(lastLoginCookies)
+                        .method(Connection.Method.POST)
+                        .data(parameter).ignoreContentType(true).execute()
+                withContext(Dispatchers.Default) {
+                    val jsonObject = JsonParser.parseString(response.body()).asJsonObject
+                    val examinationList = gson.fromJson<List<Examination>>(jsonObject.get("items")
+                            , object : TypeToken<List<Examination>>() {}.type)
+                    Result<List<Examination>>(ResultType.OK, "获取成功", examinationList)
+                }
+            } catch (e: IOException) {
+                Result<List<Examination>>(ResultType.IO, "请检查网络连接")
+            } catch (e: JsonSyntaxException) {
+                Result<List<Examination>>(ResultType.NEED_LOGIN, "请重新登陆")
+            } catch (e: Exception) {
+                Result<List<Examination>>(ResultType.OTHER, "其他错误")
+            }
         }
     }
 
@@ -224,8 +255,7 @@ object StudentClient {
     fun readCookies(context: Context) {
         val sharedPreferences = context.getSharedPreferences("cookies", Context.MODE_PRIVATE)
         val json = sharedPreferences.getString("cookies", "")
-        val map = gson.fromJson<Map<String, String>>(json, object : TypeToken<Map<String, String>>() {}.type)
-        lastLoginCookies = map
+        lastLoginCookies = gson.fromJson<Map<String, String>>(json, object : TypeToken<Map<String, String>>() {}.type)
     }
 
     /**

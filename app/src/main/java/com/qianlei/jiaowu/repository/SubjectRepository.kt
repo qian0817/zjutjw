@@ -1,8 +1,6 @@
 package com.qianlei.jiaowu.repository
 
 import android.content.Context
-import android.os.AsyncTask
-import androidx.lifecycle.MutableLiveData
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.common.ResultType
 import com.qianlei.jiaowu.common.Term
@@ -16,12 +14,11 @@ import com.qianlei.jiaowu.net.StudentClient
  *
  * @author qianlei
  */
-class SubjectRepository constructor(private val context: Context) {
-    private var subjectDao: SubjectDao = MyDataBase.getDatabase(context).subjectDao()
+object SubjectRepository {
 
-    val subjectLiveData = MutableLiveData<Result<List<Subject>>>()
 
-    private fun getDataFromDatabase(term: Term): Result<List<Subject>> {
+    private suspend fun getDataFromDatabase(context: Context, term: Term): Result<List<Subject>> {
+        val subjectDao: SubjectDao = MyDataBase.getDatabase(context).subjectDao()
         val subjectList = subjectDao.selectAllSubjectByYearAndTerm(term.year, term.term)
         return if (subjectList.isNotEmpty()) {
             Result(ResultType.OK, "从数据获取成功", subjectList)
@@ -30,7 +27,8 @@ class SubjectRepository constructor(private val context: Context) {
         }
     }
 
-    private fun getDataFromNet(term: Term): Result<List<Subject>> {
+    private suspend fun getDataFromNet(context: Context, term: Term): Result<List<Subject>> {
+        val subjectDao: SubjectDao = MyDataBase.getDatabase(context).subjectDao()
         val result = StudentClient.getStudentTimetable(context, term.year, term.term)
         if (result.isSuccess()) {
             //向数据库中添加数据
@@ -45,40 +43,16 @@ class SubjectRepository constructor(private val context: Context) {
         return result
     }
 
-    class GetSubjectDataUseCache constructor(private val subjectRepository: SubjectRepository) : AsyncTask<Term, Void, Result<List<Subject>>?>() {
-        override fun doInBackground(vararg params: Term?): Result<List<Subject>>? {
-            if (params.size != 1) {
-                return null
-            }
-            val term = params[0] ?: return null
-            //先从数据库中判断是否存在数据 不存在则继续从网络中获取数据
-            val result = subjectRepository.getDataFromDatabase(term)
-            return if (result.isSuccess()) {
-                result
-            } else {
-                subjectRepository.getDataFromNet(term)
-            }
-        }
-
-        override fun onPostExecute(result: Result<List<Subject>>?) {
-            super.onPostExecute(result)
-            subjectRepository.subjectLiveData.value = result
+    suspend fun getSubjectDataUseCache(context: Context, term: Term): Result<List<Subject>> {
+        val result = getDataFromDatabase(context, term)
+        return if (result.isSuccess()) {
+            result
+        } else {
+            getDataFromNet(context, term)
         }
     }
 
-    class GetSubjectDataTask constructor(private val subjectRepository: SubjectRepository) : AsyncTask<Term, Void, Result<List<Subject>>>() {
-        override fun doInBackground(vararg params: Term?): Result<List<Subject>>? {
-            if (params.size != 1) {
-                return null
-            }
-            val term = params[0] ?: return null
-            return subjectRepository.getDataFromNet(term)
-        }
-
-        override fun onPostExecute(result: Result<List<Subject>>?) {
-            super.onPostExecute(result)
-            subjectRepository.subjectLiveData.value = result
-        }
+    suspend fun getSubjectDataNotUseCache(context: Context, term: Term): Result<List<Subject>> {
+        return getDataFromNet(context, term)
     }
-
 }

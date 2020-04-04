@@ -8,7 +8,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     val subTitleLiveData = HitokotoRepository.hitokotoLiveData
 
     fun getSubTitle() {
-        val task = HitokotoRepository.GetPoemTask()
-        task.execute()
+        HitokotoRepository.getPoem()
     }
 }

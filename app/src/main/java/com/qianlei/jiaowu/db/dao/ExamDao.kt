@@ -16,7 +16,7 @@ interface ExamDao {
      * @param examination 所有的考试信息
      */
     @Insert
-    fun insertExam(vararg examination: Examination?)
+    suspend fun insertExam(vararg examination: Examination?)
 
     /**
      * 根据学年以及学期获取考试信息
@@ -26,7 +26,7 @@ interface ExamDao {
      * @return 该学期所有的考试信息
      */
     @Query("SELECT * FROM examination WHERE year = (:year) AND term = (:term)")
-    fun selectAllExamByYearAndTerm(year: String?, term: String?): List<Examination>
+    suspend fun selectAllExamByYearAndTerm(year: String?, term: String?): List<Examination>
 
     /**
      * 删除所有同年同学期的考试信息
@@ -35,11 +35,11 @@ interface ExamDao {
      * @param term 学期
      */
     @Query("DELETE FROM examination WHERE year = (:year) AND term = (:term)")
-    fun deleteAllByYearAndTerm(year: String?, term: String?)
+    suspend fun deleteAllByYearAndTerm(year: String?, term: String?)
 
     /**
      * 删除所有信息
      */
     @Query("DELETE FROM examination")
-    fun deleteAll()
+    suspend fun deleteAll()
 }

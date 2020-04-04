@@ -29,7 +29,7 @@ class SubjectDaoTest {
     }
 
     @Test
-    fun testSubjectDao() {
+    suspend fun testSubjectDao() {
         //测试InsertScore
         val subject = Subject()
         subject.teacher = "测试教师"

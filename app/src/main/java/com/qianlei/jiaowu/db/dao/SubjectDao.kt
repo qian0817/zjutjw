@@ -16,7 +16,7 @@ interface SubjectDao {
      * @param subjects 需要添加的课程
      */
     @Insert
-    fun insertSubject(vararg subjects: Subject?)
+    suspend fun insertSubject(vararg subjects: Subject?)
 
     /**
      * 根据学年学期获取所有的课程信息
@@ -26,7 +26,7 @@ interface SubjectDao {
      * @return 该学年学期所有的课程信息
      */
     @Query("SELECT * FROM subject WHERE year=(:year) AND term = (:term)")
-    fun selectAllSubjectByYearAndTerm(year: String?, term: String?): List<Subject>
+    suspend fun selectAllSubjectByYearAndTerm(year: String?, term: String?): List<Subject>
 
     /**
      * 根据学年学期获取所有的课程信息
@@ -35,11 +35,11 @@ interface SubjectDao {
      * @param term 学期
      */
     @Query("DELETE FROM subject WHERE year=(:year) AND term = (:term)")
-    fun deleteAllSubjectByYearAndTerm(year: String?, term: String?)
+    suspend fun deleteAllSubjectByYearAndTerm(year: String?, term: String?)
 
     /**
      * 删除所有课程信息
      */
     @Query("DELETE FROM subject")
-    fun deleteAll()
+    suspend fun deleteAll()
 }

@@ -16,7 +16,7 @@ interface ScoreDao {
      * @param scores 需要添加的分数
      */
     @Insert
-    fun insertScore(vararg scores: Score?)
+    suspend fun insertScore(vararg scores: Score?)
 
     /**
      * 根据学年学期获取分数信息
@@ -26,7 +26,7 @@ interface ScoreDao {
      * @return 该学生该学期的所有分数信息
      */
     @Query("SELECT * FROM score WHERE year=(:year) AND term = (:term)")
-    fun selectAllScoreByYearAndTerm(year: String?, term: String?): List<Score>
+    suspend fun selectAllScoreByYearAndTerm(year: String?, term: String?): List<Score>
 
     /**
      * 删除该学年学期的分数信息
@@ -35,11 +35,11 @@ interface ScoreDao {
      * @param term 学期
      */
     @Query("DELETE FROM score WHERE year=(:year) AND term = (:term)")
-    fun deleteAllScoreByYearAndTerm(year: String?, term: String?)
+    suspend fun deleteAllScoreByYearAndTerm(year: String?, term: String?)
 
     /**
      * 删除所有分数信息
      */
     @Query("DELETE FROM score")
-    fun deleteAll()
+    suspend fun deleteAll()
 }

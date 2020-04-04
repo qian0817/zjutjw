@@ -29,7 +29,7 @@ class ScoreDaoTest {
     }
 
     @Test
-    fun testScoreDao() {
+    suspend fun testScoreDao() {
         //测试InsertScore
         val score = Score()
         score.credit = "1.0"

@@ -1,8 +1,6 @@
 package com.qianlei.jiaowu.repository
 
 import android.content.Context
-import android.os.AsyncTask
-import androidx.lifecycle.MutableLiveData
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.common.ResultType
 import com.qianlei.jiaowu.common.Term
@@ -16,11 +14,9 @@ import com.qianlei.jiaowu.net.StudentClient
  *
  * @author qianlei
  */
-class ExamRepository constructor(private val context: Context) {
-    val examData = MutableLiveData<Result<List<Examination>>>()
-    private val examDao: ExamDao = MyDataBase.getDatabase(context).examDao()
+object ExamRepository {
 
-    private fun getDataFromNet(term: Term): Result<List<Examination>> {
+    private suspend fun getDataFromNet(context: Context, term: Term): Result<List<Examination>> {
         val result = StudentClient.getStudentExamInformation(context, term.year, term.term)
         if (result.isSuccess()) {
             //向数据库中添加数据
@@ -36,7 +32,8 @@ class ExamRepository constructor(private val context: Context) {
         return result
     }
 
-    private fun getDataFromDatabase(term: Term): Result<List<Examination>> {
+    private suspend fun getDataFromDatabase(context: Context, term: Term): Result<List<Examination>> {
+        val examDao: ExamDao = MyDataBase.getDatabase(context).examDao()
         val examinationList = examDao.selectAllExamByYearAndTerm(term.year, term.term)
         return if (examinationList.isNotEmpty()) {
             Result(ResultType.OK, "从数据获取成功", examinationList)
@@ -45,44 +42,17 @@ class ExamRepository constructor(private val context: Context) {
         }
     }
 
-    class GetExamDataUseCacheTask constructor(private val examRepository: ExamRepository) : AsyncTask<Term, Void, Result<List<Examination>>?>() {
-        override fun doInBackground(vararg params: Term?): Result<List<Examination>>? {
-            if (params.size != 1) {
-                return null
-            }
-            val term = params[0] ?: return null
-            val result = examRepository.getDataFromDatabase(term)
-            return if (result.isSuccess()) {
-                result
-            } else {
-                examRepository.getDataFromNet(term)
-            }
-        }
-
-        override fun onPostExecute(result: Result<List<Examination>>?) {
-            if (result == null) {
-                return
-            }
-            examRepository.examData.value = result
+    suspend fun getExamDataUseCache(context: Context, term: Term): Result<List<Examination>> {
+        val result = getDataFromDatabase(context, term)
+        return if (result.isSuccess()) {
+            result
+        } else {
+            getDataFromNet(context, term)
         }
     }
 
-    class GetExamDataTask constructor(private val examRepository: ExamRepository) : AsyncTask<Term, Void, Result<List<Examination>>?>() {
-
-        override fun doInBackground(vararg params: Term?): Result<List<Examination>>? {
-            if (params.size != 1) {
-                return null
-            }
-            val term = params[0] ?: return null
-            return examRepository.getDataFromNet(term)
-        }
-
-        override fun onPostExecute(result: Result<List<Examination>>?) {
-            if (result == null) {
-                return
-            }
-            examRepository.examData.value = result
-        }
+    suspend fun getExamDataNotUseCache(context: Context, term: Term): Result<List<Examination>> {
+        return getDataFromNet(context, term)
     }
 
 }
