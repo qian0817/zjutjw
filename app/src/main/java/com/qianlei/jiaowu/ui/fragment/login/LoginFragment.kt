@@ -8,8 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.navigation.Navigation
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
@@ -26,13 +26,10 @@ class LoginFragment : Fragment() {
         private const val USER = "user"
     }
 
-    private lateinit var mViewModel: LoginViewModel
+    private val mViewModel by viewModels<LoginViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val root = inflater.inflate(R.layout.fragment_login, container, false)
-        val factory = AndroidViewModelFactory(activity!!.application)
-        mViewModel = factory.create(LoginViewModel::class.java)
-        return root
+        return inflater.inflate(R.layout.fragment_login, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

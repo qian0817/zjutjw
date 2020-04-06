@@ -8,8 +8,8 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
@@ -26,13 +26,11 @@ import kotlinx.android.synthetic.main.fragment_score.*
  * @author qianlei
  */
 class ScoreFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
-    private lateinit var scoreViewModel: ScoreViewModel
+    private  val scoreViewModel by viewModels<ScoreViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_score, container, false)
-        val factory = AndroidViewModelFactory(activity!!.application)
-        scoreViewModel = factory.create(ScoreViewModel::class.java)
         scoreViewModel.scoreData.observe(this.viewLifecycleOwner, Observer { result: Result<List<Score>> -> updateScore(result) })
         return root
     }

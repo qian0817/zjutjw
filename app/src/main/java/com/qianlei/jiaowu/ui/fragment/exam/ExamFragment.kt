@@ -8,8 +8,8 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.qianlei.jiaowu.R
@@ -24,14 +24,11 @@ import kotlinx.android.synthetic.main.fragment_exam.*
  * @author qianlei
  */
 class ExamFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
-    private lateinit var examViewModel: ExamViewModel
+    private val examViewModel by viewModels<ExamViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val root = inflater.inflate(R.layout.fragment_exam, container, false)
-        val factory = AndroidViewModelFactory(activity!!.application)
-        examViewModel = factory.create(ExamViewModel::class.java)
-        return root
+        return inflater.inflate(R.layout.fragment_exam, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

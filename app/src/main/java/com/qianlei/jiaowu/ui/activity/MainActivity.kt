@@ -1,6 +1,7 @@
 package com.qianlei.jiaowu.ui.activity
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
@@ -21,7 +22,7 @@ import kotlinx.android.synthetic.main.header_layout.*
  */
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var mainViewModel: MainViewModel
+    private val mainViewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +37,6 @@ class MainActivity : AppCompatActivity() {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
         NavigationUI.setupWithNavController(navView, navController)
         //设置一句
-        val factory = ViewModelProvider.AndroidViewModelFactory(application)
-        mainViewModel = factory.create(MainViewModel::class.java)
         mainViewModel.subTitleLiveData.observe(this, Observer { subtitle ->
             if (poemTextView == null) {
                 return@Observer
