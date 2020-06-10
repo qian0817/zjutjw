@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.common.ResultType
-import com.qianlei.jiaowu.common.Term
+import com.qianlei.jiaowu.entity.Term
 import com.qianlei.jiaowu.entity.Examination
 import com.qianlei.jiaowu.repository.ExamRepository
 import kotlinx.coroutines.launch

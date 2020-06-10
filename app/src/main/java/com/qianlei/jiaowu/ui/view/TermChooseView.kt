@@ -7,8 +7,7 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.LinearLayout
 import android.widget.Spinner
 import com.qianlei.jiaowu.R
-import com.qianlei.jiaowu.common.Term
-import com.qianlei.jiaowu.utils.TermUtil
+import com.qianlei.jiaowu.entity.Term
 
 /**
  * @author qianlei
@@ -57,7 +56,7 @@ class TermChooseView @JvmOverloads constructor(context: Context?, attrs: Attribu
         termSpinner = findViewById(R.id.spinner_term)
         val years = resources.getStringArray(R.array.year)
         //设置选中项为当前学期
-        yearSpinner.setSelection(TermUtil.getNowTerm().year.toInt() - years[0].substring(0, 4).toInt())
-        termSpinner.setSelection(TermUtil.getNowTerm().term.toInt() - 1)
+        yearSpinner.setSelection(Term.getNowTerm().year.toInt() - years[0].substring(0, 4).toInt())
+        termSpinner.setSelection(Term.getNowTerm().term.toInt() - 1)
     }
 }

@@ -15,7 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.entity.Examination
-import com.qianlei.jiaowu.utils.TermUtil
+import com.qianlei.jiaowu.entity.Term
 import kotlinx.android.synthetic.main.fragment_exam.*
 
 /**
@@ -65,7 +65,7 @@ class ExamFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
         swipeRefreshLayout.isRefreshing = true
-        examViewModel.changeTerm(TermUtil.getNowTerm())
+        examViewModel.changeTerm(Term.getNowTerm())
     }
 
     override fun onRefresh() {

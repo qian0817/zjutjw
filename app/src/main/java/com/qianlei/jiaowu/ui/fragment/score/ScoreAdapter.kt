@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.entity.Score
 import com.qianlei.jiaowu.ui.fragment.score.ScoreAdapter.ScoreViewHolder
-import com.qianlei.jiaowu.utils.ScoreUtil
 
 /**
  * 成绩适配器
@@ -26,7 +25,7 @@ class ScoreAdapter internal constructor(private val scoreList: List<Score>?) : R
             return
         }
         if (position == 0) { //第一个显示GPA信息
-            holder.scoreText.text = ScoreUtil.getGpa(scoreList)
+            holder.scoreText.text = Score.getGpa(scoreList)
             holder.scoreNameText.setText(R.string.gpa)
             return
         }

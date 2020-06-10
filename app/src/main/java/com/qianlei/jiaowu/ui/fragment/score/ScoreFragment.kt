@@ -16,7 +16,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.entity.Score
-import com.qianlei.jiaowu.utils.TermUtil
+import com.qianlei.jiaowu.entity.Term
 import kotlinx.android.synthetic.main.fragment_exam.swipeRefreshLayout
 import kotlinx.android.synthetic.main.fragment_score.*
 
@@ -69,7 +69,7 @@ class ScoreFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
         swipeRefreshLayout.isRefreshing = true
-        scoreViewModel.changeTerm(TermUtil.getNowTerm())
+        scoreViewModel.changeTerm(Term.getNowTerm())
     }
 
     override fun onRefresh() {

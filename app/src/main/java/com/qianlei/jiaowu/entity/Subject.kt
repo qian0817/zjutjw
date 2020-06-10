@@ -13,61 +13,62 @@ import com.zhuangfei.timetable.model.ScheduleEnable
  * @author qianlei
  */
 @Entity
-class Subject : ScheduleEnable {
-    @PrimaryKey(autoGenerate = true)
-    var id = 0
-    /**
-     * 课程名称
-     */
-    @ColumnInfo(name = "name")
-    @SerializedName(value = "kcmc")
-    var name: String? = null
-    /**
-     * 任课教师
-     */
-    @ColumnInfo(name = "teacher")
-    @SerializedName(value = "xm")
-    var teacher: String? = null
-    /**
-     * 上课地点
-     */
-    @ColumnInfo(name = "place")
-    @SerializedName(value = "cdmc")
-    var place: String? = null
-    /**
-     * 上课星期
-     * 具体的格式会有
-     * 1-8
-     */
-    @ColumnInfo(name = "week")
-    @SerializedName(value = "zcd")
-    var week: String? = null
-    /**
-     * 星期几
-     * 格式为 星期X
-     */
-    @ColumnInfo(name = "day")
-    @SerializedName(value = "xqjmc")
-    var day: String? = null
-    /**
-     * 上课时间
-     * 格式为 X-X
-     */
-    @ColumnInfo(name = "last")
-    @SerializedName(value = "jc")
-    var last: String? = null
-    /**
-     * 学年
-     */
-    @ColumnInfo(name = "year")
-    @SerializedName(value = "xnm")
-    var year: String? = null
-    /**
-     * 学年
-     */
-    @ColumnInfo(name = "term")
-    @SerializedName(value = "xqm")
-    var term: String? = null
+data class Subject(
+        @PrimaryKey(autoGenerate = true)
+        var id: Int = 0,
+        /**
+         * 课程名称
+         */
+        @ColumnInfo(name = "name")
+        @SerializedName(value = "kcmc")
+        var name: String? = null,
+        /**
+         * 任课教师
+         */
+        @ColumnInfo(name = "teacher")
+        @SerializedName(value = "xm")
+        var teacher: String? = null,
+        /**
+         * 上课地点
+         */
+        @ColumnInfo(name = "place")
+        @SerializedName(value = "cdmc")
+        var place: String? = null,
+        /**
+         * 上课星期
+         * 具体的格式会有
+         * 1-8
+         */
+        @ColumnInfo(name = "week")
+        @SerializedName(value = "zcd")
+        var week: String? = null,
+        /**
+         * 星期几
+         * 格式为 星期X
+         */
+        @ColumnInfo(name = "day")
+        @SerializedName(value = "xqjmc")
+        var day: String? = null,
+        /**
+         * 上课时间
+         * 格式为 X-X
+         */
+        @ColumnInfo(name = "last")
+        @SerializedName(value = "jc")
+        var last: String? = null,
+        /**
+         * 学年
+         */
+        @ColumnInfo(name = "year")
+        @SerializedName(value = "xnm")
+        var year: String? = null,
+        /**
+         * 学年
+         */
+        @ColumnInfo(name = "term")
+        @SerializedName(value = "xqm")
+        var term: String? = null
+) : ScheduleEnable {
 
     override fun getSchedule(): Schedule {
         val tempDay = formatDay()

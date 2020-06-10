@@ -17,9 +17,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.entity.Subject
+import com.qianlei.jiaowu.entity.Term
 import com.qianlei.jiaowu.repository.SettingRepository
 import com.qianlei.jiaowu.ui.view.SubjectItemView
-import com.qianlei.jiaowu.utils.TermUtil
 import com.zhuangfei.timetable.model.Schedule
 import com.zhuangfei.timetable.model.ScheduleSupport
 import kotlinx.android.synthetic.main.fragment_subject.*
@@ -120,7 +120,7 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
         swipeRefreshLayout.isRefreshing = true
-        subjectViewModel.changeTerm(TermUtil.getNowTerm())
+        subjectViewModel.changeTerm(Term.getNowTerm())
     }
 
     override fun onRefresh() {

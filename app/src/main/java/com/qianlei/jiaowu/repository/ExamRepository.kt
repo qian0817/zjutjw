@@ -3,7 +3,7 @@ package com.qianlei.jiaowu.repository
 import android.content.Context
 import com.qianlei.jiaowu.common.Result
 import com.qianlei.jiaowu.common.ResultType
-import com.qianlei.jiaowu.common.Term
+import com.qianlei.jiaowu.entity.Term
 import com.qianlei.jiaowu.db.MyDataBase
 import com.qianlei.jiaowu.db.dao.ExamDao
 import com.qianlei.jiaowu.entity.Examination
