@@ -237,6 +237,10 @@ object StudentClient {
                     val jsonObject = JsonParser.parseString(response.body()).asJsonObject
                     val examinationList = gson.fromJson<List<Examination>>(jsonObject.get("items")
                             , object : TypeToken<List<Examination>>() {}.type)
+                    for (exam in examinationList) {
+                        exam.year = year
+                        exam.term = term
+                    }
                     Result<List<Examination>>(ResultType.OK, "获取成功", examinationList)
                 }
             } catch (e: IOException) {

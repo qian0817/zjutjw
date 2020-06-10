@@ -113,7 +113,7 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
         return ScheduleSupport.timeTransfrom("$setStartTime 00:00:00")
     }
 
-    override fun onItemSelected(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         swipeRefreshLayout.isRefreshing = true
         subjectViewModel.changeTerm(subjectTermChooseView.term)
     }
