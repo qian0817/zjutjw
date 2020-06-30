@@ -5,9 +5,8 @@
 
     <CheckBoxPreference
         android:defaultValue="false"
-        android:summary="暂未完成"
         app:key="@string/useIntranet"
-        app:title="使用内网操作" />
+        app:title="使用内网" />
 
     <PreferenceCategory app:title="课表设置">
 
@@ -25,13 +24,11 @@
     <PreferenceCategory app:title="其他设置">
         <CheckBoxPreference
             android:defaultValue="false"
-            android:summary="显示一句诗"
             app:key="@string/hitokoto"
             app:title="一句" />
 
         <Preference
             android:key="@string/clear_log"
-            android:summary="清除产生的缓存数据和日志信息"
             app:title="清理缓存" />
 
         <Preference

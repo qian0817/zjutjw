@@ -62,7 +62,7 @@ object StudentClient {
             return null
         }
         val response = withContext(Dispatchers.IO) {
-            val connection = Jsoup.connect(prefix(context) + "/jwglxt/xtgl/login_getPublicKey.html")
+            val connection = Jsoup.connect(prefix(context) + "/xtgl/login_getPublicKey.html")
             return@withContext connection.cookies(tempCookies).ignoreContentType(true).execute()
         }
         return withContext(Dispatchers.Default) {
@@ -89,7 +89,7 @@ object StudentClient {
             var tempPassword = password
             try {
                 tempPassword = getRsaPublicKey(context, tempPassword)
-                val connection = Jsoup.connect(prefix(context) + "/jwglxt/xtgl/login_slogin.html?time=" + System.currentTimeMillis())
+                val connection = Jsoup.connect(prefix(context) + "/xtgl/login_slogin.html?time=" + System.currentTimeMillis())
                 connection.header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
                 connection.data("csrftoken", csrftoken)
                 connection.data("yhm", studentId)
@@ -125,7 +125,7 @@ object StudentClient {
         return withContext(Dispatchers.IO) {
             try {
                 try {
-                    val connection = Jsoup.connect(prefix(context) + "/jwglxt/xtgl/login_slogin.html?time" + System.currentTimeMillis())
+                    val connection = Jsoup.connect(prefix(context) + "/xtgl/login_slogin.html?time" + System.currentTimeMillis())
                     val response = connection.execute()
                     //保存cookie
                     tempCookies = response.cookies()
@@ -135,12 +135,12 @@ object StudentClient {
                 } catch (e: IOException) {
                     return@withContext Result<Bitmap>(ResultType.IO, "请检查网络连接")
                 }
-                val connection = Jsoup.connect(prefix(context) + "/jwglxt/kaptcha").ignoreContentType(true)
+                val connection = Jsoup.connect(prefix(context) + "/kaptcha").ignoreContentType(true)
                 val response = connection.cookies(tempCookies).execute()
                 withContext(Dispatchers.Default) {
                     val bytes = response.bodyAsBytes()
                     val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                    Result<Bitmap>(ResultType.OK, "获取成功", bitmap)
+                    Result(ResultType.OK, "获取成功", bitmap)
                 }
             } catch (e: IOException) {
                 return@withContext Result<Bitmap>(ResultType.IO, "请检查网络连接")
@@ -163,7 +163,7 @@ object StudentClient {
         }
         return withContext(Dispatchers.IO) {
             try {
-                val connection = Jsoup.connect(prefix(context) + "/jwglxt/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151")
+                val connection = Jsoup.connect(prefix(context) + "/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151")
                 connection.data("xnm", year)
                 connection.data("xqm", term)
                 val response: Connection.Response
@@ -173,7 +173,7 @@ object StudentClient {
                     val body = JsonParser.parseString(response.body()).asJsonObject
                     val subjectList = gson.fromJson<List<Subject>>(body.get("kbList")
                             , object : TypeToken<List<Subject>>() {}.type)
-                    Result<List<Subject>>(ResultType.OK, "获取成功", subjectList)
+                    Result(ResultType.OK, "获取成功", subjectList)
                 }
             } catch (e: IOException) {
                 Result<List<Subject>>(ResultType.IO, "请检查网络连接")
@@ -201,7 +201,7 @@ object StudentClient {
                 val parameter: MutableMap<String, String> = HashMap(2)
                 parameter["xnm"] = year
                 parameter["xqm"] = term
-                val connection = Jsoup.connect(prefix(context) + "/jwglxt/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005")
+                val connection = Jsoup.connect(prefix(context) + "/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005")
                 val response = connection.cookies(lastLoginCookies).method(Connection.Method.POST)
                         .data(parameter).ignoreContentType(true).execute()
                 withContext(Dispatchers.Default) {
@@ -229,7 +229,7 @@ object StudentClient {
                 val parameter: MutableMap<String, String> = HashMap(2)
                 parameter["xnm"] = year
                 parameter["xqm"] = term
-                val connection = Jsoup.connect(prefix(context) + "/jwglxt/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105")
+                val connection = Jsoup.connect(prefix(context) + "/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105")
                 val response = connection.cookies(lastLoginCookies)
                         .method(Connection.Method.POST)
                         .data(parameter).ignoreContentType(true).execute()
@@ -241,7 +241,7 @@ object StudentClient {
                         exam.year = year
                         exam.term = term
                     }
-                    Result<List<Examination>>(ResultType.OK, "获取成功", examinationList)
+                    Result(ResultType.OK, "获取成功", examinationList)
                 }
             } catch (e: IOException) {
                 Result<List<Examination>>(ResultType.IO, "请检查网络连接")
@@ -278,10 +278,9 @@ object StudentClient {
     private fun prefix(context: Context): String {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         return if (sharedPreferences.getBoolean(context.getString(R.string.useIntranet), false)) {
-            "http://www.gdjw.zjut.edu.cn"
+            "http://172.16.19.160"
         } else {
-            //TODO 内网地址暂不知 回校测试
-            "http://www.gdjw.zjut.edu.cn"
+            "http://www.gdjw.zjut.edu.cn/jwglxt"
         }
     }
 }

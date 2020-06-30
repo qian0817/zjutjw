@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.DatePicker
 import android.widget.Toast
+import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.afollestad.date.dayOfMonth
@@ -37,18 +38,14 @@ class SettingFragment : PreferenceFragmentCompat() {
             }
         }
         //清楚缓存
-        val clearCachePreference = findPreference<Preference>(getString(R.string.clear_log))
-        if (clearCachePreference != null) {
-            clearCachePreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                return@OnPreferenceClickListener deleteCache()
-            }
-        }
-        val hitokotoPreference = findPreference<Preference>(getString(R.string.hitokoto))
-        if (hitokotoPreference != null) {
-            hitokotoPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                return@OnPreferenceChangeListener changeHitokoto(newValue)
-            }
-        }
+        findPreference<Preference>(getString(R.string.clear_log))?.onPreferenceClickListener =
+                Preference.OnPreferenceClickListener {
+                    return@OnPreferenceClickListener deleteCache()
+                }
+        findPreference<Preference>(getString(R.string.hitokoto))?.onPreferenceChangeListener =
+                Preference.OnPreferenceChangeListener { _, newValue ->
+                    return@OnPreferenceChangeListener changeHitokoto(newValue)
+                }
     }
 
     private fun changeHitokoto(newValue: Any?): Boolean {
