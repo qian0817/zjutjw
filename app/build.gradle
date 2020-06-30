@@ -4,12 +4,12 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion '29.0.3'
     defaultConfig {
         applicationId "com.qianlei.jiaowu"
         minSdkVersion 19
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 2
         versionName "1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -34,7 +34,7 @@ android {
 dependencies {
     def room_version = "2.2.5"
     def material_dialogs_version = "3.2.1"
-    def navigation_version = "2.2.2"
+    def navigation_version = "2.3.0"
     def lifecycle_version = "2.2.0"
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
