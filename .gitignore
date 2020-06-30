@@ -75,3 +75,4 @@ lint/tmp/
 # lint/reports/
 /.idea/
 /app/release/output.json
+/gradle/
