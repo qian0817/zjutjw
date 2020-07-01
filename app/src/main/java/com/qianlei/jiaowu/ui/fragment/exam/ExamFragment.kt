@@ -58,7 +58,7 @@ class ExamFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
         swipeRefreshLayout.isRefreshing = false
     }
 
-    override fun onItemSelected(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         swipeRefreshLayout.isRefreshing = true
         examViewModel.changeTerm(termChooseView.term)
     }

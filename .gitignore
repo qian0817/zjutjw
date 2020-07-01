@@ -76,3 +76,4 @@ lint/tmp/
 /.idea/
 /app/release/output.json
 /gradle/
+/key/
