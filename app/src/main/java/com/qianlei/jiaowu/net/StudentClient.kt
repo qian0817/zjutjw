@@ -198,9 +198,7 @@ object StudentClient {
         }
         return withContext(Dispatchers.IO) {
             try {
-                val parameter: MutableMap<String, String> = HashMap(2)
-                parameter["xnm"] = year
-                parameter["xqm"] = term
+                val parameter = mapOf(Pair("xnm", year), Pair("xqm", term), Pair("queryModel.showCount", "100"))
                 val connection = Jsoup.connect(prefix(context) + "/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005")
                 val response = connection.cookies(lastLoginCookies).method(Connection.Method.POST)
                         .data(parameter).ignoreContentType(true).execute()
@@ -220,15 +218,16 @@ object StudentClient {
         }
     }
 
+    /**
+     * 获取[year]学年第[term]学期学生考试信息
+     */
     suspend fun getStudentExamInformation(context: Context, year: String, term: String): Result<List<Examination>> {
         if (lastLoginCookies == null) {
             return Result(ResultType.NEED_LOGIN, "请先登陆")
         }
         return withContext(Dispatchers.IO) {
             try {
-                val parameter: MutableMap<String, String> = HashMap(2)
-                parameter["xnm"] = year
-                parameter["xqm"] = term
+                val parameter = mapOf(Pair("xnm", year), Pair("xqm", term), Pair("queryModel.showCount", "100"))
                 val connection = Jsoup.connect(prefix(context) + "/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105")
                 val response = connection.cookies(lastLoginCookies)
                         .method(Connection.Method.POST)
