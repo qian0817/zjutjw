@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <CheckBoxPreference
+    <SwitchPreference
         android:defaultValue="false"
         app:key="@string/useIntranet"
         app:title="使用内网" />
@@ -14,7 +14,7 @@
             app:key="@string/start_day"
             app:title="设置开学日期" />
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="true"
             android:key="@string/show_weekend"
             app:title="显示周末" />
@@ -22,7 +22,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory app:title="其他设置">
-        <CheckBoxPreference
+        <SwitchPreference
             android:defaultValue="false"
             app:key="@string/hitokoto"
             app:title="一句" />
