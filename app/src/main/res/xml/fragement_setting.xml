@@ -22,10 +22,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory app:title="其他设置">
-        <SwitchPreference
-            android:defaultValue="false"
-            app:key="@string/hitokoto"
-            app:title="一句" />
 
         <Preference
             android:key="@string/clear_log"

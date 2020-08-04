@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.DatePicker
 import android.widget.Toast
-import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.afollestad.date.dayOfMonth
@@ -15,7 +14,6 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.datetime.datePicker
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.db.MyDataBase
-import com.qianlei.jiaowu.repository.HitokotoRepository
 import com.qianlei.jiaowu.repository.SettingRepository
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -42,21 +40,6 @@ class SettingFragment : PreferenceFragmentCompat() {
                 Preference.OnPreferenceClickListener {
                     return@OnPreferenceClickListener deleteCache()
                 }
-        findPreference<Preference>(getString(R.string.hitokoto))?.onPreferenceChangeListener =
-                Preference.OnPreferenceChangeListener { _, newValue ->
-                    return@OnPreferenceChangeListener changeHitokoto(newValue)
-                }
-    }
-
-    private fun changeHitokoto(newValue: Any?): Boolean {
-        if (newValue is Boolean) {
-            if (newValue) {
-                HitokotoRepository.getPoem()
-            } else {
-                HitokotoRepository.hitokotoLiveData.value = ""
-            }
-        }
-        return true
     }
 
     /**
