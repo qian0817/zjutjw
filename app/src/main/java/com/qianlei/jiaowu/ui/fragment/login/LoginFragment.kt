@@ -39,9 +39,11 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         mViewModel.captcha.observe(this.viewLifecycleOwner, Observer { result -> changeCaptcha(result) })
         mViewModel.loginResult.observe(this.viewLifecycleOwner, Observer { result -> login(result) })
         loginButton.setOnClickListener {
+            loginButton.startAnimation()
             val studentId = studentIdEditText.text.toString()
             val password = passwordEditText.text.toString()
             val captcha = captchaText.text.toString()
@@ -93,6 +95,7 @@ class LoginFragment : Fragment() {
             captchaText.setText("")
             Toast.makeText(context, result.msg, Toast.LENGTH_SHORT).show()
         }
+        loginButton.revertAnimation()
     }
 
     /**
