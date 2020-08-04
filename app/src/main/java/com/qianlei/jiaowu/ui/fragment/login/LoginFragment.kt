@@ -1,6 +1,7 @@
 package com.qianlei.jiaowu.ui.fragment.login
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,11 +12,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.qianlei.jiaowu.R
 import com.qianlei.jiaowu.common.Result
 import kotlinx.android.synthetic.main.fragment_login.*
 
 /**
+ * 登录的Fragment,用于学生登录
+ *
  * @author qianlei
  */
 class LoginFragment : Fragment() {
@@ -34,8 +39,8 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mViewModel.captcha.observe(this.viewLifecycleOwner, Observer { result: Result<Bitmap> -> changeCaptcha(result) })
-        mViewModel.loginResult.observe(this.viewLifecycleOwner, Observer { result: Result<String> -> login(result) })
+        mViewModel.captcha.observe(this.viewLifecycleOwner, Observer { result -> changeCaptcha(result) })
+        mViewModel.loginResult.observe(this.viewLifecycleOwner, Observer { result -> login(result) })
         loginButton.setOnClickListener {
             val studentId = studentIdEditText.text.toString()
             val password = passwordEditText.text.toString()
@@ -48,15 +53,20 @@ class LoginFragment : Fragment() {
         mViewModel.changeCaptcha()
     }
 
+    /**
+     * 获取之前保存的密码
+     */
     private fun getRememberPassword() {
-        val c = context ?: return
-        val preferences = c.getSharedPreferences(USER, Context.MODE_PRIVATE)
+        val preferences = createEncryptedSharedPreferences(context ?: return)
         val studentId = preferences.getString(ID, "")
         val password = preferences.getString(PASSWORD, "")
         passwordEditText.setText(password)
         studentIdEditText.setText(studentId)
     }
 
+    /**
+     * 更换验证码图片,将其修改为[result]中的图片
+     */
     private fun changeCaptcha(result: Result<Bitmap>) {
         if (result.isSuccess()) {
             captchaImage.setImageBitmap(result.data)
@@ -69,8 +79,7 @@ class LoginFragment : Fragment() {
         val studentId = studentIdEditText.text.toString()
         val password = passwordEditText.text.toString()
         if (result.isSuccess()) { //保存用户名 密码
-            val c = context ?: return
-            val preferences = c.getSharedPreferences(USER, Context.MODE_PRIVATE)
+            val preferences = createEncryptedSharedPreferences(context ?: return)
             val editor = preferences.edit()
             editor.putString(ID, studentId)
             editor.putString(PASSWORD, password)
@@ -85,4 +94,18 @@ class LoginFragment : Fragment() {
             Toast.makeText(context, result.msg, Toast.LENGTH_SHORT).show()
         }
     }
+
+    /**
+     * 创建可加密的密码
+     */
+    private fun createEncryptedSharedPreferences(context: Context): SharedPreferences {
+        val key = MasterKey
+                .Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+        return EncryptedSharedPreferences.create(context, USER, key,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+    }
+
 }
