@@ -26,12 +26,14 @@ import kotlinx.android.synthetic.main.fragment_score.*
  * @author qianlei
  */
 class ScoreFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
-    private  val scoreViewModel by viewModels<ScoreViewModel>()
+    private val scoreViewModel by viewModels<ScoreViewModel>()
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
         val root = inflater.inflate(R.layout.fragment_score, container, false)
-        scoreViewModel.scoreData.observe(this.viewLifecycleOwner, Observer { result: Result<List<Score>> -> updateScore(result) })
+        scoreViewModel.scoreData.observe(viewLifecycleOwner, Observer { updateScore(it) })
         return root
     }
 
@@ -43,8 +45,6 @@ class ScoreFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary)
         scoreTermChooseView.setItemSelectedListener(this)
     }
-
-
 
     /**
      * 更新成绩数据

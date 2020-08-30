@@ -11,20 +11,20 @@ import com.zhuangfei.timetable.model.Schedule
  * @author qianlei
  */
 class SubjectItemView(context: Context) : NestedScrollView(context) {
-    private var teacherNameTextView: TextView? = null
-    private var subjectNameTextView: TextView? = null
-    private var subjectPlaceTextView: TextView? = null
-    private var subjectLastTextView: TextView? = null
-    private var subjectWeekTextView: TextView? = null
+    private lateinit var teacherNameTextView: TextView
+    private lateinit var subjectNameTextView: TextView
+    private lateinit var subjectPlaceTextView: TextView
+    private lateinit var subjectLastTextView: TextView
+    private lateinit var subjectWeekTextView: TextView
 
     constructor(context: Context, schedule: Schedule) : this(context) {
         LayoutInflater.from(context).inflate(R.layout.subject_item_dialog, this)
         findView()
-        teacherNameTextView!!.text = schedule.teacher
-        subjectNameTextView!!.text = schedule.name
-        subjectPlaceTextView!!.text = schedule.room
-        subjectLastTextView!!.text = schedule.extras["last"].toString()
-        subjectWeekTextView!!.text = schedule.extras["week"].toString()
+        teacherNameTextView.text = schedule.teacher
+        subjectNameTextView.text = schedule.name
+        subjectPlaceTextView.text = schedule.room
+        subjectLastTextView.text = schedule.extras["last"].toString()
+        subjectWeekTextView.text = schedule.extras["week"].toString()
     }
 
     private fun findView() {

@@ -12,9 +12,10 @@ import com.qianlei.jiaowu.entity.Term
 /**
  * @author qianlei
  */
-class TermChooseView @JvmOverloads constructor(context: Context?, attrs: AttributeSet? = null) : LinearLayout(context, attrs) {
+class TermChooseView(context: Context?, attrs: AttributeSet?) : LinearLayout(context, attrs) {
     private val yearSpinner: Spinner
     private val termSpinner: Spinner
+
     fun setItemSelectedListener(listener: OnItemSelectedListener?) {
         yearSpinner.onItemSelectedListener = listener
         termSpinner.onItemSelectedListener = listener

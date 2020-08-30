@@ -33,10 +33,13 @@ import kotlinx.android.synthetic.main.fragment_subject.*
 class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     private val subjectViewModel by viewModels<SubjectViewModel>()
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val root = inflater.inflate(R.layout.fragment_subject, container, false)
-        subjectViewModel.subjectData.observe(this.viewLifecycleOwner, Observer { result: Result<List<Subject>> -> updateSubject(result) })
+        subjectViewModel.subjectData.observe(viewLifecycleOwner, Observer { updateSubject(it) })
         return root
     }
 
@@ -46,16 +49,22 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
         subjectTermChooseView.setItemSelectedListener(this)
         swipeRefreshLayout.setOnRefreshListener(this)
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary)
-        weekView.curWeek(getStartTime()).itemCount(16)
-                .hideLeftLayout().callback { week: Int -> changeWeek(week) }.showView()
+        weekView
+            .curWeek(getStartTime())
+            .itemCount(16)
+            .hideLeftLayout()
+            .callback { week: Int -> changeWeek(week) }
+            .showView()
         //是否显示周末
         val preferenceManager = PreferenceManager.getDefaultSharedPreferences(context)
         val showWeek = preferenceManager.getBoolean(getString(R.string.show_weekend), true)
-        timeTableView.curWeek(getStartTime()).isShowFlaglayout(false)
-                .isShowWeekends(showWeek)
-                .callback { mInflate: LayoutInflater -> mInflate.inflate(R.layout.custom_myscrollview, null, false) }
-                .callback { _: View?, scheduleList: List<Schedule>? -> showSubjectItemDialog(scheduleList) }
-                .showView()
+        timeTableView
+            .curWeek(getStartTime())
+            .isShowFlaglayout(false)
+            .isShowWeekends(showWeek)
+            .callback { mInflate: LayoutInflater -> mInflate.inflate(R.layout.custom_myscrollview, null, false) }
+            .callback { _: View?, scheduleList: List<Schedule>? -> showSubjectItemDialog(scheduleList) }
+            .showView()
     }
 
 
@@ -69,10 +78,10 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
             return
         }
         val c = context ?: return
-        val dialog = BottomSheetDialog(c)
         val curWeek = timeTableView.curWeek()
         val subject = scheduleList.find { it.weekList.contains(curWeek) } ?: return
         val view: View = SubjectItemView(c, subject)
+        val dialog = BottomSheetDialog(c)
         dialog.setContentView(view)
         dialog.show()
     }

@@ -14,7 +14,7 @@ import com.qianlei.jiaowu.ui.fragment.score.ScoreAdapter.ScoreViewHolder
  *
  * @author qianlei
  */
-class ScoreAdapter internal constructor(private val scoreList: List<Score>?) : RecyclerView.Adapter<ScoreViewHolder>() {
+class ScoreAdapter(private val scoreList: List<Score>?) : RecyclerView.Adapter<ScoreViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ScoreViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.score_item, parent, false)
         return ScoreViewHolder(view)

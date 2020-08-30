@@ -26,8 +26,10 @@ import kotlinx.android.synthetic.main.fragment_exam.*
 class ExamFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     private val examViewModel by viewModels<ExamViewModel>()
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_exam, container, false)
     }
 
@@ -37,7 +39,7 @@ class ExamFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
         recyclerView.layoutManager = LinearLayoutManager(context)
         swipeRefreshLayout.setOnRefreshListener(this)
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary)
-        examViewModel.examData.observe(this.viewLifecycleOwner, Observer { result: Result<List<Examination>> -> updateExam(result) })
+        examViewModel.examData.observe(this.viewLifecycleOwner, Observer { updateExam(it) })
     }
 
 

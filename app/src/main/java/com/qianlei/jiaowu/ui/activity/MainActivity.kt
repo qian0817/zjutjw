@@ -24,9 +24,12 @@ class MainActivity : AppCompatActivity() {
         val navView = findViewById<NavigationView>(R.id.nav_view)
         val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
         appBarConfiguration = AppBarConfiguration.Builder(
-                R.id.navigation_examination, R.id.navigation_login,
-                R.id.navigation_score, R.id.navigation_subject, R.id.navigation_setting)
-                .setOpenableLayout(drawer).build()
+            R.id.navigation_examination,
+            R.id.navigation_login,
+            R.id.navigation_score,
+            R.id.navigation_subject,
+            R.id.navigation_setting
+        ).setOpenableLayout(drawer).build()
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
         NavigationUI.setupWithNavController(navView, navController)
@@ -48,5 +51,4 @@ class MainActivity : AppCompatActivity() {
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         return NavigationUI.navigateUp(navController, appBarConfiguration) || super.onSupportNavigateUp()
     }
-
 }

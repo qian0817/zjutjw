@@ -20,8 +20,13 @@ import java.util.*
  *
  * @author qianlei
  */
-class ExamAdapter internal constructor(context: Context, private val examinationList: List<Examination>?) : RecyclerView.Adapter<ExamViewHolder>() {
+class ExamAdapter(
+    context: Context,
+    private val examinationList: List<Examination>?
+) : RecyclerView.Adapter<ExamViewHolder>() {
+
     private val context: Context = context.applicationContext
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExamViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.exam_item, parent, false)
         return ExamViewHolder(view)

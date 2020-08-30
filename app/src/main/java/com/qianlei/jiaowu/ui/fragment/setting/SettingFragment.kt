@@ -31,15 +31,11 @@ class SettingFragment : PreferenceFragmentCompat() {
         val startDayPreference = findPreference<Preference>(getString(R.string.start_day))
         if (startDayPreference != null) {
             setStartDaySummary()
-            startDayPreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                return@OnPreferenceClickListener changeStartDay()
-            }
+            startDayPreference.onPreferenceClickListener = Preference.OnPreferenceClickListener { changeStartDay() }
         }
         //清楚缓存
         findPreference<Preference>(getString(R.string.clear_log))?.onPreferenceClickListener =
-                Preference.OnPreferenceClickListener {
-                    return@OnPreferenceClickListener deleteCache()
-                }
+            Preference.OnPreferenceClickListener { deleteCache() }
     }
 
     /**

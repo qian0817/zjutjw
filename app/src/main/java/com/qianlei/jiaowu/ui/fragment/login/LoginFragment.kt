@@ -39,9 +39,8 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        mViewModel.captcha.observe(this.viewLifecycleOwner, Observer { result -> changeCaptcha(result) })
-        mViewModel.loginResult.observe(this.viewLifecycleOwner, Observer { result -> login(result) })
+        mViewModel.captcha.observe(this.viewLifecycleOwner, Observer { changeCaptcha(it) })
+        mViewModel.loginResult.observe(this.viewLifecycleOwner, Observer { login(it) })
         loginButton.setOnClickListener {
             loginButton.startAnimation()
             val studentId = studentIdEditText.text.toString()
@@ -87,8 +86,7 @@ class LoginFragment : Fragment() {
             editor.putString(PASSWORD, password)
             editor.apply()
             //跳转到课程界面
-            val v = view ?: return
-            val controller = Navigation.findNavController(v)
+            val controller = Navigation.findNavController(view ?: return)
             controller.navigate(R.id.action_navigation_login_to_navigation_lesson)
         } else {
             mViewModel.changeCaptcha()
@@ -103,12 +101,16 @@ class LoginFragment : Fragment() {
      */
     private fun createEncryptedSharedPreferences(context: Context): SharedPreferences {
         val key = MasterKey
-                .Builder(context)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
-        return EncryptedSharedPreferences.create(context, USER, key,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM)
+            .Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        return EncryptedSharedPreferences.create(
+            context,
+            USER,
+            key,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
     }
 
 }
