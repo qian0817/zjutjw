@@ -65,12 +65,14 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
      * @param scheduleList 点击的课程
      */
     private fun showSubjectItemDialog(scheduleList: List<Schedule>?) {
-        if (scheduleList == null || scheduleList.isEmpty()) {
+        if (scheduleList.isNullOrEmpty()) {
             return
         }
         val c = context ?: return
         val dialog = BottomSheetDialog(c)
-        val view: View = SubjectItemView(c, scheduleList[0])
+        val curWeek = timeTableView.curWeek()
+        val subject = scheduleList.find { it.weekList.contains(curWeek) } ?: return
+        val view: View = SubjectItemView(c, subject)
         dialog.setContentView(view)
         dialog.show()
     }
@@ -99,7 +101,7 @@ class SubjectFragment : Fragment(), OnItemSelectedListener, OnRefreshListener {
     private fun changeWeek(week: Int) {
         val cur = timeTableView.curWeek()
         timeTableView.onDateBuildListener().onUpdateDate(cur, week)
-        timeTableView.changeWeekOnly(week)
+        timeTableView.changeWeekForce(week)
     }
 
     /**
