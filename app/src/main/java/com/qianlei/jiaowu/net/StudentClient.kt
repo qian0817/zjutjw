@@ -3,7 +3,6 @@ package com.qianlei.jiaowu.net
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
 import com.google.gson.JsonParser
@@ -22,7 +21,6 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 import java.io.IOException
-import java.util.*
 
 /**
  * 从教务处获取信息
@@ -30,7 +28,6 @@ import java.util.*
  * @author qianlei
  */
 object StudentClient {
-    private val TAG = "STUDENT_CLIENT"
     private val gson = Gson()
 
     /**
@@ -61,18 +58,15 @@ object StudentClient {
         if (password == null) {
             return null
         }
-        val response = withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.IO) {
             val connection = Jsoup.connect(prefix(context) + "/xtgl/login_getPublicKey.html")
-            return@withContext connection.cookies(tempCookies).ignoreContentType(true).execute()
-        }
-        return withContext(Dispatchers.Default) {
-            var retPassword: String = password
-            val jsonObject = JsonParser.parseString(response.body()).asJsonObject
-            val modulus = jsonObject.get("modulus").asString
-            val exponent = jsonObject.get("exponent").asString
-            retPassword = RSAEncoder.rsaEncrypt(retPassword, Base64.b64toHex(modulus), Base64.b64toHex(exponent))
-            retPassword = Base64.hex2b64(retPassword)
-            return@withContext retPassword
+            val response = connection.cookies(tempCookies).ignoreContentType(true).execute()
+            withContext(Dispatchers.Default) {
+                val jsonObject = JsonParser.parseString(response.body()).asJsonObject
+                val modulus = jsonObject.get("modulus").asString
+                val exponent = jsonObject.get("exponent").asString
+                Base64.hex2b64(RSAEncoder.rsaEncrypt(password, Base64.b64toHex(modulus), Base64.b64toHex(exponent)))
+            }
         }
     }
 
@@ -86,32 +80,34 @@ object StudentClient {
      */
     suspend fun login(context: Context, studentId: String?, password: String?, code: String?): Result<String> {
         return withContext(Dispatchers.IO) {
-            var tempPassword = password
             try {
-                tempPassword = getRsaPublicKey(context, tempPassword)
-                val connection = Jsoup.connect(prefix(context) + "/xtgl/login_slogin.html?time=" + System.currentTimeMillis())
+                val rsaPassword = getRsaPublicKey(context, password)
+                val connection =
+                    Jsoup.connect(prefix(context) + "/xtgl/login_slogin.html?time=" + System.currentTimeMillis())
                 connection.header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
                 connection.data("csrftoken", csrftoken)
                 connection.data("yhm", studentId)
-                connection.data("mm", tempPassword)
-                connection.data("mm", tempPassword)
+                connection.data("mm", rsaPassword)
+                connection.data("mm", rsaPassword)
                 connection.data("yzm", code)
-                val response = connection.cookies(tempCookies).ignoreContentType(true)
-                        .method(Connection.Method.POST).execute()
-                return@withContext withContext(Dispatchers.Default) {
+
+                val response = connection
+                    .cookies(tempCookies)
+                    .ignoreContentType(true)
+                    .method(Connection.Method.POST)
+                    .execute()
+
+                withContext(Dispatchers.Default) {
                     val document = Jsoup.parse(response.body())
                     if (document.getElementById("tips") == null) { //设置cookie
                         lastLoginCookies = response.cookies()
-                        Result<String>(ResultType.OK, "成功登陆")
+                        Result(ResultType.OK, "成功登陆")
                     } else {
                         Result(ResultType.PARAMS_ERROR, document.getElementById("tips").text())
                     }
                 }
-            } catch (e: IOException) {
-                Result<String>(ResultType.IO, "请检查网络连接")
             } catch (e: Exception) {
-                Log.e(TAG, "登陆错误", e)
-                Result<String>(ResultType.IO, "其他错误" + e.message)
+                handleException(e)
             }
         }
     }
@@ -124,28 +120,25 @@ object StudentClient {
     suspend fun getCaptchaImage(context: Context): Result<Bitmap> {
         return withContext(Dispatchers.IO) {
             try {
-                try {
-                    val connection = Jsoup.connect(prefix(context) + "/xtgl/login_slogin.html?time" + System.currentTimeMillis())
-                    val response = connection.execute()
-                    //保存cookie
-                    tempCookies = response.cookies()
-                    //保存csrftoken
-                    val document = Jsoup.parse(response.body())
-                    csrftoken = document.getElementById("csrftoken").`val`()
-                } catch (e: IOException) {
-                    return@withContext Result<Bitmap>(ResultType.IO, "请检查网络连接")
-                }
-                val connection = Jsoup.connect(prefix(context) + "/kaptcha").ignoreContentType(true)
-                val response = connection.cookies(tempCookies).execute()
+                val connection =
+                    Jsoup.connect(prefix(context) + "/xtgl/login_slogin.html?time" + System.currentTimeMillis())
+                val response = connection.execute()
+                //保存 cookie
+                tempCookies = response.cookies()
+                //保存 csrftoken
+                val document = Jsoup.parse(response.body())
+                csrftoken = document.getElementById("csrftoken").`val`()
+
+                // 获取验证码的请求
+                val verifyCodeConnection = Jsoup.connect(prefix(context) + "/kaptcha").ignoreContentType(true)
+                val verifyCoderesponse = verifyCodeConnection.cookies(tempCookies).execute()
                 withContext(Dispatchers.Default) {
-                    val bytes = response.bodyAsBytes()
+                    val bytes = verifyCoderesponse.bodyAsBytes()
                     val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                     Result(ResultType.OK, "获取成功", bitmap)
                 }
-            } catch (e: IOException) {
-                return@withContext Result<Bitmap>(ResultType.IO, "请检查网络连接")
             } catch (e: Exception) {
-                return@withContext Result<Bitmap>(ResultType.OTHER, "其他错误" + e.message)
+                handleException(e)
             }
         }
     }
@@ -166,21 +159,19 @@ object StudentClient {
                 val connection = Jsoup.connect(prefix(context) + "/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151")
                 connection.data("xnm", year)
                 connection.data("xqm", term)
-                val response: Connection.Response
-                response = connection.cookies(lastLoginCookies)
-                        .method(Connection.Method.POST).ignoreContentType(true).execute()
+                val response = connection.cookies(lastLoginCookies)
+                    .method(Connection.Method.POST)
+                    .ignoreContentType(true)
+                    .execute()
+
                 withContext(Dispatchers.Default) {
                     val body = JsonParser.parseString(response.body()).asJsonObject
-                    val subjectList = gson.fromJson<List<Subject>>(body.get("kbList")
-                            , object : TypeToken<List<Subject>>() {}.type)
+                    val subjectList =
+                        gson.fromJson<List<Subject>>(body.get("kbList"), object : TypeToken<List<Subject>>() {}.type)
                     Result(ResultType.OK, "获取成功", subjectList)
                 }
-            } catch (e: IOException) {
-                Result<List<Subject>>(ResultType.IO, "请检查网络连接")
-            } catch (e: JsonSyntaxException) {
-                Result<List<Subject>>(ResultType.NEED_LOGIN, "请重新登陆")
             } catch (e: Exception) {
-                Result<List<Subject>>(ResultType.OTHER, "其他错误" + e.message)
+                handleException(e)
             }
         }
     }
@@ -200,20 +191,20 @@ object StudentClient {
             try {
                 val parameter = mapOf(Pair("xnm", year), Pair("xqm", term), Pair("queryModel.showCount", "100"))
                 val connection = Jsoup.connect(prefix(context) + "/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005")
-                val response = connection.cookies(lastLoginCookies).method(Connection.Method.POST)
-                        .data(parameter).ignoreContentType(true).execute()
+                val response = connection.cookies(lastLoginCookies)
+                    .method(Connection.Method.POST)
+                    .data(parameter)
+                    .ignoreContentType(true)
+                    .execute()
+
                 withContext(Dispatchers.Default) {
                     val jsonObject = JsonParser.parseString(response.body()).asJsonObject
-                    val scoreList = gson.fromJson<List<Score>>(jsonObject.get("items")
-                            , object : TypeToken<List<Score>>() {}.type)
+                    val scoreList =
+                        gson.fromJson<List<Score>>(jsonObject.get("items"), object : TypeToken<List<Score>>() {}.type)
                     Result(ResultType.OK, "获取成功", scoreList)
                 }
-            } catch (e: IOException) {
-                Result<List<Score>>(ResultType.IO, "请检查网络连接")
-            } catch (e: JsonSyntaxException) {
-                Result<List<Score>>(ResultType.NEED_LOGIN, "请重新登陆")
             } catch (e: Exception) {
-                Result<List<Score>>(ResultType.OTHER, "其他错误" + e.message)
+                handleException(e)
             }
         }
     }
@@ -228,29 +219,40 @@ object StudentClient {
         return withContext(Dispatchers.IO) {
             try {
                 val parameter = mapOf(Pair("xnm", year), Pair("xqm", term), Pair("queryModel.showCount", "100"))
-                val connection = Jsoup.connect(prefix(context) + "/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105")
-                val response = connection.cookies(lastLoginCookies)
-                        .method(Connection.Method.POST)
-                        .data(parameter).ignoreContentType(true).execute()
+                val connection = Jsoup
+                    .connect(prefix(context) + "/kwgl/kscx_cxXsksxxIndex.html?doType=query&gnmkdm=N358105")
+
+                val response = connection
+                    .cookies(lastLoginCookies)
+                    .method(Connection.Method.POST)
+                    .data(parameter)
+                    .ignoreContentType(true)
+                    .execute()
+
                 withContext(Dispatchers.Default) {
                     val jsonObject = JsonParser.parseString(response.body()).asJsonObject
-                    val examinationList = gson.fromJson<List<Examination>>(jsonObject.get("items")
-                            , object : TypeToken<List<Examination>>() {}.type)
+                    val examinationList = gson.fromJson<List<Examination>>(
+                        jsonObject.get("items"),
+                        object : TypeToken<List<Examination>>() {}.type
+                    )
                     for (exam in examinationList) {
                         exam.year = year
                         exam.term = term
                     }
                     Result(ResultType.OK, "获取成功", examinationList)
                 }
-            } catch (e: IOException) {
-                Result<List<Examination>>(ResultType.IO, "请检查网络连接")
-            } catch (e: JsonSyntaxException) {
-                Result<List<Examination>>(ResultType.NEED_LOGIN, "请重新登陆")
             } catch (e: Exception) {
-                Result<List<Examination>>(ResultType.OTHER, "其他错误")
+                handleException(e)
             }
         }
     }
+
+    private fun <T> handleException(e: Exception): Result<T> =
+        when (e) {
+            is IOException -> Result(ResultType.IO, "请检查网络连接")
+            is JsonSyntaxException -> Result(ResultType.NEED_LOGIN, "请重新登陆")
+            else -> Result(ResultType.OTHER, "其他错误")
+        }
 
     /**
      * 读取cookies
