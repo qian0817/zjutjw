@@ -14,7 +14,7 @@ import com.qianlei.jiaowu.entity.Subject
 /**
  * @author qianlei
  */
-@Database(entities = [Examination::class, Score::class, Subject::class], version = 1, exportSchema = false)
+@Database(entities = [Examination::class, Score::class, Subject::class], version = 2, exportSchema = false)
 abstract class MyDataBase : RoomDatabase() {
     abstract fun examDao(): ExamDao
     abstract fun scoreDao(): ScoreDao
@@ -22,13 +22,16 @@ abstract class MyDataBase : RoomDatabase() {
 
     companion object {
         private var INSTANCE: MyDataBase? = null
-        fun getDatabase(context: Context?): MyDataBase {
+        fun getDatabase(context: Context): MyDataBase {
             if (INSTANCE == null) {
                 synchronized(MyDataBase::class.java) {
                     if (INSTANCE == null) {
-                        INSTANCE = Room.databaseBuilder(context!!.applicationContext,
-                                MyDataBase::class.java, "database")
-                                .build()
+                        INSTANCE = Room.databaseBuilder(
+                            context.applicationContext,
+                            MyDataBase::class.java, "database"
+                        )
+                            .fallbackToDestructiveMigration()
+                            .build()
                     }
                 }
             }

@@ -39,7 +39,6 @@ class ExamAdapter(
         holder.examNameView.text = examinationList[position].name
         holder.examTimeView.text = examinationList[position].time
         holder.examPlaceView.text = examinationList[position].place
-        holder.examSeatIdView.text = examinationList[position].seatId
         holder.addCalendarImageView.setOnClickListener { startCalender(position) }
     }
 
@@ -69,7 +68,6 @@ class ExamAdapter(
                 calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, calendar.timeInMillis)
                 calendarIntent.putExtra(CalendarContract.Events.TITLE, examinationList[position].name + "考试")
                 calendarIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, examinationList[position].place)
-                calendarIntent.putExtra(CalendarContract.Events.DESCRIPTION, "座位号" + examinationList[position].seatId)
                 calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, CalendarContract.EXTRA_EVENT_ALL_DAY)
                 //启动日历
                 context.startActivity(calendarIntent)
@@ -90,7 +88,6 @@ class ExamAdapter(
         var examPlaceView: TextView = itemView.findViewById(R.id.exam_place_text_view)
         var examNameView: TextView = itemView.findViewById(R.id.exam_name_text_view)
         var examTimeView: TextView = itemView.findViewById(R.id.exam_time_text_view)
-        var examSeatIdView: TextView = itemView.findViewById(R.id.exam_seat_id_text_view)
         var addCalendarImageView: ImageView = itemView.findViewById(R.id.add_calendar_image_view)
     }
 

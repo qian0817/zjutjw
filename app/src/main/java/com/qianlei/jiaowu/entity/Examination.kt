@@ -34,12 +34,6 @@ data class Examination(
         @ColumnInfo(name = "time")
         var time: String? = null,
         /**
-         * 座位号
-         */
-        @SerializedName(value = "zwh")
-        @ColumnInfo(name = "seat_id")
-        var seatId: String? = null,
-        /**
          * 学年
          */
         @ColumnInfo(name = "year")

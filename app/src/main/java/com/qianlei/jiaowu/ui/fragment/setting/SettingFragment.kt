@@ -94,7 +94,7 @@ class SettingFragment : PreferenceFragmentCompat() {
                 }
             }
             //从数据库中删除所有的数据
-            val dataBase: MyDataBase = MyDataBase.getDatabase(context)
+            val dataBase: MyDataBase = MyDataBase.getDatabase(c)
             dataBase.examDao().deleteAll()
             dataBase.scoreDao().deleteAll()
             dataBase.subjectDao().deleteAll()
