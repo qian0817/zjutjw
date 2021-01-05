@@ -27,8 +27,8 @@ object SettingRepository {
     fun getStartDay(c: Context): Date {
         val sharedPreferences = c.getSharedPreferences("setting", Context.MODE_PRIVATE)
         val year = sharedPreferences.getInt("year", 2020)
-        val month = sharedPreferences.getInt("month", 1)
-        val day = sharedPreferences.getInt("day", 16)
+        val month = sharedPreferences.getInt("month", 10)
+        val day = sharedPreferences.getInt("day", 28)
         val calendar = Calendar.getInstance()
         calendar.set(year, month, day)
         return calendar.time
